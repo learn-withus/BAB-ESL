@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link rel="icon" type="image/png" href="images/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESL Pro Tool - Create Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-width: 260px;
+            --sidebar-bg: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        /* --- DARK MODE THEME --- */
+        body.dark-mode {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --sidebar-bg: #020617;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+
+        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* Unified Sidebar & Nav Styling (Matches Dashboards) */
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; overflow-y: auto; }
+        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } }
+        .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 30px; padding-left: 10px; }
+        
+        /* Consistent Nav Links Matching Main Dashboards */
+        .sidebar a, .side-link, .sidebar ul li a { 
+            padding: 12px 16px !important; 
+            color: #cbd5e1 !important; 
+            text-decoration: none !important; 
+            border-radius: 8px !important; 
+            margin-bottom: 6px !important; 
+            display: flex !important; 
+            align-items: center !important; 
+            gap: 12px !important; 
+            font-size: 15px !important; /* Fixed to match dashboard size */
+            font-weight: 500 !important; 
+            transition: 0.2s !important; 
+        }
+        .sidebar a:hover, .sidebar a.active, .side-link:hover, .side-link.active, .sidebar ul li a:hover, .sidebar ul li a.active { 
+            background: #334155 !important; 
+            color: white !important; 
+        }
+
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
+        @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+
+        .top-nav { background: var(--card-bg); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
+        @media (max-width: 1024px) { .menu-toggle { display: block; } }
+
+        /* Professional Wide Form Container */
+        .content-body { padding: 40px 24px; display: flex; justify-content: center; align-items: flex-start; flex: 1; }
+        .signup-card { background: var(--card-bg); padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid var(--border); width: 100%; max-width: 600px; }
+        
+        .card-header-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
+        .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        
+        /* Big & Wide Fields */
+        input, select { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 15px; outline: none; background: var(--bg); color: var(--text-main); transition: border-color 0.2s, box-shadow 0.2s; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        
+        button.btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        button.btn-submit:hover { background: #1d4ed8; }
+        
+        #error-msg { color: #ef4444; font-size: 14px; margin-top: 15px; display: none; text-align: center; font-weight: 500; }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        .sidebar-overlay.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">ESL PRO TOOL</div>
+        <div id="navbar-placeholder"></div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-nav">
+            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+                <span style="font-weight: 600; font-size: 14px;">Welcome, <span id="username-display">Admin</span>!</span>
+                <i class="fa-solid fa-circle-user fa-xl"></i>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <div class="signup-card">
+                <div class="card-header-title">Create Account</div>
+                <div class="subtitle">Fill out the information below to add a new user to the system database</div>
+                
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter username">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter secure password">
+                </div>
+                
+                <div class="form-group">
+                    <label>Account Role</label>
+                    <select id="role">
+                        <option value="1">1 - Student / Normal User</option>
+                        <option value="2">2 - Teacher</option>
+                        <option value="3">3 - Admin</option>
+                    </select>
+                </div>
+
+                <button class="btn-submit" onclick="handleSignup()">Create Account</button>
+                <p id="error-msg">Error message</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Central Navigation Script -->
+    <script src="scripts/nav.js"></script>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const nameSpan = document.getElementById('username-display');
+            const storedName = localStorage.getItem('teacherName');
+            if (nameSpan && storedName) {
+                nameSpan.textContent = storedName;
+            }
+        });
+
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhn8Y4LozU2a8Kd-mPpBb_bQ6k3cQwtzdZ-5UhDVn6Xl66sXWeFldF65iNC1H_ek_H/exec";
+
+        function handleSignup() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const role = document.getElementById('role').value.trim();
+            const error = document.getElementById('error-msg');
+            const btn = document.querySelector('.btn-submit');
+
+            if (!user || !pass) {
+                error.innerText = "Please fill in all fields";
+                error.style.display = 'block';
+                return;
+            }
+
+            btn.innerText = "Creating Account...";
+            btn.disabled = true;
+            error.style.display = 'none';
+
+            const callbackName = 'google_signup_callback_' + Math.round(Math.random() * 1000000);
+
+            window[callbackName] = function(result) {
+                if (result.status === "success") {
+                    alert("Account created successfully!");
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                    btn.innerText = "Create Account";
+                    btn.disabled = false;
+                } else {
+                    error.innerText = result.message || "Username already taken or creation failed.";
+                    error.style.display = 'block';
+                    btn.innerText = "Create Account";
+                    btn.disabled = false;
+                }
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=signup&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&role=${encodeURIComponent(role)}&callback=${callbackName}`;
+            document.body.appendChild(script);
+
+            script.onerror = () => {
+                error.innerText = "Connection failed. Check Deployment URL.";
+                error.style.display = 'block';
+                btn.innerText = "Create Account";
+                btn.disabled = false;
+            };
+        }
+    </script>
+</body>
+</html>

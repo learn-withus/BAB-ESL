@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link rel="icon" type="image/png" href="images/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESL Pro Tool - Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-width: 260px;
+            --sidebar-bg: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body.dark-mode {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --sidebar-bg: #020617;
+            --border: #334155;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+
+        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; }
+        
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+        }
+
+        .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
+        .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .side-link:hover, .side-link.active { background: #334155; color: white; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
+        @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+
+        .top-nav { background: var(--card-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
+        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); background: none; border: none; }
+        @media (max-width: 1024px) { .menu-toggle { display: block; } }
+
+        /* --- BOOK GRID --- */
+        .content-header { padding: 30px 30px 10px 30px; }
+        .content-header h1 { font-size: 24px; font-weight: 700; }
+
+        .book-grid {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-image { width: 100%; height: 180px; overflow: hidden; }
+        .book-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .book-card:hover .book-image img { transform: scale(1.05); }
+
+        .book-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .book-info h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-main); }
+        .book-info .description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 400; }
+
+        .view-btn {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: auto;
+            transition: opacity 0.2s;
+        }
+        .view-btn:hover { opacity: 0.9; }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        .sidebar-overlay.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">ESL PRO TOOL</div>
+        <div id="navbar-placeholder"></div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-nav">
+            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+                <span style="font-weight: 600; font-size: 14px;">Welcome, <span id="username-display">User</span>!</span>
+                <i class="fa-solid fa-circle-user fa-xl"></i>
+            </div>
+        </header>
+
+        <div class="content-header">
+            <h1>Lesson Library</h1>
+        </div>
+
+        <div class="book-grid" id="bookGrid">
+            <!-- Active Listening -->
+            <div class="book-card" data-book="customer-service.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=17ZGiOq-PRivPftXbquKzZhk3Ipuphq5z&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Customer Service</h3>
+                    <p class="description">Show reactions and encourage discussion</p>
+                    <a href="./pages/customer-service.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Free Time -->
+            <div class="book-card" data-book="work-life-balance.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1XU_SR_pLG6J86NvAfI-xlMVviz6L-50Q&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Free time</h3>
+                    <p class="description">Talking about Work-Life Balance and Stress</p>
+                    <a href="./pages/work-life-balance.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Professionalism -->
+            <div class="book-card" data-book="workplace-ethics.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1P6Mnzq5jvovr2V-EMQvDMqgx1EtG94an&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Professionalism</h3>
+                    <p class="description">Talking about ethical principles</p>
+                    <a href="./pages/workplace-ethics.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the restaurant -->
+            <div class="book-card" data-book="restaurant.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the restaurant</h3>
+                    <p class="description">Talking about food and restaurants</p>
+                    <a href="./pages/restaurant.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Sports -->
+            <div class="book-card" data-book="sports-lesson.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Sports</h3>
+                    <p class="description">Talking about discipline, strategy, agility and coordination</p>
+                    <a href="./pages/sports-lesson.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the library -->
+            <div class="book-card" data-book="library.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the library</h3>
+                    <p class="description">Talking about books and article</p>
+                    <a href="./pages/library.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the bus stop -->
+            <div class="book-card" data-book="bus-stop.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the bus stop</h3>
+                    <p class="description">Talking about bus stop</p>
+                    <a href="./pages/bus-stop.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the super market -->
+            <div class="book-card" data-book="super-market.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the super market</h3>
+                    <p class="description">Talking about super market</p>
+                    <a href="./pages/super-market.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Kitchen and cooking -->
+            <div class="book-card" data-book="kitchen-cooking.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Kitchen and cooking</h3>
+                    <p class="description">Talking about kitchen</p>
+                    <a href="./pages/kitchen-cooking.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the park -->
+            <div class="book-card" data-book="park.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the park</h3>
+                    <p class="description">Talking about park</p>
+                    <a href="./pages/park.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the Museum -->
+            <div class="book-card" data-book="museums.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the Museum</h3>
+                    <p class="description">Talking about Museum</p>
+                    <a href="./pages/museums.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- School life and Education -->
+            <div class="book-card" data-book="school-life.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>School life and Education</h3>
+                    <p class="description">Talking about School life and Education</p>
+                    <a href="./pages/school-life.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Hospitals and Healthcare -->
+            <div class="book-card" data-book="hospital-healthcare.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Hospitals and Healthcare</h3>
+                    <p class="description">Talking about Hospitals and Healthcare</p>
+                    <a href="./pages/hospital-healthcare.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Hotels and Airports -->
+            <div class="book-card" data-book="hotels-airports.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Hotels and Airports</h3>
+                    <p class="description">Talking about Hotels and Airports</p>
+                    <a href="./pages/hotels-airports.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Commuting and Directions -->
+            <div class="book-card" data-book="commuting-directions.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Commuting and Directions</h3>
+                    <p class="description">Talking about commuting and directions</p>
+                    <a href="./pages/commuting-directions.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the café -->
+            <div class="book-card" data-book="cafe.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the café</h3>
+                    <p class="description">Talking about café</p>
+                    <a href="./pages/cafe.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Behind the Wheel -->
+            <div class="book-card" data-book="driving.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Behind the Wheel</h3>
+                    <p class="description">Driving and Road Safety</p>
+                    <a href="./pages/driving.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- Hectic schedule -->
+            <div class="book-card" data-book="managing-busy-schedule.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Hectic schedule</h3>
+                    <p class="description">Managing busy schedule</p>
+                    <a href="./pages/managing-busy-schedule.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+
+            <!-- At the Zoo -->
+            <div class="book-card" data-book="zoo.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>At the Zoo</h3>
+                    <p class="description">Talking about zoo</p>
+                    <a href="./pages/zoo.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Load the navigation script last so placeholder exists -->
+    <script src="scripts/nav.js"></script>
+    <script>
+        // Sidebar Mobile Toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const userRole = localStorage.getItem('role') || "1";
+            const rawBooks = localStorage.getItem('books') || "";
+            
+            console.log("--- DEBUG DASHBOARD PERMISSIONS ---");
+            console.log("User Role:", userRole);
+            console.log("Raw Books from localStorage:", rawBooks);
+
+            // Admins (Role 2 or 'admin') can view everything
+            const isAdmin = userRole === "2" || userRole.toLowerCase() === "admin";
+
+            // Split the books string into a clean array of lowercase strings
+            const allowedBooks = rawBooks
+                .toLowerCase()
+                .split(',')
+                .map(b => b.trim().replace(/['"]+/g, ''))
+                .filter(b => b.length > 0);
+
+            console.log("Cleaned Allowed Books Array:", allowedBooks);
+
+            const bookCards = document.querySelectorAll('.book-card');
+            let visibleCount = 0;
+
+            bookCards.forEach(card => {
+                const bookFileName = card.getAttribute('data-book').toLowerCase().trim();
+                
+                // Check if the exact book file name is inside the user's allowed books list
+                const isAllowed = allowedBooks.includes(bookFileName);
+
+                if (isAdmin || isAllowed) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                    console.log(`Card "${bookFileName}" is UNLOCKED.`);
+                } else {
+                    card.style.display = "none";
+                    console.log(`Card "${bookFileName}" is LOCKED.`);
+                }
+            });
+
+            // Show fallback message if no books are visible
+            if (visibleCount === 0) {
+                const grid = document.getElementById('bookGrid');
+                grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
+                    <p>No lessons have been unlocked for your account yet. Please contact your administrator.</p>
+                </div>`;
+            }
+
+            // Update username display
+            const username = localStorage.getItem('username') || localStorage.getItem('name');
+            if (username) {
+                const usernameDisplay = document.getElementById('username-display');
+                if (usernameDisplay) usernameDisplay.textContent = username;
+            }
+        });
+    </script>
+</body>
+</html>

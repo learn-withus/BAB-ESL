@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bab ESL Pro - Admin Dashboard</title>
@@ -35,52 +35,79 @@
 
         body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease, background 0.3s ease; overflow-y: auto; }
-
+        /* Unified Sidebar & Nav Styling */
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 24px 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; overflow-y: auto; }
         @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } }
-
-        .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 30px; padding-left: 10px; }
+        .sidebar .logo { font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 30px; padding-left: 10px; letter-spacing: -0.5px; }
         
-        .sidebar a, .side-link, .sidebar ul li a { 
-            padding: 12px 16px !important; 
-            color: #cbd5e1 !important; 
-            text-decoration: none !important; 
-            border-radius: 8px !important; 
-            margin-bottom: 6px !important; 
-            display: flex !important; 
-            align-items: center !important; 
-            gap: 12px !important; 
-            font-size: 15px !important; 
-            font-weight: 500 !important; 
-            transition: 0.2s !important; 
-        }
-        .sidebar a:hover, .sidebar a.active, .side-link:hover, .side-link.active, .sidebar ul li a:hover, .sidebar ul li a.active { 
-            background: #334155 !important; 
-            color: white !important; 
-        }
+        /* Consistent Side Links */
+        .side-link { padding: 12px 14px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 14px; font-weight: 500; }
+        .side-link:hover, .side-link.active { background: #334155; color: white; }
 
         .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
         @media (max-width: 1024px) { .main-content { margin-left: 0; } }
 
-        .top-nav { background: var(--card-bg); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
+        .top-nav { background: var(--card-bg); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
+        .menu-toggle { display: none; font-size: 20px; cursor: pointer; color: var(--text-main); }
         @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
-        .dashboard-grid { padding: 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); }
+        .dashboard-grid { padding: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid var(--border); }
 
-        .welcome-card { grid-column: span 2; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; }
+        .welcome-card { 
+            grid-column: span 2; 
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.88) 0%, rgba(29, 78, 216, 0.92) 100%), url('images/bab.png');
+            background-size: cover;
+            background-position: center;
+            color: white; 
+            border: none; 
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+        .welcome-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .welcome-card p { font-size: 14px; opacity: 0.95; }
+        
+        .welcome-clock {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .table-card { grid-column: span 2; overflow-x: auto; }
+        .table-card h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; color: var(--text-main); }
 
-        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } .welcome-card, .table-card { grid-column: span 1; } }
+        @media (max-width: 768px) { 
+            .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } 
+            .welcome-card, .table-card { grid-column: span 1; } 
+            .welcome-card { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .welcome-clock { width: 100%; justify-content: center; }
+        }
 
         table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
         th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background-color: var(--table-header); font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        tr:hover { background-color: rgba(0, 0, 0, 0.02); }
-        body.dark-mode tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+        th { background-color: var(--table-header); font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        tr:hover { background-color: rgba(0, 0, 0, 0.015); }
+        body.dark-mode tr:hover { background-color: rgba(255, 255, 255, 0.015); }
 
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
         .badge-admin { background: #fee2e2; color: #dc2626; }
         .badge-teacher { background: #dcfce7; color: #16a34a; }
         .badge-student { background: #e0f2fe; color: #0284c7; }
@@ -91,17 +118,84 @@
         .btn-delete { background: #fee2e2; color: #dc2626; }
         .btn-delete:hover { background: #fecaca; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        /* Modern Modal Layout & Grid Books */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
         .modal-overlay.active { display: flex; }
-        .modal { background: var(--card-bg); width: 100%; max-width: 480px; padding: 24px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-        .modal h3 { margin-bottom: 20px; font-size: 18px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
-        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); font-size: 14px; outline: none; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        .btn-modal { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+        .modal { background: var(--card-bg); width: 100%; max-width: 520px; padding: 30px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+        .modal h3 { margin-bottom: 20px; font-size: 18px; font-weight: 700; color: var(--text-main); }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        .form-group input, .form-group select { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+
+        /* Modern Books Toggle Grid Styling inside Modal */
+        .books-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            background: var(--bg);
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .book-toggle-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+        .book-toggle-label:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .book-toggle-label input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            outline: none;
+            background: var(--bg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .book-toggle-label input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .book-toggle-label input[type="checkbox"]:checked::after {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 10px;
+            color: white;
+        }
+
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+        .btn-modal { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s; }
         .btn-cancel { background: var(--border); color: var(--text-main); }
+        .btn-cancel:hover { opacity: 0.8; }
         .btn-save { background: var(--primary); color: white; }
+        .btn-save:hover { background: #1d4ed8; }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .sidebar-overlay.active { display: block; }
@@ -128,15 +222,15 @@
                 <div class="form-group">
                     <label for="editRole">Role</label>
                     <select id="editRole">
-                        <option value="3">Admin (Role 3)</option>
-                        <option value="2">Teacher (Role 2)</option>
-                        <option value="1">Student (Role 1)</option>
+                        <option value="3">3 - Admin</option>
+                        <option value="2">2 - Teacher</option>
+                        <option value="1">1 - Student / Normal User</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Allowed Books Access (From Config / Folder)</label>
-                    <div id="dynamicBooksContainer" style="display: flex; flex-direction: column; gap: 8px; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); max-height: 180px; overflow-y: auto;">
-                        <span style="font-size: 13px; color: var(--text-muted);">Loading books list...</span>
+                    <div id="dynamicBooksContainer" class="books-grid-container">
+                        <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -147,8 +241,11 @@
         </div>
     </div>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="logo">ESL PRO TOOL</div>
+        
+        <!-- Navigation injected via nav.js -->
         <div id="navbar-placeholder"></div>
     </aside>
 
@@ -156,19 +253,24 @@
         <header class="top-nav">
             <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
             <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Welcome, <span id="username-display">Admin</span>!</span>
-                <i class="fa-solid fa-circle-user fa-xl"></i>
+                <span style="font-weight: 600; font-size: 13px; color: var(--text-main);">Welcome <span id="username-display">Admin</span>&nbsp;!</span>
+                <i class="fa-solid fa-circle-user fa-xl" style="color: var(--text-muted);"></i>
             </div>
         </header>
 
         <div class="dashboard-grid">
             <div class="card welcome-card">
-                <h2>Admin Control Center 🛡️</h2>
-                <p>Manage accounts and system controls efficiently.</p>
+                <div class="welcome-content">
+                    <h2>Admin Control Center 🛡️</h2>
+                    <p>Manage accounts and system controls efficiently.</p>
+                </div>
+                <div class="welcome-clock" id="live-clock">
+                    <i class="fa-regular fa-clock"></i> <span>--:--:-- --</span>
+                </div>
             </div>
 
             <div class="card table-card">
-                <h2><i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i>User Accounts from Google Sheet</h2>
+                <h2><i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i>User Accounts</h2>
                 <table>
                     <thead>
                         <tr>
@@ -194,21 +296,34 @@
         const menuBtn = document.getElementById('menu-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwhn8Y4LozU2a8Kd-mPpBb_bQ6k3cQwtzdZ-5UhDVn6Xl66sXWeFldF65iNC1H_ek_H/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzKgmrpwFccCctJWLGi0TiFkIBlfU-3RtJxXp9noikDEX9TW2MBvRNgv8I-H5vht7os/exec'; 
 
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
         window.addEventListener('DOMContentLoaded', () => {
             const nameSpan = document.getElementById('username-display');
-            const storedName = localStorage.getItem('teacherName');
+            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
             if (nameSpan && storedName) {
                 nameSpan.textContent = storedName;
             }
 
             fetchGoogleSheetAccounts();
             loadDynamicBooksList();
+            updateClock();
+            setInterval(updateClock, 1000);
         });
+
+        // Live Clock Function
+        function updateClock() {
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const span = clockEl.querySelector('span');
+                if (span) span.textContent = timeString;
+            }
+        }
 
         // Dynamically load available books/pages handling varied JSON structures safely
         async function loadDynamicBooksList() {
@@ -224,7 +339,6 @@
 
                 container.innerHTML = '';
                 
-                // Handle config whether it's an array or object dictionary
                 let keys = [];
                 if (Array.isArray(config)) {
                     keys = config;
@@ -233,27 +347,30 @@
                 }
 
                 if (keys.length === 0) {
-                    container.innerHTML = `<span style="font-size: 13px; color: var(--text-muted);">No books found in Config sheet.</span>`;
+                    container.innerHTML = `<span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">No books found in Config sheet.</span>`;
                     return;
                 }
 
                 keys.forEach(pageName => {
                     const label = document.createElement('label');
-                    label.style.cssText = "font-weight: normal; color: var(--text-main); display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;";
+                    label.className = 'book-toggle-label';
+                    
+                    const span = document.createElement('span');
+                    span.textContent = pageName;
                     
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.name = 'allowedBook';
                     checkbox.value = pageName;
 
+                    label.appendChild(span);
                     label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(` ${pageName}`));
                     container.appendChild(label);
                 });
 
             } catch (err) {
                 console.error("Failed to load dynamic config books:", err);
-                container.innerHTML = `<span style="font-size: 13px; color: #f87171;">Failed to load book options.</span>`;
+                container.innerHTML = `<span style="font-size: 13px; color: #f87171; grid-column: 1 / -1; text-align: center; padding: 10px;">Failed to load book options.</span>`;
             }
         }
 

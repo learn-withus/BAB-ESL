@@ -115,7 +115,7 @@
         <header class="top-nav">
             <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
             <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Welcome, <span id="username-display">User</span>!</span>
+                <span style="font-weight: 600; font-size: 14px;">Teacher&nbsp;<span id="username-display">User</span></span>
                 <i class="fa-solid fa-circle-user fa-xl"></i>
             </div>
         </header>
@@ -158,6 +158,16 @@
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
+
+         // Set Teacher Name in Header UI on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const nameSpan = document.querySelector('.user-profile span');
+            const storedName = localStorage.getItem('teacherName');
+            if (nameSpan && storedName) {
+                nameSpan.textContent = "Teacher " + storedName;
+            }
+        });
+
         // Theme Toggle Logic for this page
         const settingsLink = document.getElementById('settings-link');
         function updateThemeUI(isDark) {
@@ -181,6 +191,7 @@
         // Apply saved theme on load
         const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
         updateThemeUI(savedTheme === 'dark');
+        
     </script>
 </body>
 </html>

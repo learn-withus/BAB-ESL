@@ -89,6 +89,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-variant-numeric: tabular-nums; /* Prevents shifting as numbers change */
+            white-space: nowrap;
         }
 
         .table-card { grid-column: span 2; overflow-x: auto; }
@@ -314,7 +316,7 @@
             setInterval(updateClock, 1000);
         });
 
-        // Live Clock Function
+        // Live Clock Function with Hours, Minutes, and Seconds
         function updateClock() {
             const clockEl = document.getElementById('live-clock');
             if (clockEl) {

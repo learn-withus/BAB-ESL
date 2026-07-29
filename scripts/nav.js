@@ -39,7 +39,7 @@ function loadNavbar() {
         navHTML = `
             <a href="${pathToRoot}index.html" class="side-link" data-page="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
             <a href="${pathToRoot}pages/book-menu.html" class="side-link" data-page="book-menu.html"><i class="fa-solid fa-book"></i> Lessons</a>
-            <a href="${pathToRoot}pages/progress.html" class="side-link" data-page="progress.html"><i class="fa-solid fa-chart-line"></i> Progress</a>
+            <a href="${pathToRoot}pages/create-link.html" class="side-link" data-page="create-link.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Link</a>
             <a href="#" class="side-link" id="settings-link"><i class="fa-solid fa-moon"></i> Theme</a>
             <a href="#" onclick="logout()" class="side-link" style="margin-top: 20px; color: #f87171;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         `;

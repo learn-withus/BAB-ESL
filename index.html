@@ -41,15 +41,15 @@
         .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
         .side-link:hover, .side-link.active { background: #334155; color: white; }
 
-        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; min-width: 0; }
         @media (max-width: 1024px) { .main-content { margin-left: 0; } }
 
-        .top-nav { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
+        .top-nav { background: var(--card-bg); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
         .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
         @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
-        .dashboard-grid { padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); }
+        .dashboard-grid { padding: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); overflow: hidden; }
 
         /* Full Width Welcome Banner with Embedded Clock */
         .welcome-card { 
@@ -59,7 +59,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             position: relative;
             overflow: hidden;
         }
@@ -91,7 +91,7 @@
         .welcome-right-section {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
             z-index: 1;
         }
         
@@ -99,12 +99,12 @@
         .banner-clock-widget {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .analog-clock-mini {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             position: relative;
@@ -119,7 +119,7 @@
             bottom: 50%;
             left: calc(50% - 1px);
             width: 2px;
-            height: 10px;
+            height: 9px;
             background: #ffffff;
             border-radius: 2px;
             transform-origin: bottom center;
@@ -130,7 +130,7 @@
             bottom: 50%;
             left: calc(50% - 1px);
             width: 1.5px;
-            height: 13px;
+            height: 12px;
             background: #93c5fd;
             border-radius: 2px;
             transform-origin: bottom center;
@@ -147,8 +147,8 @@
         .brand-logo-container {
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(10px);
-            padding: 16px 26px;
-            border-radius: 14px;
+            padding: 12px 20px;
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.25);
             display: flex;
             align-items: center;
@@ -164,7 +164,7 @@
         }
 
         .brand-logo-container img {
-            height: 56px;
+            height: 44px;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
@@ -173,17 +173,17 @@
         .stat-card { display: flex; align-items: center; gap: 15px; }
         .sticky-card { grid-column: span 1; grid-row: span 2; }
 
-        .icon-box { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .icon-box { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         
         /* Strict Monospace & Tabular Alignment for Jitter-Free Clock Display */
         .clock-text-container {
             display: flex;
             flex-direction: column;
-            min-width: 170px; /* Increased to accommodate seconds */
+            min-width: 150px;
         }
 
         #ph-date {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             color: rgba(255,255,255,0.75);
             letter-spacing: 0.5px;
@@ -192,7 +192,7 @@
         }
 
         #ph-time { 
-            font-size: 1.15rem; 
+            font-size: 1.05rem; 
             font-weight: 700; 
             color: #ffffff; 
             letter-spacing: -0.5px;
@@ -202,7 +202,7 @@
         }
 
         #ph-timezone {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 500;
             color: rgba(255, 255, 255, 0.85);
             letter-spacing: 0.3px;
@@ -211,16 +211,21 @@
             margin-top: 1px;
         }
 
-        .sticky-card textarea { width: 100%; height: 200px; border: none; background: #fffdec; padding: 15px; border-radius: 8px; resize: none; color: #1e293b; }
+        .sticky-card textarea { width: 100%; height: 180px; border: none; background: #fffdec; padding: 12px; border-radius: 8px; resize: none; color: #1e293b; font-size: 14px; }
         body.dark-mode .sticky-card textarea { background: #334155; color: #f1f5f9; }
 
         @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } .sticky-card { grid-column: span 2; grid-row: auto; } }
+        
+        /* Extra small screen tuning */
         @media (max-width: 768px) { 
-            .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } 
-            .welcome-card { flex-direction: column; align-items: flex-start; } 
-            .welcome-right-section { width: 100%; flex-direction: column; align-items: stretch; gap: 15px; }
-            .brand-logo-container { width: 100%; justify-content: center; }
-            .banner-clock-widget { justify-content: flex-start; }
+            .dashboard-grid { grid-template-columns: 1fr; padding: 12px; gap: 12px; } 
+            .welcome-card { flex-direction: column; align-items: stretch; padding: 16px; } 
+            .welcome-right-section { width: 100%; flex-direction: column; align-items: stretch; gap: 12px; }
+            .brand-logo-container { width: 100%; justify-content: center; padding: 10px; }
+            .brand-logo-container img { height: 36px; }
+            .banner-clock-widget { justify-content: center; background: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 10px; }
+            .card { padding: 16px; }
+            .user-profile span { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
         }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
@@ -239,8 +244,8 @@
     <main class="main-content">
         <header class="top-nav">
             <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
-            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Welcome <span id="username-display">User</span>&nbsp;!</span>
+            <div class="user-profile" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                <span style="font-weight: 600; font-size: 13px;">Welcome <span id="username-display">User</span>&nbsp;!</span>
                 <i class="fa-solid fa-circle-user fa-xl"></i>
             </div>
         </header>
@@ -249,8 +254,8 @@
             <!-- Full Width Welcome Banner with Embedded Live Clock & Logo -->
             <div class="card welcome-card">
                 <div class="welcome-content">
-                    <h2 style="font-size: 26px; font-weight: 700;">Good Day! 👋</h2>
-                    <p style="opacity: 0.9; margin-top: 6px; font-size: 15px;">Ready for your lessons today?</p>
+                    <h2 style="font-size: 22px; font-weight: 700;">Good Day! 👋</h2>
+                    <p style="opacity: 0.9; margin-top: 4px; font-size: 13px;">Ready for your lessons today?</p>
                 </div>
                 <div class="welcome-right-section">
                     <div class="banner-clock-widget">
@@ -273,8 +278,8 @@
             <div class="card stat-card">
                 <div class="icon-box" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-graduation-cap"></i></div>
                 <div>
-                    <div style="font-size: 12px; color: var(--text-muted);">Completed</div>
-                    <div id="completed-lessons-text" style="font-size: 18px; font-weight: 700;">0 Lessons</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Completed</div>
+                    <div id="completed-lessons-text" style="font-size: 16px; font-weight: 700;">0 Lessons</div>
                 </div>
             </div>
 
@@ -282,11 +287,11 @@
             <div class="card stat-card" style="align-items: flex-start;">
                 <div class="icon-box" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-video"></i></div>
                 <div style="overflow: hidden; width: 100%;">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Class Status</div>
-                    <div id="class-status-text" style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">No link yet</div>
-                    <div style="font-size: 11px; color: var(--text-muted);">Meet Link:</div>
-                    <div id="meet-link-display" style="font-size: 13px; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <span style="color: var(--text-muted); font-weight: 400; font-size: 12px;">No link generated yet</span>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 2px;">Class Status</div>
+                    <div id="class-status-text" style="font-size: 14px; font-weight: 700; margin-bottom: 4px;">No link yet</div>
+                    <div style="font-size: 10px; color: var(--text-muted);">Meet Link:</div>
+                    <div id="meet-link-display" style="font-size: 12px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span style="color: var(--text-muted); font-weight: 400; font-size: 11px;">No link generated yet</span>
                     </div>
                     <!-- Toggle / Complete Button Container -->
                     <div id="complete-action-container"></div>
@@ -294,15 +299,15 @@
             </div>
 
             <div class="card sticky-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="font-size: 15px;"><i class="fa-solid fa-thumbtack"></i> Notes</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="font-size: 14px;"><i class="fa-solid fa-thumbtack"></i> Notes</h3>
                     <div style="display: flex; gap: 10px;">
-                        <button id="save-note" title="Save to Cloud" style="border:none; background:none; color: var(--primary); cursor:pointer;"><i class="fa-solid fa-cloud-arrow-up"></i></button>
-                        <button id="delete-note" title="Clear Note" style="border:none; background:none; color: #f87171; cursor:pointer;"><i class="fa-solid fa-trash-can"></i></button>
+                        <button id="save-note" title="Save to Cloud" style="border:none; background:none; color: var(--primary); cursor:pointer; padding: 4px;"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+                        <button id="delete-note" title="Clear Note" style="border:none; background:none; color: #f87171; cursor:pointer; padding: 4px;"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
                 <textarea id="sticky-notes" placeholder="Loading your notes..."></textarea>
-                <div id="save-status" style="font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right;">Connecting...</div>
+                <div id="save-status" style="font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right;">Connecting...</div>
             </div>
         </div>
     </main>
@@ -342,7 +347,6 @@
         function updateClock() {
             const now = new Date();
 
-            // Format Philippine Standard Time (Manila) - Hours, Minutes, and Seconds included
             const optionsTime = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
             const optionsDate = { timeZone: 'Asia/Manila', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
             
@@ -355,14 +359,12 @@
             if (timeEl && timeEl.textContent !== timeString) timeEl.textContent = timeString;
             if (dateEl && dateEl.textContent !== dateString.toUpperCase()) dateEl.textContent = dateString.toUpperCase();
 
-            // Calculate exact angles for the mini analog clock based on Manila time
             const manilaTimeStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(now);
             const [h, m, s] = manilaTimeStr.split(':').map(Number);
 
             const minuteDeg = (m * 6) + (s * 0.1);
             const hourDeg = ((h % 12) * 30) + (m * 0.5);
 
-            // Update or inject dynamic inline styling for smooth, accurate real-time hand rotation
             let clockStyleTag = document.getElementById('live-clock-style');
             if (!clockStyleTag) {
                 clockStyleTag = document.createElement('style');
@@ -402,12 +404,12 @@
                         if (meetLink !== "" && meetLink !== "undefined") {
                             linkContainer.innerHTML = `<a href="${meetLink}" target="_blank" style="color: var(--primary); text-decoration: none;"><i class="fa-solid fa-external-link-alt"></i> Join Google Meet</a>`;
                             actionContainer.innerHTML = `
-                                <button onclick="completeClass('${username}')" style="background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                <button onclick="completeClass('${username}')" style="background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
                                     <i class="fa-solid fa-check-circle"></i> Complete Class / Done
                                 </button>
                             `;
                         } else {
-                            linkContainer.innerHTML = `<span style="color: var(--text-muted); font-weight: 400; font-size: 12px;">No link generated yet</span>`;
+                            linkContainer.innerHTML = `<span style="color: var(--text-muted); font-weight: 400; font-size: 11px;">No link generated yet</span>`;
                             actionContainer.innerHTML = ``;
                         }
 
@@ -447,7 +449,6 @@
             document.body.appendChild(script);
         }
 
-        // --- CLOUD STICKY NOTES FUNCTIONS ---
         function fetchStickyNotes(username) {
             const statusEl = document.getElementById('save-status');
             const textarea = document.getElementById('sticky-notes');
@@ -500,7 +501,6 @@
             document.body.appendChild(script);
         }
 
-        // Event Listeners for Note Buttons
         document.getElementById('save-note').addEventListener('click', saveStickyNotes);
         
         document.getElementById('delete-note').addEventListener('click', () => {

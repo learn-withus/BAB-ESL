@@ -51,19 +51,177 @@
         .dashboard-grid { padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); }
 
-        .welcome-card { grid-column: span 2; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; }
-        .clock-card { grid-column: span 1; text-align: center; }
+        /* Full Width Welcome Banner with Embedded Clock */
+        .welcome-card { 
+            grid-column: 1 / -1; 
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
+            color: white; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulseGlow 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .welcome-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .welcome-right-section {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            z-index: 1;
+        }
+        
+        /* Integrated Clock Widget inside Welcome Box */
+        .banner-clock-widget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .analog-clock-mini {
+            width: 36px;
+            height: 36px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .analog-clock-mini::before {
+            content: '';
+            position: absolute;
+            bottom: 50%;
+            left: calc(50% - 1px);
+            width: 2px;
+            height: 10px;
+            background: #ffffff;
+            border-radius: 2px;
+            transform-origin: bottom center;
+        }
+        .analog-clock-mini::after {
+            content: '';
+            position: absolute;
+            bottom: 50%;
+            left: calc(50% - 1px);
+            width: 1.5px;
+            height: 13px;
+            background: #93c5fd;
+            border-radius: 2px;
+            transform-origin: bottom center;
+        }
+        .clock-center-dot {
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        
+        /* Larger Brand Logo Container */
+        .brand-logo-container {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            padding: 16px 26px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            animation: floatLogo 4s ease-in-out infinite;
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .brand-logo-container img {
+            height: 56px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
         .stat-card { display: flex; align-items: center; gap: 15px; }
         .sticky-card { grid-column: span 1; grid-row: span 2; }
 
-        .icon-box { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        #ph-time { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+        .icon-box { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        
+        /* Strict Monospace & Tabular Alignment for Jitter-Free Clock Display */
+        .clock-text-container {
+            display: flex;
+            flex-direction: column;
+            min-width: 170px; /* Increased to accommodate seconds */
+        }
+
+        #ph-date {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.75);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            margin-bottom: 2px;
+        }
+
+        #ph-time { 
+            font-size: 1.15rem; 
+            font-weight: 700; 
+            color: #ffffff; 
+            letter-spacing: -0.5px;
+            font-family: monospace, 'Inter', sans-serif;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        #ph-timezone {
+            font-size: 10px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin-top: 1px;
+        }
 
         .sticky-card textarea { width: 100%; height: 200px; border: none; background: #fffdec; padding: 15px; border-radius: 8px; resize: none; color: #1e293b; }
         body.dark-mode .sticky-card textarea { background: #334155; color: #f1f5f9; }
 
         @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } .sticky-card { grid-column: span 2; grid-row: auto; } }
-        @media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } .welcome-card, .clock-card, .sticky-card { grid-column: span 1; } #ph-time { font-size: 2rem; } .welcome-card h2 { font-size: 22px; } }
+        @media (max-width: 768px) { 
+            .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } 
+            .welcome-card { flex-direction: column; align-items: flex-start; } 
+            .welcome-right-section { width: 100%; flex-direction: column; align-items: stretch; gap: 15px; }
+            .brand-logo-container { width: 100%; justify-content: center; }
+            .banner-clock-widget { justify-content: flex-start; }
+        }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .sidebar-overlay.active { display: block; }
@@ -82,39 +240,56 @@
         <header class="top-nav">
             <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
             <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Welcome, <span id="username-display">User</span>!</span>
+                <span style="font-weight: 600; font-size: 14px;">Welcome <span id="username-display">User</span>&nbsp;!</span>
                 <i class="fa-solid fa-circle-user fa-xl"></i>
             </div>
         </header>
 
         <div class="dashboard-grid">
+            <!-- Full Width Welcome Banner with Embedded Live Clock & Logo -->
             <div class="card welcome-card">
-                <h2>Good Day! 👋</h2>
-                <p>Ready for your lessons today?</p>
-                <a href="pages/zoo.html">
-                    <button style="margin-top: 15px; padding: 8px 16px; border-radius: 6px; border:none; cursor:pointer; font-weight:bold; background: white; color: var(--primary);">View Schedule</button>
-                </a>
+                <div class="welcome-content">
+                    <h2 style="font-size: 26px; font-weight: 700;">Good Day! 👋</h2>
+                    <p style="opacity: 0.9; margin-top: 6px; font-size: 15px;">Ready for your lessons today?</p>
+                </div>
+                <div class="welcome-right-section">
+                    <div class="banner-clock-widget">
+                        <div class="analog-clock-mini" id="mini-clock">
+                            <div class="clock-center-dot"></div>
+                        </div>
+                        <div class="clock-text-container">
+                            <div id="ph-date">LOADING...</div>
+                            <div id="ph-time">00:00:00 AM</div>
+                            <div id="ph-timezone">Philippine Standard Time</div>
+                        </div>
+                    </div>
+                    <div class="brand-logo-container">
+                        <img src="images/bab.png" alt="BAB ESL Pro Logo">
+                    </div>
+                </div>
             </div>
 
-            <div class="card clock-card">
-                <div id="ph-date" style="font-size: 14px; font-weight: 600; color: var(--text-muted);">LOADING...</div>
-                <div id="ph-time">00:00 AM</div>
-                <div style="font-size: 10px; color: var(--text-muted);">MANILA, PH</div>
-            </div>
-
+            <!-- Completed Lessons Card -->
             <div class="card stat-card">
                 <div class="icon-box" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-graduation-cap"></i></div>
                 <div>
                     <div style="font-size: 12px; color: var(--text-muted);">Completed</div>
-                    <div style="font-size: 18px; font-weight: 700;">18 Lessons</div>
+                    <div id="completed-lessons-text" style="font-size: 18px; font-weight: 700;">0 Lessons</div>
                 </div>
             </div>
 
-            <div class="card stat-card">
-                <div class="icon-box" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-star"></i></div>
-                <div>
-                    <div style="font-size: 12px; color: var(--text-muted);">Rating</div>
-                    <div style="font-size: 18px; font-weight: 700;">5.0 / 5.0</div>
+            <!-- Class Status & Column E Google Meet Link Card -->
+            <div class="card stat-card" style="align-items: flex-start;">
+                <div class="icon-box" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-video"></i></div>
+                <div style="overflow: hidden; width: 100%;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Class Status</div>
+                    <div id="class-status-text" style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">No link yet</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Meet Link:</div>
+                    <div id="meet-link-display" style="font-size: 13px; font-weight: 600; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span style="color: var(--text-muted); font-weight: 400; font-size: 12px;">No link generated yet</span>
+                    </div>
+                    <!-- Toggle / Complete Button Container -->
+                    <div id="complete-action-container"></div>
                 </div>
             </div>
 
@@ -132,25 +307,206 @@
         </div>
     </main>
 
-    <!-- Central Navigation Script -->
     <script src="scripts/nav.js"></script>
-    <!-- Secondary General Script -->
     <script src="scripts/script.js"></script>
     
     <script>
         const menuBtn = document.getElementById('menu-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
+        const API_URL = "https://script.google.com/macros/s/AKfycbzKgmrpwFccCctJWLGi0TiFkIBlfU-3RtJxXp9noikDEX9TW2MBvRNgv8I-H5vht7os/exec";
 
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
-        // Set Teacher Name in Header UI on load
         window.addEventListener('DOMContentLoaded', () => {
-            const nameSpan = document.querySelector('.user-profile span');
-            const storedName = localStorage.getItem('teacherName');
+            const nameSpan = document.querySelector('.user-profile span span');
+            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
             if (nameSpan && storedName) {
                 nameSpan.textContent = "Teacher " + storedName;
+            }
+
+            if (storedName) {
+                fetchAccountDetails(storedName);
+                fetchStickyNotes(storedName);
+            } else {
+                document.getElementById('sticky-notes').placeholder = "Please log in to use cloud notes.";
+                document.getElementById('save-status').textContent = "Not logged in";
+            }
+
+            // Start live clock update loop
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+
+        function updateClock() {
+            const now = new Date();
+
+            // Format Philippine Standard Time (Manila) - Hours, Minutes, and Seconds included
+            const optionsTime = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const optionsDate = { timeZone: 'Asia/Manila', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            
+            const timeString = new Intl.DateTimeFormat('en-US', optionsTime).format(now);
+            const dateString = new Intl.DateTimeFormat('en-US', optionsDate).format(now);
+
+            const timeEl = document.getElementById('ph-time');
+            const dateEl = document.getElementById('ph-date');
+
+            if (timeEl && timeEl.textContent !== timeString) timeEl.textContent = timeString;
+            if (dateEl && dateEl.textContent !== dateString.toUpperCase()) dateEl.textContent = dateString.toUpperCase();
+
+            // Calculate exact angles for the mini analog clock based on Manila time
+            const manilaTimeStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(now);
+            const [h, m, s] = manilaTimeStr.split(':').map(Number);
+
+            const minuteDeg = (m * 6) + (s * 0.1);
+            const hourDeg = ((h % 12) * 30) + (m * 0.5);
+
+            // Update or inject dynamic inline styling for smooth, accurate real-time hand rotation
+            let clockStyleTag = document.getElementById('live-clock-style');
+            if (!clockStyleTag) {
+                clockStyleTag = document.createElement('style');
+                clockStyleTag.id = 'live-clock-style';
+                document.head.appendChild(clockStyleTag);
+            }
+
+            clockStyleTag.innerHTML = `
+                .analog-clock-mini::before { transform: rotate(${hourDeg}deg); }
+                .analog-clock-mini::after { transform: rotate(${minuteDeg}deg); }
+            `;
+        }
+
+        function fetchAccountDetails(username) {
+            const callbackName = 'account_cb_' + Math.round(Math.random() * 1000000);
+
+            window[callbackName] = function(accounts) {
+                if (Array.isArray(accounts)) {
+                    const currentUser = accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
+                    if (currentUser) {
+                        const linkContainer = document.getElementById('meet-link-display');
+                        const actionContainer = document.getElementById('complete-action-container');
+                        const statusContainer = document.getElementById('class-status-text');
+                        const meetLink = currentUser.meetLink ? String(currentUser.meetLink).trim() : "";
+
+                        let statusText = currentUser.classStatus || "No link yet";
+                        statusContainer.textContent = statusText;
+
+                        if (statusText === "Ongoing") {
+                            statusContainer.style.color = "#0284c7";
+                        } else if (statusText === "Completed") {
+                            statusContainer.style.color = "#16a34a";
+                        } else {
+                            statusContainer.style.color = "var(--text-muted)";
+                        }
+
+                        if (meetLink !== "" && meetLink !== "undefined") {
+                            linkContainer.innerHTML = `<a href="${meetLink}" target="_blank" style="color: var(--primary); text-decoration: none;"><i class="fa-solid fa-external-link-alt"></i> Join Google Meet</a>`;
+                            actionContainer.innerHTML = `
+                                <button onclick="completeClass('${username}')" style="background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                    <i class="fa-solid fa-check-circle"></i> Complete Class / Done
+                                </button>
+                            `;
+                        } else {
+                            linkContainer.innerHTML = `<span style="color: var(--text-muted); font-weight: 400; font-size: 12px;">No link generated yet</span>`;
+                            actionContainer.innerHTML = ``;
+                        }
+
+                        const lessonsContainer = document.getElementById('completed-lessons-text');
+                        if (currentUser.completedLessons !== undefined) {
+                            lessonsContainer.textContent = currentUser.completedLessons + " Lessons";
+                        }
+                    }
+                }
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=getAccounts&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        function completeClass(username) {
+            if (!confirm("Are you sure you want to mark this class as done? This will update your status to Completed and add +1 to your completed lessons.")) return;
+
+            const callbackName = 'complete_cb_' + Math.round(Math.random() * 1000000);
+
+            window[callbackName] = function(response) {
+                if (response && response.status === "success") {
+                    alert("Class completed! Status set to Completed.");
+                    fetchAccountDetails(username);
+                } else {
+                    alert("Failed to update: " + (response ? response.message : "Unknown error"));
+                }
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=completeClass&username=${encodeURIComponent(username)}&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        // --- CLOUD STICKY NOTES FUNCTIONS ---
+        function fetchStickyNotes(username) {
+            const statusEl = document.getElementById('save-status');
+            const textarea = document.getElementById('sticky-notes');
+            statusEl.textContent = "Loading notes...";
+
+            const callbackName = 'notes_get_cb_' + Math.round(Math.random() * 1000000);
+
+            window[callbackName] = function(response) {
+                if (response && response.status === "success") {
+                    textarea.value = response.note || "";
+                    statusEl.textContent = "Synced with cloud";
+                } else {
+                    statusEl.textContent = "Could not load notes";
+                }
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=getNote&username=${encodeURIComponent(username)}&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        function saveStickyNotes() {
+            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
+            if (!storedName) {
+                alert("Please log in first!");
+                return;
+            }
+
+            const textarea = document.getElementById('sticky-notes');
+            const statusEl = document.getElementById('save-status');
+            const noteContent = textarea.value;
+            statusEl.textContent = "Saving to cloud...";
+
+            const callbackName = 'notes_save_cb_' + Math.round(Math.random() * 1000000);
+
+            window[callbackName] = function(response) {
+                if (response && response.status === "success") {
+                    statusEl.textContent = "Saved successfully!";
+                } else {
+                    statusEl.textContent = "Save failed!";
+                }
+                document.body.removeChild(script);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=saveNote&username=${encodeURIComponent(storedName)}&note=${encodeURIComponent(noteContent)}&callback=${callbackName}`;
+            document.body.appendChild(script);
+        }
+
+        // Event Listeners for Note Buttons
+        document.getElementById('save-note').addEventListener('click', saveStickyNotes);
+        
+        document.getElementById('delete-note').addEventListener('click', () => {
+            if (confirm("Are you sure you want to clear your note?")) {
+                document.getElementById('sticky-notes').value = "";
+                saveStickyNotes();
             }
         });
     </script>

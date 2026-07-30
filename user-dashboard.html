@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/png" href="images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bab ESL Pro- Student Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Bab ESL Pro - Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -17,6 +17,7 @@
             --sidebar-width: 260px;
             --sidebar-bg: #1e293b;
             --border: #e2e8f0;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body.dark-mode {
@@ -28,12 +29,12 @@
             --border: #334155;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease); }
 
         body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
 
         /* --- SIDEBAR --- */
-        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; }
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s var(--ease); }
         
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
@@ -41,7 +42,7 @@
         }
 
         .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
-        .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: background 0.2s, color 0.2s; }
         .side-link:hover, .side-link.active { background: #334155; color: white; }
 
         /* --- MAIN CONTENT --- */
@@ -52,15 +53,229 @@
         .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); background: none; border: none; }
         @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
-        /* --- BOOK GRID --- */
-        .content-header { padding: 30px 30px 10px 30px; }
-        .content-header h1 { font-size: 24px; font-weight: 700; }
+        /* --- CONTENT HEADER & TOP CONTROLS (FLEX ROW) --- */
+        .content-header { 
+            padding: 30px 30px 24px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: stretch; 
+            gap: 24px; 
+            border-bottom: 1px solid var(--border); 
+            margin-bottom: 10px; 
+            flex-wrap: wrap; 
+        }
+        
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+            flex: 1;
+            min-width: 280px;
+        }
 
+        .header-title-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .header-left h1 { 
+            font-size: 26px; 
+            font-weight: 700; 
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 400;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            transition: all 0.2s var(--ease);
+        }
+
+        .search-container input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .search-container input:hover {
+            border-color: var(--text-muted);
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        /* --- STICKY NOTES WIDGET (BESIDE HEADER) --- */
+        .sticky-notes-header-widget {
+            flex: 1;
+            min-width: 300px;
+            max-width: 460px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .sticky-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sticky-card-header h3 {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.02em;
+        }
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .notes-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .notes-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        .note-item {
+            background: var(--bg);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            border-left: 3.5px solid var(--primary);
+            color: var(--text-main);
+            word-break: break-word;
+            white-space: pre-wrap;
+            line-height: 1.45;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .note-content-text {
+            width: 100%;
+        }
+        .note-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .note-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .note-btn:hover {
+            background: var(--border);
+            border-color: var(--text-muted);
+        }
+        .note-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .note-btn.primary:hover {
+            background: #1d4ed8;
+        }
+
+        /* --- BOOK GRID --- */
         .book-grid {
             padding: 30px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
+        }
+
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .book-card {
@@ -71,29 +286,39 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
+            animation: cardEntry 0.5s var(--ease) forwards;
+            opacity: 0;
         }
 
+        .book-card:nth-child(1) { animation-delay: 0.05s; }
+        .book-card:nth-child(2) { animation-delay: 0.10s; }
+        .book-card:nth-child(3) { animation-delay: 0.15s; }
+        .book-card:nth-child(4) { animation-delay: 0.20s; }
+        .book-card:nth-child(5) { animation-delay: 0.25s; }
+        .book-card:nth-child(6) { animation-delay: 0.30s; }
+
         .book-image { width: 100%; height: 180px; overflow: hidden; }
-        .book-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .book-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
         .book-card:hover .book-image img { transform: scale(1.05); }
 
         .book-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .book-info h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-main); }
-        .book-info .description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 400; }
+        .book-info .description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 400; line-height: 1.5; }
 
         .view-btn {
             background: var(--primary);
             color: white;
             text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             text-align: center;
             font-weight: 600;
             font-size: 14px;
             margin-top: auto;
-            transition: opacity 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
-        .view-btn:hover { opacity: 0.9; }
+        .view-btn:hover { background-color: #1d4ed8; }
+        .view-btn:active { transform: scale(0.98); }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .sidebar-overlay.active { display: block; }
@@ -117,8 +342,31 @@
             </div>
         </header>
 
+        <!-- CONTENT HEADER: LESSON LIBRARY & SEARCH BAR ALONGSIDE STICKY WIDGET -->
         <div class="content-header">
-            <h1>Lesson Library</h1>
+            <div class="header-left">
+                <div class="header-title-wrapper">
+                    <h1>Lesson Library</h1>
+                    <span class="header-subtitle">Browse and search through available study materials</span>
+                </div>
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="bookSearchInput" placeholder="Search lessons by title or keyword...">
+                </div>
+            </div>
+
+            <!-- LIVE NOTES / ANNOUNCEMENT FEED WIDGET -->
+            <div class="sticky-notes-header-widget">
+                <div class="sticky-card-header">
+                    <h3><i class="fa-solid fa-note-sticky" style="color: var(--primary);"></i> Live Class Updates</h3>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span> Live Feed
+                    </div>
+                </div>
+                <div class="notes-list" id="notesList">
+                    <div class="note-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Syncing live updates...</div>
+                </div>
+            </div>
         </div>
 
         <div class="book-grid" id="bookGrid">
@@ -349,6 +597,18 @@
                     <a href="./pages/zoo.html" class="view-btn">View Lesson</a>
                 </div>
             </div>
+
+            <!-- Drugstore and Pharmacy -->
+            <div class="book-card" data-book="drugstore.html">
+                <div class="book-image">
+                    <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w1000" alt="Book Cover">
+                </div>
+                <div class="book-info">
+                    <h3>Drugstore and Pharmacy</h3>
+                    <p class="description">Talking about Drugstore and Pharmacy</p>
+                    <a href="./pages/drugstore.html" class="view-btn">View Lesson</a>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -363,60 +623,153 @@
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
+        // --- GOOGLE SPREADSHEET STICKY NOTES LIVE-VIEW LOGIC ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlcQO5V2dM7pMqHBdPos8qoSMlJt4HnolFVhXBiWD-V-uUcWLxfJAexGnbPblXBGdo/exec"; 
+        const GID = "772730659";
+
+        // Helper function to check if a string contains a web URL
+        function extractUrl(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const match = text.match(urlRegex);
+            return match ? match[0] : null;
+        }
+
+        function fetchNotes() {
+            const notesList = document.getElementById('notesList');
+            fetch(`${SCRIPT_URL}?gid=${GID}&action=get`)
+                .then(res => res.json())
+                .then(data => {
+                    notesList.innerHTML = '';
+                    if (data && data.notes && data.notes.length > 0) {
+                        data.notes.forEach(noteText => {
+                            if (noteText && noteText.trim() !== '') {
+                                const item = document.createElement('div');
+                                item.className = 'note-item';
+
+                                // Text container (preserves spacing & breaks typed by teacher)
+                                const textSpan = document.createElement('div');
+                                textSpan.className = 'note-content-text';
+                                textSpan.textContent = noteText;
+                                item.appendChild(textSpan);
+
+                                // Check if note contains any link
+                                const foundUrl = extractUrl(noteText);
+                                if (foundUrl) {
+                                    const actionsDiv = document.createElement('div');
+                                    actionsDiv.className = 'note-actions';
+
+                                    // Open Link Button
+                                    const openBtn = document.createElement('a');
+                                    openBtn.className = 'note-btn primary';
+                                    openBtn.href = foundUrl;
+                                    openBtn.target = '_blank';
+                                    openBtn.rel = 'noopener noreferrer';
+                                    openBtn.innerHTML = '<i class="fa-solid fa-external-link-alt"></i> Open Link';
+                                    actionsDiv.appendChild(openBtn);
+
+                                    // Copy Link Button
+                                    const copyBtn = document.createElement('button');
+                                    copyBtn.className = 'note-btn';
+                                    copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
+                                    copyBtn.onclick = () => {
+                                        navigator.clipboard.writeText(foundUrl).then(() => {
+                                            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                                            setTimeout(() => {
+                                                copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
+                                            }, 2000);
+                                        }).catch(err => {
+                                            console.error('Failed to copy link:', err);
+                                        });
+                                    };
+                                    actionsDiv.appendChild(copyBtn);
+
+                                    item.appendChild(actionsDiv);
+                                }
+
+                                notesList.appendChild(item);
+                            }
+                        });
+                    }
+                    if (notesList.children.length === 0) {
+                        notesList.innerHTML = '<div class="note-item" style="color: var(--text-muted); border-left-color: var(--text-muted);"><div class="note-content-text">No live updates available right now.</div></div>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching notes:', err);
+                    notesList.innerHTML = '<div class="note-item" style="color: #ef4444; border-left-color: #ef4444;"><div class="note-content-text">Failed to sync live updates from spreadsheet.</div></div>';
+                });
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            fetchNotes();
+            // Automatically poll for live updates every 15 seconds
+            setInterval(fetchNotes, 15000);
+
             const userRole = localStorage.getItem('role') || "1";
             const rawBooks = localStorage.getItem('books') || "";
             
-            console.log("--- DEBUG DASHBOARD PERMISSIONS ---");
-            console.log("User Role:", userRole);
-            console.log("Raw Books from localStorage:", rawBooks);
-
-            // Admins (Role 2 or 'admin') can view everything
             const isAdmin = userRole === "2" || userRole.toLowerCase() === "admin";
 
-            // Split the books string into a clean array of lowercase strings
             const allowedBooks = rawBooks
                 .toLowerCase()
                 .split(',')
                 .map(b => b.trim().replace(/['"]+/g, ''))
                 .filter(b => b.length > 0);
 
-            console.log("Cleaned Allowed Books Array:", allowedBooks);
-
             const bookCards = document.querySelectorAll('.book-card');
-            let visibleCount = 0;
+            const searchInput = document.getElementById('bookSearchInput');
 
-            bookCards.forEach(card => {
-                const bookFileName = card.getAttribute('data-book').toLowerCase().trim();
-                
-                // Check if the exact book file name is inside the user's allowed books list
-                const isAllowed = allowedBooks.includes(bookFileName);
+            function filterBooks() {
+                const query = searchInput.value.toLowerCase().trim();
+                let visibleCount = 0;
 
-                if (isAdmin || isAllowed) {
-                    card.style.display = "flex";
-                    visibleCount++;
-                    console.log(`Card "${bookFileName}" is UNLOCKED.`);
-                } else {
-                    card.style.display = "none";
-                    console.log(`Card "${bookFileName}" is LOCKED.`);
-                }
-            });
+                bookCards.forEach(card => {
+                    const bookFileName = card.getAttribute('data-book').toLowerCase().trim();
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const description = card.querySelector('.description').textContent.toLowerCase();
+                    
+                    const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
+                    const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
 
-            // Show fallback message if no books are visible
-            if (visibleCount === 0) {
+                    if (isAllowed && matchesSearch) {
+                        card.style.display = "flex";
+                        visibleCount++;
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
+
+                let fallbackMsg = document.getElementById('no-books-msg');
                 const grid = document.getElementById('bookGrid');
-                grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
-                    <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
-                    <p>No lessons have been unlocked for your account yet. Please contact your administrator.</p>
-                </div>`;
+
+                if (visibleCount === 0) {
+                    if (!fallbackMsg) {
+                        fallbackMsg = document.createElement('div');
+                        fallbackMsg.id = 'no-books-msg';
+                        fallbackMsg.style.gridColumn = '1 / -1';
+                        fallbackMsg.style.textAlign = 'center';
+                        fallbackMsg.style.padding = '40px';
+                        fallbackMsg.style.color = 'var(--text-muted)';
+                        grid.appendChild(fallbackMsg);
+                    }
+                    if (allowedBooks.length === 0 && !isAdmin) {
+                        fallbackMsg.innerHTML = `
+                            <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
+                            <p>No lessons assigned to your account yet.</p>
+                        `;
+                    } else {
+                        fallbackMsg.innerHTML = `
+                            <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 10px;"></i>
+                            <p>No lessons found matching "${searchInput.value}".</p>
+                        `;
+                    }
+                } else if (fallbackMsg) {
+                    fallbackMsg.remove();
+                }
             }
 
-            // Update username display
-            const username = localStorage.getItem('username') || localStorage.getItem('name');
-            if (username) {
-                const usernameDisplay = document.getElementById('username-display');
-                if (usernameDisplay) usernameDisplay.textContent = username;
-            }
+            searchInput.addEventListener('input', filterBooks);
+            filterBooks();
         });
     </script>
 </body>

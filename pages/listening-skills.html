@@ -9,180 +9,229 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<Style>
+<style>
+    /* Force dark mode styling for card rows and states */
+    .button-class.card-row,
+    .button-class.card-row:hover,
+    .button-class.card-row:focus {
+        background-color: var(--card-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border) !important;
+    }
 
-/* Force dark mode styling for card rows and states */
-        .button-class.card-row,
-        .button-class.card-row:hover,
-        .button-class.card-row:focus {
-            background-color: var(--card-bg) !important;
-            color: var(--text-main) !important;
-            border-color: var(--border) !important;
-        }
-
-        /* Ensure all text inside the row adapts */
-        .button-class.card-row * {
-            color: inherit;
-        }
-    /* --- MENU TOOLTIP & LIST ROWS DARK MODE FIX --- */
-        .button-class.card-row {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            margin-bottom: 8px;
-        }
-
-        .btn-title {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .btn-target {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .tooltip-box {
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            /* Add your positioning rules for tooltip-box here if missing */
-        }
-
-        .tooltip-box p {
-            color: var(--text-main);
-        }
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --sidebar-width: 260px;
-            --sidebar-bg: #1e293b;
-            --border: #e2e8f0;
-        }
-
-        body.dark-mode {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --sidebar-bg: #020617;
-            --border: #334155;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
-
-        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-        /* --- SIDEBAR --- */
-        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; }
-        
-        @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.active { transform: translateX(0); }
-        }
-
-        .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
-        .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .side-link:hover, .side-link.active { background: #334155; color: white; }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
-        @media (max-width: 1024px) { .main-content { margin-left: 0; } }
-
-        .top-nav { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
-        @media (max-width: 1024px) { .menu-toggle { display: block; } }
-
-        /* --- BOOK GRID --- */
-        .content-header { padding: 30px 30px 10px 30px; }
-        .content-header h1 { font-size: 24px; font-weight: 700; }
-
-        .book-grid {
-            padding: 30px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .book-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .book-image { width: 100%; height: 180px; overflow: hidden; }
-        .book-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .book-card:hover .book-image img { transform: scale(1.05); }
-
-        .book-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
-        .book-info h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-main); }
-        .book-info .description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 400; }
-
-        .view-btn {
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 14px;
-            margin-top: auto;
-            transition: opacity 0.2s;
-        }
-        .view-btn:hover { opacity: 0.9; }
-
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        .sidebar-overlay.active { display: block; }
-
-        .listening-skills {
-    width: 100%;
-    margin: 20px 0;
-    display: flex;
-    justify-content: center; /* Centers the image */
-    overflow: hidden; /* Prevents edge spillover */
-}
-
-.listening-skills img {
-    width: 100%;       /* Takes full width of the card */
-    max-width: 600px;  /* Prevents it from getting too huge on Desktop */
-    height: auto;      /* CRITICAL: Maintains aspect ratio so it doesn't overlap */
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    display: block;
-}
-
-
-/* Mobile specific tweak */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px; 
+    /* Ensure all text inside the row adapts */
+    .button-class.card-row * {
+        color: inherit;
     }
     
-    .card {
-        padding: 15px;
+    /* --- MENU TOOLTIP & LIST ROWS DARK MODE FIX --- */
+    .button-class.card-row {
+        background-color: var(--card-bg);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-decoration: none;
+        margin-bottom: 8px;
+    }
+
+    .btn-title {
+        color: var(--text-main);
+        font-weight: 600;
+    }
+
+    .btn-target {
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .tooltip-box {
+        background-color: var(--card-bg);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .tooltip-box p {
+        color: var(--text-main);
+    }
+
+    :root {
+        --primary: #2563eb;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --sidebar-width: 260px;
+        --sidebar-bg: #1e293b;
+        --border: #e2e8f0;
+    }
+
+    body.dark-mode {
+        --bg: #0f172a;
+        --card-bg: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --sidebar-bg: #020617;
+        --border: #334155;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+
+    body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* --- SIDEBAR --- */
+    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; }
+    
+    @media (max-width: 1024px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+    }
+
+    .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
+    .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+    .side-link:hover, .side-link.active { background: #334155; color: white; }
+
+    /* --- MAIN CONTENT --- */
+    .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
+    @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+
+    .top-nav { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
+    .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
+    @media (max-width: 1024px) { .menu-toggle { display: block; } }
+
+    /* --- PREDICTIVE SEARCH BAR STYLING --- */
+    .search-container {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+        margin: 0 20px;
+    }
+
+    .search-bar-wrapper {
+        display: flex;
+        align-items: center;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        gap: 10px;
+    }
+
+    .search-bar-wrapper i {
+        color: var(--text-muted);
+    }
+
+    .search-bar-wrapper input {
+        border: none;
+        background: transparent;
+        outline: none;
+        color: var(--text-main);
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .search-results-dropdown {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+
+    .search-result-item {
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--text-main);
+        border-bottom: 1px solid var(--border);
+        transition: background 0.2s;
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .search-result-item:hover {
+        background: var(--bg);
+    }
+
+    .search-result-item img {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    .search-result-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-result-title {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .search-result-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    /* --- BOOK GRID --- */
+    .content-header { padding: 30px 30px 10px 30px; }
+    .content-header h1 { font-size: 24px; font-weight: 700; }
+
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+    .sidebar-overlay.active { display: block; }
+
+    .listening-skills {
+        width: 100%;
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
     }
 
     .listening-skills img {
-        max-width: 100%; /* Use all available space on phone */
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: block;
     }
-}
 
-</Style>
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px; 
+        }
+        
+        .card {
+            padding: 15px;
+        }
+
+        .listening-skills img {
+            max-width: 100%;
+        }
+
+        .search-container {
+            margin: 0 10px;
+        }
+    }
+</style>
 
 <body>
 
@@ -190,15 +239,23 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="logo">ESL PRO TOOL</div>
-        
         <div id="navbar-placeholder"></div>
         <script src="../scripts/nav.js"></script>
-
     </aside>
 
     <main class="main-content">
         <header class="top-nav">
             <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            
+            <!-- Predictive Search Bar Added Here -->
+            <div class="search-container">
+                <div class="search-bar-wrapper">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="lesson-search" placeholder="Search lessons or topics..." autocomplete="off">
+                </div>
+                <div class="search-results-dropdown" id="search-results"></div>
+            </div>
+
             <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
                 <span style="font-weight: 600; font-size: 14px;">Teacher&nbsp;<span id="username-display">User</span></span>
                 <i class="fa-solid fa-circle-user fa-xl"></i>
@@ -276,7 +333,7 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w1000" alt="Full Preview">
                                 <p><strong>At the restaurant</strong></p>
                                 <p>Talking about food and restaurants</p>
                             </div>
@@ -293,13 +350,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w1000" alt="Full Preview">
                                 <p><strong>Sports</strong></p>
                                 <p>Talking about discipline, strategy, agility and coordination</p>
                             </div>
                         </div> 
                     </li>
-
     
                     <li> 
                         <div class="menu-tooltip">
@@ -311,13 +367,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w1000" alt="Full Preview">
                                 <p><strong>At the library</strong></p>
                                 <p>Talking about books and article</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -329,13 +384,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w1000" alt="Full Preview">
                                 <p><strong>At the bus stop</strong></p>
                                 <p>Talking about bus stop</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -347,13 +401,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000" alt="Full Preview">
                                 <p><strong>At the super market</strong></p>
                                 <p>Talking about super market</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -365,13 +418,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w1000" alt="Full Preview">
                                 <p><strong>kitchen and cooking</strong></p>
                                 <p>Talking about kitchen</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -383,13 +435,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w1000" alt="Full Preview">
                                 <p><strong>At the park</strong></p>
                                 <p>Talking about park</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -401,13 +452,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w1000" alt="Full Preview">
                                 <p><strong>At the Museum</strong></p>
                                 <p>Talking about Museum</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -419,13 +469,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w1000" alt="Full Preview">
                                 <p><strong>School life and Education</strong></p>
                                 <p>Talking School life and Education</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -437,7 +486,7 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w1000" alt="Full Preview">
                                 <p><strong>Hospitals and Healthcare</strong></p>
                                 <p>Talking about Hospitals and Healthcare</p>
                             </div>
@@ -454,7 +503,7 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w1000" alt="Full Preview">
                                 <p><strong>Hotels and Airports</strong></p>
                                 <p>Talking about Hotels and Airports</p>
                             </div>
@@ -471,13 +520,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w1000" alt="Full Preview">
                                 <p><strong>Commuting and Directions</strong></p>
                                 <p>Talking about commuting and directions</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -489,7 +537,7 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w1000" alt="Full Preview">
                                 <p><strong>At the café</strong></p>
                                 <p>Talking about café</p>
                             </div>
@@ -506,13 +554,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w1000" alt="Full Preview">
                                 <p><strong>Behind the Wheel</strong></p>
                                 <p>Driving and Road Safety</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -524,13 +571,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w1000" alt="Full Preview">
                                 <p><strong>Hectic schedule</strong></p>
                                 <p>Managing busy schedule</p>
                             </div>
                         </div> 
                     </li>
-
 
                     <li> 
                         <div class="menu-tooltip">
@@ -542,7 +588,7 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w1000" alt="Full Preview">
                                 <p><strong>At the Zoo</strong></p>
                                 <p>Talking about zoo</p>
                             </div>
@@ -559,13 +605,12 @@
                                 </div>
                             </a>
                             <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz==w1000" alt="Full Preview">
+                                <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w1000" alt="Full Preview">
                                 <p><strong>Drugstore and Pharmacy</strong></p>
                                 <p>Talking about Drugstore and Pharmacy</p>
                             </div>
                         </div> 
                     </li>
-
                 </ol>
             </div>
         </div>
@@ -592,15 +637,85 @@
                 settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Dark Mode';
             }
         }
-        settingsLink.onclick = (e) => {
-            e.preventDefault();
-            const isDark = !document.body.classList.contains('dark-mode');
-            localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
-            updateThemeUI(isDark);
-        };
+        
+        // Safety check if settingsLink exists before binding
+        if (settingsLink) {
+            settingsLink.onclick = (e) => {
+                e.preventDefault();
+                const isDark = !document.body.classList.contains('dark-mode');
+                localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
+                updateThemeUI(isDark);
+            };
+        }
         const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
-        updateThemeUI(savedTheme === 'dark');
+        if (settingsLink) {
+            updateThemeUI(savedTheme === 'dark');
+        } else {
+            if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+        }
+
+        /* --- PREDICTIVE SEARCH SCRIPT --- */
+        const searchInput = document.getElementById('lesson-search');
+        const searchResults = document.getElementById('search-results');
+        
+        // Extract all lessons dynamically from the DOM list items
+        const lessonItems = Array.from(document.querySelectorAll('.menu-tooltip')).map(item => {
+            const link = item.querySelector('a');
+            const img = item.querySelector('.btn-thumb');
+            const title = item.querySelector('.btn-title');
+            const target = item.querySelector('.btn-target');
+            return {
+                url: link ? link.getAttribute('href') : '#',
+                imgSrc: img ? img.getAttribute('src') : '',
+                title: title ? title.textContent.trim() : '',
+                desc: target ? target.textContent.trim() : ''
+            };
+        });
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query === '') {
+                searchResults.style.display = 'none';
+                searchResults.innerHTML = '';
+                return;
+            }
+
+            const filteredLessons = lessonItems.filter(lesson => 
+                lesson.title.toLowerCase().includes(query) || 
+                lesson.desc.toLowerCase().includes(query)
+            );
+
+            if (filteredLessons.length > 0) {
+                searchResults.innerHTML = filteredLessons.map(lesson => `
+                    <a href="${lesson.url}" class="search-result-item">
+                        <img src="${lesson.imgSrc}" alt="${lesson.title}">
+                        <div class="search-result-text">
+                            <span class="search-result-title">${lesson.title}</span>
+                            <span class="search-result-desc">${lesson.desc}</span>
+                        </div>
+                    </a>
+                `).join('');
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.innerHTML = `<div style="padding: 12px 15px; font-size: 13px; color: var(--text-muted); text-align: center;">No matching lessons found</div>`;
+                searchResults.style.display = 'block';
+            }
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // Show results again if focused and has text
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim() !== '') {
+                searchResults.style.display = 'block';
+            }
+        });
     </script>
 </body>
- <script src="../scripts/script.js"></script>
 </html>

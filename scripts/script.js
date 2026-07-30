@@ -41,6 +41,8 @@ function getTargetUrl() {
         gid = "765833607"; 
     }else if (pageName === "zoo.html") { 
         gid = "1525942912"; 
+    }else if (pageName === "drugstore.html") { 
+        gid = "841754616"; 
     }
     
     

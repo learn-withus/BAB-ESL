@@ -39,7 +39,7 @@ function loadNavbar() {
         navHTML = `
             <a href="${pathToRoot}index.html" class="side-link" data-page="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
             <a href="${pathToRoot}pages/book-menu.html" class="side-link" data-page="book-menu.html"><i class="fa-solid fa-book"></i> Lessons</a>
-            <a href="${pathToRoot}pages/create-link.html" class="side-link" data-page="create-link.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Link</a>
+            <a href="${pathToRoot}create-link.html" class="side-link" data-page="create-link.html"><i class="fa-solid fa-wand-magic-sparkles"></i> Create Link</a>
             <a href="#" class="side-link" id="settings-link"><i class="fa-solid fa-moon"></i> Theme</a>
             <a href="#" onclick="logout()" class="side-link" style="margin-top: 20px; color: #f87171;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         `;
@@ -48,7 +48,6 @@ function loadNavbar() {
     else if (userRole === "3") {
         navHTML = `
             <a href="${pathToRoot}admin-dashboard.html" class="side-link" data-page="admin-dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a href="${pathToRoot}signup.html" class="side-link" data-page="signup.html"><i class="fa-solid fa-user-plus"></i> Create Account</a>
             <a href="#" class="side-link" id="settings-link"><i class="fa-solid fa-moon"></i> Theme</a>
             <a href="#" onclick="logout()" class="side-link" style="margin-top: 20px; color: #f87171;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         `;

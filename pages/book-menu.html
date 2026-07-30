@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bab ESL Pro - Books</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -52,15 +52,147 @@
         .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
         @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
-        /* --- BOOK GRID --- */
-        .content-header { padding: 30px 30px 10px 30px; }
-        .content-header h1 { font-size: 24px; font-weight: 700; }
+        /* --- HEADER & STACKED PREDICTIVE SEARCH BAR WITH FIX FOR OVERLAPPING --- */
+        .content-header { 
+            padding: 30px 30px 10px 30px; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
+            z-index: 800; /* Fixes dropdown going behind cards */
+            animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 16px;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .search-box:hover {
+            border-color: #94a3b8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12), 0 4px 12px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .search-box i {
+            color: var(--text-muted);
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .search-box:focus-within i {
+            color: var(--primary);
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            color: var(--text-main);
+            font-size: 14.5px;
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Predictive Dropdown Suggestions Panel with High Z-Index */
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.18), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+            z-index: 9999; /* Ensures it sits cleanly on top of everything else */
+            max-height: 260px;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+        }
+
+        .search-suggestions.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            font-size: 13.5px;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s, padding-left 0.15s;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: var(--bg);
+            padding-left: 20px;
+            color: var(--primary);
+        }
+
+        .suggestion-item i {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .suggestion-item:hover i {
+            color: var(--primary);
+        }
+
+        /* --- BOOK GRID & CARD ANIMATIONS --- */
         .book-grid {
-            padding: 30px;
+            padding: 20px 30px 40px 30px;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
+            position: relative;
+            z-index: 1; /* Keeps cards below dropdown */
         }
 
         .book-card {
@@ -71,15 +203,41 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUpCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        /* Staggered entrance animations */
+        .book-card:nth-child(1) { animation-delay: 0.1s; }
+        .book-card:nth-child(2) { animation-delay: 0.2s; }
+        .book-card:nth-child(3) { animation-delay: 0.3s; }
+        .book-card:nth-child(n+4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUpCard {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-card.hidden {
+            display: none !important;
         }
 
         .book-image { width: 100%; height: 180px; overflow: hidden; }
-        .book-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .book-card:hover .book-image img { transform: scale(1.05); }
+        .book-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .book-card:hover .book-image img { transform: scale(1.08); }
 
         .book-info { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .book-info h3 { font-size: 18px; margin-bottom: 8px; color: var(--text-main); }
-        .book-info .description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 400; }
+        .book-info .description { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; font-weight: 400; line-height: 1.5; }
 
         .view-btn {
             background: var(--primary);
@@ -91,9 +249,28 @@
             font-weight: 600;
             font-size: 14px;
             margin-top: auto;
-            transition: opacity 0.2s;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
         }
-        .view-btn:hover { opacity: 0.9; }
+        .view-btn:hover { 
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            font-size: 15px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .sidebar-overlay.active { display: block; }
@@ -105,27 +282,34 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="logo">ESL PRO TOOL</div>
-
         <div id="navbar-placeholder"></div>
         <script src="../scripts/nav.js"></script>
-         
     </aside>
 
     <main class="main-content">
         <header class="top-nav">
             <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
             <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Teacher&nbsp;<span id="username-display">User</span></span>
+                <span style="font-weight: 600; font-size: 14px;">Hello&nbsp;<span id="username-display">User</span></span>
                 <i class="fa-solid fa-circle-user fa-xl"></i>
             </div>
         </header>
 
         <div class="content-header">
             <h1>Lesson Library</h1>
+            
+            <!-- Stacked Predictive Search Bar Component -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="book-search-input" placeholder="Search lessons or books..." autocomplete="off">
+                </div>
+                <div class="search-suggestions" id="search-suggestions"></div>
+            </div>
         </div>
 
-        <div class="book-grid">
-            <div class="book-card">
+        <div class="book-grid" id="book-grid">
+            <div class="book-card" data-title="Communication Strategy" data-desc="Master the art of listening and reacting in real-time conversations.">
                 <div class="book-image">
                     <img src="https://drive.google.com/thumbnail?id=1Yuj0cmcBpycR87XruVFvYmD0wq893VcP&sz=w1000" alt="Communication Strategy">
                 </div>
@@ -136,7 +320,7 @@
                 </div>
             </div>
 
-            <div class="book-card">
+            <div class="book-card" data-title="Speaking Skills" data-desc="Learn essential phrases for customer service and restaurant environments.">
                 <div class="book-image">
                     <img src="https://img.freepik.com/premium-photo/having-conversation-indoors-new-modern-luxury-restaurant_146671-58152.jpg" alt="Speaking Skills">
                 </div>
@@ -145,6 +329,11 @@
                     <h5 class="description">Learn essential phrases for customer service and restaurant environments.</h5>
                     <a href="customer-service.html" class="view-btn">View Lesson</a>
                 </div>
+            </div>
+
+            <div class="no-results" id="no-results-msg">
+                <i class="fa-regular fa-folder-open fa-2x" style="margin-bottom: 10px; display: block;"></i>
+                No lessons found matching your search.
             </div>
         </div>
     </main>
@@ -158,8 +347,7 @@
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
-
-         // Set Teacher Name in Header UI on load
+        // Set Teacher Name in Header UI on load
         window.addEventListener('DOMContentLoaded', () => {
             const nameSpan = document.querySelector('.user-profile span');
             const storedName = localStorage.getItem('teacherName');
@@ -168,30 +356,117 @@
             }
         });
 
+        // Predictive Search & Filtering Logic
+        const searchInput = document.getElementById('book-search-input');
+        const suggestionsBox = document.getElementById('search-suggestions');
+        const bookCards = document.querySelectorAll('.book-card');
+        const noResultsMsg = document.getElementById('no-results-msg');
+
+        function getBookData() {
+            const list = [];
+            bookCards.forEach(card => {
+                list.push({
+                    title: card.getAttribute('data-title'),
+                    description: card.getAttribute('data-desc'),
+                    element: card
+                });
+            });
+            return list;
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const books = getBookData();
+            let matchCount = 0;
+
+            suggestionsBox.innerHTML = '';
+
+            if (query === '') {
+                suggestionsBox.classList.remove('active');
+                books.forEach(b => b.element.classList.remove('hidden'));
+                noResultsMsg.style.display = 'none';
+                return;
+            }
+
+            // Filter cards and collect suggestions
+            const matchedSuggestions = [];
+            books.forEach(book => {
+                const titleMatch = book.title.toLowerCase().includes(query);
+                const descMatch = book.description.toLowerCase().includes(query);
+
+                if (titleMatch || descMatch) {
+                    book.element.classList.remove('hidden');
+                    matchCount++;
+                    matchedSuggestions.push(book.title);
+                } else {
+                    book.element.classList.add('hidden');
+                }
+            });
+
+            // Handle empty results view
+            if (matchCount === 0) {
+                noResultsMsg.style.display = 'block';
+                suggestionsBox.classList.remove('active');
+            } else {
+                noResultsMsg.style.display = 'none';
+                
+                // Populate predictive suggestion items
+                matchedSuggestions.forEach(title => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.innerHTML = `<i class="fa-solid fa-book-open"></i><span>${title}</span>`;
+                    item.addEventListener('click', () => {
+                        searchInput.value = title;
+                        suggestionsBox.classList.remove('active');
+                        // Filter directly on click
+                        books.forEach(b => {
+                            if (b.title.toLowerCase() === title.toLowerCase()) {
+                                b.element.classList.remove('hidden');
+                            } else {
+                                b.element.classList.add('hidden');
+                            }
+                        });
+                    });
+                    suggestionsBox.appendChild(item);
+                });
+                suggestionsBox.classList.add('active');
+            }
+        });
+
+        // Close suggestions dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.remove('active');
+            }
+        });
+
         // Theme Toggle Logic for this page
         const settingsLink = document.getElementById('settings-link');
         function updateThemeUI(isDark) {
+            if (!settingsLink) return;
             const icon = settingsLink.querySelector('i');
             if (isDark) {
                 document.body.classList.add('dark-mode');
-                icon.className = 'fa-solid fa-sun';
+                if (icon) icon.className = 'fa-solid fa-sun';
                 settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Light Mode';
             } else {
                 document.body.classList.remove('dark-mode');
-                icon.className = 'fa-solid fa-moon';
+                if (icon) icon.className = 'fa-solid fa-moon';
                 settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Dark Mode';
             }
         }
-        settingsLink.onclick = (e) => {
-            e.preventDefault();
-            const isDark = !document.body.classList.contains('dark-mode');
-            localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
-            updateThemeUI(isDark);
-        };
-        // Apply saved theme on load
+        
+        if (settingsLink) {
+            settingsLink.onclick = (e) => {
+                e.preventDefault();
+                const isDark = !document.body.classList.contains('dark-mode');
+                localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
+                updateThemeUI(isDark);
+            };
+        }
+        
         const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
         updateThemeUI(savedTheme === 'dark');
-        
     </script>
 </body>
 </html>

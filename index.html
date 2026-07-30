@@ -99,7 +99,7 @@
         .banner-clock-widget {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .analog-clock-mini {
@@ -175,20 +175,22 @@
 
         .icon-box { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         
-        /* Strict Monospace & Tabular Alignment for Jitter-Free Clock Display */
+        /* Strict Monospace, Tabular Alignment & Fixed Sizing for Jitter-Free Display */
         .clock-text-container {
             display: flex;
             flex-direction: column;
-            min-width: 150px;
+            min-width: 210px; /* Expanded minimum width to completely hold full date text stably */
         }
 
         #ph-date {
             font-size: 10px;
             font-weight: 600;
-            color: rgba(255,255,255,0.75);
-            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.85);
+            letter-spacing: 0.4px;
             white-space: nowrap;
             margin-bottom: 2px;
+            font-family: monospace, 'Inter', sans-serif;
+            font-variant-numeric: tabular-nums;
         }
 
         #ph-time { 
@@ -348,7 +350,8 @@
             const now = new Date();
 
             const optionsTime = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const optionsDate = { timeZone: 'Asia/Manila', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            // Changed from 'short' to 'long' for fully spelled out complete details
+            const optionsDate = { timeZone: 'Asia/Manila', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
             
             const timeString = new Intl.DateTimeFormat('en-US', optionsTime).format(now);
             const dateString = new Intl.DateTimeFormat('en-US', optionsDate).format(now);
@@ -357,7 +360,7 @@
             const dateEl = document.getElementById('ph-date');
 
             if (timeEl && timeEl.textContent !== timeString) timeEl.textContent = timeString;
-            if (dateEl && dateEl.textContent !== dateString.toUpperCase()) dateEl.textContent = dateString.toUpperCase();
+            if (dateEl && dateEl.textContent !== dateString) dateEl.textContent = dateString;
 
             const manilaTimeStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(now);
             const [h, m, s] = manilaTimeStr.split(':').map(Number);

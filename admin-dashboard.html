@@ -52,7 +52,12 @@
         @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
         .dashboard-grid { padding: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid var(--border); }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid var(--border); animation: fadeInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .welcome-card { 
             grid-column: span 2; 
@@ -89,23 +94,189 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-variant-numeric: tabular-nums; /* Prevents shifting as numbers change */
+            font-variant-numeric: tabular-nums;
             white-space: nowrap;
         }
 
-        .table-card { grid-column: span 2; overflow-x: auto; }
+        .table-card { grid-column: span 2; }
         .table-card h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; color: var(--text-main); }
+
+        /* --- CONTROL BAR & ANALYTICS COUNTER --- */
+        .dashboard-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .accounts-counter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .controls-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        /* --- ADD USER BUTTON --- */
+        .btn-add-user {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-add-user:hover { background: #1d4ed8; }
+        .btn-add-user:active { transform: scale(0.96); }
+
+        /* --- PREDICTIVE SEARCH BAR --- */
+        .search-container-wrapper {
+            position: relative;
+            min-width: 240px;
+        }
+
+        .search-input-box {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .search-container-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* Predictive Dropdown Suggestions Box */
+        .predictive-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 500;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            animation: fadeInDown 0.2s ease forwards;
+        }
+
+        .predictive-dropdown.active {
+            display: block;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .predictive-item {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--text-main);
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s ease;
+        }
+
+        .predictive-item:last-child {
+            border-bottom: none;
+        }
+
+        .predictive-item:hover {
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary);
+        }
+
+        /* --- ROLE SORTATION DROPDOWN --- */
+        .role-sort-select {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .role-sort-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
 
         @media (max-width: 768px) { 
             .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } 
             .welcome-card, .table-card { grid-column: span 1; } 
             .welcome-card { flex-direction: column; align-items: flex-start; gap: 15px; }
             .welcome-clock { width: 100%; justify-content: center; }
+            .dashboard-controls-bar { flex-direction: column; align-items: stretch; }
+            .controls-group { justify-content: stretch; flex-direction: column; }
+            .search-container-wrapper, .role-sort-select, .btn-add-user { width: 100%; justify-content: center; }
         }
 
-        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 15px; }
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 5px; }
         th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { background-color: var(--table-header); font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        
+        tr {
+            animation: fadeInRow 0.3s ease forwards;
+        }
+
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         tr:hover { background-color: rgba(0, 0, 0, 0.015); }
         body.dark-mode tr:hover { background-color: rgba(255, 255, 255, 0.015); }
 
@@ -114,33 +285,94 @@
         .badge-teacher { background: #dcfce7; color: #16a34a; }
         .badge-student { background: #e0f2fe; color: #0284c7; }
 
-        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; display: inline-flex; align-items: center; gap: 5px; transition: transform 0.15s ease, background 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
         .btn-edit { background: #e0f2fe; color: #0284c7; }
         .btn-edit:hover { background: #bae6fd; }
         .btn-delete { background: #fee2e2; color: #dc2626; }
         .btn-delete:hover { background: #fecaca; }
 
-        /* Modern Modal Layout & Grid Books */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--card-bg); width: 100%; max-width: 520px; padding: 30px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
-        .modal h3 { margin-bottom: 20px; font-size: 18px; font-weight: 700; color: var(--text-main); }
+        /* --- MODAL STYLING (Standard Centered) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease; padding: 20px; }
+        .modal-overlay.active { display: flex; opacity: 1; }
         
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
-        .form-group input, .form-group select { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text-main); font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        .modal { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 640px; 
+            padding: 40px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 20px 35px -5px rgba(0,0,0,0.15), 0 10px 15px -5px rgba(0,0,0,0.05); 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            transform: scale(0.95) translateY(10px); 
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
 
-        /* Modern Books Toggle Grid Styling inside Modal */
+        /* --- EXTRA WIDE & SPACIOUS CREATE ACCOUNT MODAL STYLING --- */
+        .modal-overlay#createModalOverlay {
+            align-items: center;
+        }
+        .modal-overlay#createModalOverlay .modal {
+            max-width: 820px;
+            padding: 45px 50px;
+        }
+        .modal-overlay#createModalOverlay .books-grid-container {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            max-height: 260px;
+            padding: 20px;
+        }
+        
+        .modal-header-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .modal h3 { margin-bottom: 6px; font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+        .modal .modal-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.4; }
+        
+        .form-group { margin-bottom: 22px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.2px; }
+        
+        /* Bigger, wide input fields matching the signup form style */
+        .form-group input[type="text"], 
+        .form-group input[type="password"], 
+        .form-group select { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border); 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-size: 14px; 
+            outline: none; 
+            transition: border-color 0.2s, box-shadow 0.2s; 
+        }
+        .form-group input:focus, .form-group select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); 
+        }
+
+        /* Spacious Books Toggle Grid Styling inside Modal */
         .books-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
             background: var(--bg);
-            padding: 14px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 12px;
             border: 1px solid var(--border);
-            max-height: 200px;
+            max-height: 220px;
             overflow-y: auto;
         }
 
@@ -149,7 +381,7 @@
             align-items: center;
             justify-content: space-between;
             background: var(--card-bg);
-            padding: 10px 12px;
+            padding: 12px 14px;
             border-radius: 8px;
             border: 1px solid var(--border);
             cursor: pointer;
@@ -192,37 +424,160 @@
             color: white;
         }
 
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
-        .btn-modal { padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
+        .btn-modal { padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; }
+        .btn-modal:active { transform: scale(0.96); }
         .btn-cancel { background: var(--border); color: var(--text-main); }
         .btn-cancel:hover { opacity: 0.8; }
         .btn-save { background: var(--primary); color: white; }
         .btn-save:hover { background: #1d4ed8; }
 
+        /* --- DELETE WARNING MODAL STYLING (Positioned Higher up on the screen) --- */
+        .modal-overlay#deleteModalOverlay {
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+        @media (min-height: 700px) {
+            .modal-overlay#deleteModalOverlay {
+                padding-top: 110px;
+            }
+        }
+
+        .modal-warning-icon {
+            width: 52px;
+            height: 52px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 18px;
+        }
+        .btn-delete-confirm { background: #dc2626; color: white; }
+        .btn-delete-confirm:hover { background: #b91c1c; }
+
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .sidebar-overlay.active { display: block; }
+
+        /* --- MODERN TOAST NOTIFICATION SYSTEM --- */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            color: var(--text-main);
+            padding: 14px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: auto;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            max-width: 380px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+        .toast.success i {
+            color: #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+        .toast.error i {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar-overlay" id="overlay"></div>
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Create User Modal (Wider and Spaced Out) -->
+    <div class="modal-overlay" id="createModalOverlay">
+        <div class="modal">
+            <div class="modal-header-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h3>Create New Account</h3>
+            <div class="modal-subtitle">Fill out the information below to add a new user to the system database</div>
+            <form id="createForm" onsubmit="submitCreateForm(event)">
+                <div class="form-group">
+                    <label for="createUsername">Username</label>
+                    <input type="text" id="createUsername" placeholder="Enter username" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="createPassword">Password</label>
+                    <input type="password" id="createPassword" placeholder="Enter secure password" required>
+                </div>
+                <div class="form-group">
+                    <label for="createRole">Account Role</label>
+                    <select id="createRole">
+                        <option value="1">1 - Student / Normal User</option>
+                        <option value="2">2 - Teacher</option>
+                        <option value="3">3 - Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Allowed Books Access (From Config / Folder)</label>
+                    <div id="createBooksContainer" class="books-grid-container">
+                        <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal btn-cancel" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="btn-modal btn-save" id="btnCreateSubmit">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit User Modal -->
     <div class="modal-overlay" id="editModalOverlay">
         <div class="modal">
+            <div class="modal-header-icon">
+                <i class="fa-solid fa-user-pen"></i>
+            </div>
             <h3>Edit Account Details</h3>
+            <div class="modal-subtitle">Update user profile information and access permissions</div>
             <form id="editForm" onsubmit="submitEditForm(event)">
                 <input type="hidden" id="editOldUsername">
                 <div class="form-group">
                     <label for="editUsername">Username</label>
-                    <input type="text" id="editUsername" required>
+                    <input type="text" id="editUsername" required autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="editPassword">Password</label>
                     <input type="text" id="editPassword" required>
                 </div>
                 <div class="form-group">
-                    <label for="editRole">Role</label>
+                    <label for="editRole">Account Role</label>
                     <select id="editRole">
                         <option value="3">3 - Admin</option>
                         <option value="2">2 - Teacher</option>
@@ -231,7 +586,7 @@
                 </div>
                 <div class="form-group">
                     <label>Allowed Books Access (From Config / Folder)</label>
-                    <div id="dynamicBooksContainer" class="books-grid-container">
+                    <div id="editBooksContainer" class="books-grid-container">
                         <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
                     </div>
                 </div>
@@ -240,6 +595,22 @@
                     <button type="submit" class="btn-modal btn-save">Save Changes</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal (Positioned Higher Up) -->
+    <div class="modal-overlay" id="deleteModalOverlay">
+        <div class="modal" style="max-width: 440px;">
+            <div class="modal-warning-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3>Are you sure you want to delete user <span id="deleteUsernameDisplay" style="color: var(--primary);"></span>?</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.4;">This action is permanent and cannot be undone from the system database.</p>
+            <input type="hidden" id="deleteTargetUsername">
+            <div class="modal-actions" style="margin-top: 0;">
+                <button type="button" class="btn-modal btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-modal btn-delete-confirm" onclick="confirmDeleteAccount()">Yes, Delete</button>
+            </div>
         </div>
     </div>
 
@@ -273,21 +644,54 @@
 
             <div class="card table-card">
                 <h2><i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i>User Accounts</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>User Name</th>
-                            <th>Password</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="account-table-body">
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: var(--text-muted);">Fetching accounts from Google Sheet...</td>
-                        </tr>
-                    </tbody>
-                </table>
+                
+                <!-- Controls Bar with Indicator, Add Account Button, Predictive Search, and Role Sortation -->
+                <div class="dashboard-controls-bar">
+                    <div class="accounts-counter-badge" id="accounts-counter">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Loading accounts indicator...</span>
+                    </div>
+
+                    <div class="controls-group">
+                        <!-- Add User Modal Trigger Button -->
+                        <button class="btn-add-user" onclick="openCreateModal()">
+                            <i class="fa-solid fa-user-plus"></i> Add Account
+                        </button>
+
+                        <!-- Predictive Username Search Bar -->
+                        <div class="search-container-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="usernameSearchInput" class="search-input-box" placeholder="Search by username..." autocomplete="off">
+                            <div class="predictive-dropdown" id="predictiveDropdown"></div>
+                        </div>
+
+                        <!-- Role Sortation Dropdown -->
+                        <select id="roleSortSelect" class="role-sort-select" onchange="filterAndRenderAccounts()">
+                            <option value="all">All Roles (Show All)</option>
+                            <option value="3">Admin (Role 3)</option>
+                            <option value="2">Teacher (Role 2)</option>
+                            <option value="1">Student / Normal User (Role 1)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Password</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="account-table-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-muted);">Fetching accounts from Google Sheet...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
@@ -298,7 +702,10 @@
         const menuBtn = document.getElementById('menu-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzKgmrpwFccCctJWLGi0TiFkIBlfU-3RtJxXp9noikDEX9TW2MBvRNgv8I-H5vht7os/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzlcQO5V2dM7pMqHBdPos8qoSMlJt4HnolFVhXBiWD-V-uUcWLxfJAexGnbPblXBGdo/exec'; 
+
+        // Global store for fetched accounts data to enable instant predictive filtering
+        let allAccountsData = [];
 
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
@@ -311,12 +718,79 @@
             }
 
             fetchGoogleSheetAccounts();
-            loadDynamicBooksList();
+            loadDynamicBooksLists();
             updateClock();
             setInterval(updateClock, 1000);
+
+            // Event Listeners for Predictive Search Bar
+            const searchInput = document.getElementById('usernameSearchInput');
+            const dropdown = document.getElementById('predictiveDropdown');
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim().toLowerCase();
+                filterAndRenderAccounts();
+
+                if (!query) {
+                    dropdown.classList.remove('active');
+                    dropdown.innerHTML = '';
+                    return;
+                }
+
+                const matches = allAccountsData.filter(acc => {
+                    const uname = (acc.username || acc.Username || acc.Name || "").toLowerCase();
+                    return uname.includes(query);
+                });
+
+                if (matches.length > 0) {
+                    dropdown.innerHTML = '';
+                    matches.slice(0, 5).forEach(match => {
+                        const uname = match.username || match.Username || match.Name || "Unknown";
+                        const item = document.createElement('div');
+                        item.className = 'predictive-item';
+                        item.innerHTML = `<i class="fa-solid fa-user" style="font-size: 11px; color: var(--primary);"></i> <span>${uname}</span>`;
+                        item.onclick = () => {
+                            searchInput.value = uname;
+                            dropdown.classList.remove('active');
+                            filterAndRenderAccounts();
+                        };
+                        dropdown.appendChild(item);
+                    });
+                    dropdown.classList.add('active');
+                } else {
+                    dropdown.classList.remove('active');
+                    dropdown.innerHTML = '';
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container-wrapper')) {
+                    dropdown.classList.remove('active');
+                }
+            });
         });
 
-        // Live Clock Function with Hours, Minutes, and Seconds
+        // Toast Notification System Function
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} fa-lg"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('show'); }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3500);
+        }
+
+        // Live Clock Function
         function updateClock() {
             const clockEl = document.getElementById('live-clock');
             if (clockEl) {
@@ -327,9 +801,11 @@
             }
         }
 
-        // Dynamically load available books/pages handling varied JSON structures safely
-        async function loadDynamicBooksList() {
-            const container = document.getElementById('dynamicBooksContainer');
+        // Dynamically populate books lists for both Create and Edit modals
+        async function loadDynamicBooksLists() {
+            const createContainer = document.getElementById('createBooksContainer');
+            const editContainer = document.getElementById('editBooksContainer');
+            
             try {
                 let config = JSON.parse(localStorage.getItem('pageConfig') || '{}');
                 
@@ -339,8 +815,6 @@
                     localStorage.setItem('pageConfig', JSON.stringify(config));
                 }
 
-                container.innerHTML = '';
-                
                 let keys = [];
                 if (Array.isArray(config)) {
                     keys = config;
@@ -349,30 +823,34 @@
                 }
 
                 if (keys.length === 0) {
-                    container.innerHTML = `<span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">No books found in Config sheet.</span>`;
+                    const emptyMsg = `<span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">No books found in Config sheet.</span>`;
+                    createContainer.innerHTML = emptyMsg;
+                    editContainer.innerHTML = emptyMsg;
                     return;
                 }
 
-                keys.forEach(pageName => {
-                    const label = document.createElement('label');
-                    label.className = 'book-toggle-label';
-                    
-                    const span = document.createElement('span');
-                    span.textContent = pageName;
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'allowedBook';
-                    checkbox.value = pageName;
+                createContainer.innerHTML = '';
+                editContainer.innerHTML = '';
 
-                    label.appendChild(span);
-                    label.appendChild(checkbox);
-                    container.appendChild(label);
+                keys.forEach(pageName => {
+                    // Create Modal Checkbox
+                    const createLabel = document.createElement('label');
+                    createLabel.className = 'book-toggle-label';
+                    createLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="createAllowedBook" value="${pageName}">`;
+                    createContainer.appendChild(createLabel);
+
+                    // Edit Modal Checkbox
+                    const editLabel = document.createElement('label');
+                    editLabel.className = 'book-toggle-label';
+                    editLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="allowedBook" value="${pageName}">`;
+                    editContainer.appendChild(editLabel);
                 });
 
             } catch (err) {
                 console.error("Failed to load dynamic config books:", err);
-                container.innerHTML = `<span style="font-size: 13px; color: #f87171; grid-column: 1 / -1; text-align: center; padding: 10px;">Failed to load book options.</span>`;
+                const errorMsg = `<span style="font-size: 13px; color: #f87171; grid-column: 1 / -1; text-align: center; padding: 10px;">Failed to load book options.</span>`;
+                createContainer.innerHTML = errorMsg;
+                editContainer.innerHTML = errorMsg;
             }
         }
 
@@ -384,51 +862,157 @@
                 const result = await response.json();
 
                 if (!result || result.length === 0) {
+                    allAccountsData = [];
                     tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No accounts found in sheet.</td></tr>`;
+                    updateAccountsCounter(0, 0);
                     return;
                 }
 
-                tbody.innerHTML = '';
-                result.forEach(acc => {
-                    let roleBadge = '';
-                    let roleName = '';
-                    const roleStr = String(acc.role || acc.Role || "").trim();
-
-                    if (roleStr === "3") {
-                        roleBadge = 'badge-admin';
-                        roleName = 'Admin (Role 3)';
-                    } else if (roleStr === "2") {
-                        roleBadge = 'badge-teacher';
-                        roleName = 'Teacher (Role 2)';
-                    } else {
-                        roleBadge = 'badge-student';
-                        roleName = 'Student (Role 1)';
-                    }
-
-                    const username = acc.username || acc.Username || acc.Name || "Unknown";
-                    const password = acc.password || acc.Password || "";
-                    const userBooks = acc.books || acc.Books || "";
-
-                    const row = `
-                        <tr>
-                            <td><strong>${username}</strong></td>
-                            <td><span style="font-family: monospace; font-size: 13px; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px;">${password}</span></td>
-                            <td><span class="badge ${roleBadge}">${roleName}</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" onclick="openEditModal('${username}', '${password}', '${roleStr}', '${userBooks}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                                <button class="btn-action btn-delete" onclick="deleteAccount('${username}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
+                allAccountsData = result;
+                filterAndRenderAccounts();
 
             } catch (error) {
                 console.error('Error fetching sheet data:', error);
                 tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f87171;">Failed to load data from Google Sheet. Check your Web App URL.</td></tr>`;
+                updateAccountsCounter(0, 0);
             }
         }
 
+        function filterAndRenderAccounts() {
+            const tbody = document.getElementById('account-table-body');
+            const searchQuery = document.getElementById('usernameSearchInput').value.trim().toLowerCase();
+            const selectedRole = document.getElementById('roleSortSelect').value;
+
+            const filtered = allAccountsData.filter(acc => {
+                const username = (acc.username || acc.Username || acc.Name || "").toLowerCase();
+                const roleStr = String(acc.role || acc.Role || "").trim();
+
+                const matchesSearch = username.includes(searchQuery);
+                const matchesRole = (selectedRole === 'all' || roleStr === selectedRole);
+
+                return matchesSearch && matchesRole;
+            });
+
+            updateAccountsCounter(filtered.length, allAccountsData.length);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">No accounts matching criteria.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            filtered.forEach(acc => {
+                let roleBadge = '';
+                let roleName = '';
+                const roleStr = String(acc.role || acc.Role || "").trim();
+
+                if (roleStr === "3") {
+                    roleBadge = 'badge-admin';
+                    roleName = 'Admin (Role 3)';
+                } else if (roleStr === "2") {
+                    roleBadge = 'badge-teacher';
+                    roleName = 'Teacher (Role 2)';
+                } else {
+                    roleBadge = 'badge-student';
+                    roleName = 'Student (Role 1)';
+                }
+
+                const username = acc.username || acc.Username || acc.Name || "Unknown";
+                const password = acc.password || acc.Password || "";
+                const userBooks = acc.books || acc.Books || "";
+
+                const row = `
+                    <tr>
+                        <td><strong>${username}</strong></td>
+                        <td><span style="font-family: monospace; font-size: 13px; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px;">${password}</span></td>
+                        <td><span class="badge ${roleBadge}">${roleName}</span></td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="openEditModal('${username}', '${password}', '${roleStr}', '${userBooks}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            <button class="btn-action btn-delete" onclick="openDeleteModal('${username}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function updateAccountsCounter(filteredCount, totalCount) {
+            const counterEl = document.getElementById('accounts-counter');
+            if (counterEl) {
+                const span = counterEl.querySelector('span');
+                if (filteredCount === totalCount) {
+                    span.textContent = `Total Accounts: ${totalCount}`;
+                } else {
+                    span.textContent = `Showing ${filteredCount} of ${totalCount} Accounts`;
+                }
+            }
+        }
+
+        /* --- CREATE ACCOUNT MODAL FUNCTIONS --- */
+        function openCreateModal() {
+            document.getElementById('createUsername').value = '';
+            document.getElementById('createPassword').value = '';
+            document.getElementById('createRole').value = '1';
+            document.querySelectorAll('input[name="createAllowedBook"]').forEach(cb => cb.checked = false);
+            document.getElementById('createModalOverlay').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModalOverlay').classList.remove('active');
+        }
+
+        async function submitCreateForm(event) {
+            event.preventDefault();
+
+            const user = document.getElementById('createUsername').value.trim();
+            const pass = document.getElementById('createPassword').value.trim();
+            const role = document.getElementById('createRole').value.trim();
+            const btn = document.getElementById('btnCreateSubmit');
+
+            if (!user || !pass) {
+                showToast("Please fill in all required fields", "error");
+                return;
+            }
+
+            const selectedBooks = [];
+            document.querySelectorAll('input[name="createAllowedBook"]:checked').forEach(cb => {
+                selectedBooks.push(cb.value);
+            });
+            const booksParam = selectedBooks.join(',');
+
+            btn.innerText = "Creating...";
+            btn.disabled = true;
+
+            try {
+                const url = `${scriptURL}?action=signup&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&role=${encodeURIComponent(role)}&books=${encodeURIComponent(booksParam)}`;
+                const response = await fetch(url);
+                const textResponse = await response.text();
+                
+                let result;
+                try {
+                    result = JSON.parse(textResponse);
+                } catch (parseErr) {
+                    console.error("Non-JSON Response received:", textResponse);
+                    throw new Error("Server returned an invalid response.");
+                }
+
+                if (result.status === "success") {
+                    showToast("Account created successfully!", "success");
+                    closeCreateModal();
+                    fetchGoogleSheetAccounts();
+                } else {
+                    showToast(result.message || "Username already taken or creation failed.", "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast(err.message || "Connection failed. Check Deployment URL.", "error");
+            } finally {
+                btn.innerText = "Create Account";
+                btn.disabled = false;
+            }
+        }
+
+        /* --- EDIT ACCOUNT MODAL FUNCTIONS --- */
         function openEditModal(username, password, role, booksString = "") {
             document.getElementById('editOldUsername').value = username;
             document.getElementById('editUsername').value = username;
@@ -467,20 +1051,32 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    alert("Account updated successfully!");
+                    showToast("Account updated successfully!", "success");
                     closeEditModal();
                     fetchGoogleSheetAccounts();
                 } else {
-                    alert("Error: " + result.message);
+                    showToast("Error: " + result.message, "error");
                 }
             } catch (err) {
                 console.error(err);
-                alert("Failed to update account.");
+                showToast("Failed to update account.", "error");
             }
         }
 
-        async function deleteAccount(username) {
-            if (!confirm(`Are you sure you want to delete user "${username}"?`)) return;
+        /* --- DELETE ACCOUNT MODAL FUNCTIONS --- */
+        function openDeleteModal(username) {
+            document.getElementById('deleteTargetUsername').value = username;
+            document.getElementById('deleteUsernameDisplay').textContent = `"${username}"`;
+            document.getElementById('deleteModalOverlay').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModalOverlay').classList.remove('active');
+        }
+
+        async function confirmDeleteAccount() {
+            const username = document.getElementById('deleteTargetUsername').value;
+            closeDeleteModal();
 
             try {
                 const url = `${scriptURL}?action=deleteAccount&username=${encodeURIComponent(username)}`;
@@ -488,14 +1084,14 @@
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    alert("Account deleted successfully!");
+                    showToast("Account deleted successfully!", "success");
                     fetchGoogleSheetAccounts();
                 } else {
-                    alert("Error: " + result.message);
+                    showToast("Error: " + result.message, "error");
                 }
             } catch (err) {
                 console.error(err);
-                alert("Failed to delete account.");
+                showToast("Failed to delete account.", "error");
             }
         }
     </script>

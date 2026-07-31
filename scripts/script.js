@@ -44,7 +44,7 @@ function getTargetUrl() {
     }else if (pageName === "drugstore.html") { 
         gid = "841754616"; 
     }else if (pageName === "workplace-ethics-v2.html") { 
-        gid = "841754616"; 
+        gid = "105353041"; 
     }
     
     

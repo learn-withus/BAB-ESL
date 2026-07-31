@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bab ESL Pro - Lessons</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<style>
+    /* Force dark mode styling for card rows and states */
+    .button-class.card-row,
+    .button-class.card-row:hover,
+    .button-class.card-row:focus {
+        background-color: var(--card-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border) !important;
+    }
+
+    /* Ensure all text inside the row adapts */
+    .button-class.card-row * {
+        color: inherit;
+    }
+    
+    /* --- MENU TOOLTIP & LIST ROWS DARK MODE FIX --- */
+    .button-class.card-row {
+        background-color: var(--card-bg);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-decoration: none;
+        margin-bottom: 8px;
+    }
+
+    .btn-title {
+        color: var(--text-main);
+        font-weight: 600;
+    }
+
+    .btn-target {
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .tooltip-box {
+        background-color: var(--card-bg);
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .tooltip-box p {
+        color: var(--text-main);
+    }
+
+    :root {
+        --primary: #2563eb;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --sidebar-width: 260px;
+        --sidebar-bg: #1e293b;
+        --border: #e2e8f0;
+    }
+
+    body.dark-mode {
+        --bg: #0f172a;
+        --card-bg: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --sidebar-bg: #020617;
+        --border: #334155;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+
+    body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+    /* --- SIDEBAR --- */
+    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; }
+    
+    @media (max-width: 1024px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.active { transform: translateX(0); }
+    }
+
+    .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
+    .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+    .side-link:hover, .side-link.active { background: #334155; color: white; }
+
+    /* --- MAIN CONTENT --- */
+    .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
+    @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+
+    .top-nav { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
+    .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
+    @media (max-width: 1024px) { .menu-toggle { display: block; } }
+
+    /* --- PREDICTIVE SEARCH BAR STYLING --- */
+    .search-container {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+        margin: 0 20px;
+    }
+
+    .search-bar-wrapper {
+        display: flex;
+        align-items: center;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        gap: 10px;
+    }
+
+    .search-bar-wrapper i {
+        color: var(--text-muted);
+    }
+
+    .search-bar-wrapper input {
+        border: none;
+        background: transparent;
+        outline: none;
+        color: var(--text-main);
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .search-results-dropdown {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+
+    .search-result-item {
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--text-main);
+        border-bottom: 1px solid var(--border);
+        transition: background 0.2s;
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .search-result-item:hover {
+        background: var(--bg);
+    }
+
+    .search-result-item img {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    .search-result-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .search-result-title {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .search-result-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    /* --- BOOK GRID --- */
+    .content-header { padding: 30px 30px 10px 30px; }
+    .content-header h1 { font-size: 24px; font-weight: 700; }
+
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+    .sidebar-overlay.active { display: block; }
+
+    .listening-skills {
+        width: 100%;
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .listening-skills img {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px; 
+        }
+        
+        .card {
+            padding: 15px;
+        }
+
+        .listening-skills img {
+            max-width: 100%;
+        }
+
+        .search-container {
+            margin: 0 10px;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">ESL PRO TOOL</div>
+        <div id="navbar-placeholder"></div>
+        <script src="../scripts/nav.js"></script>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-nav">
+            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            
+            <!-- Predictive Search Bar Added Here -->
+            <div class="search-container">
+                <div class="search-bar-wrapper">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="lesson-search" placeholder="Search lessons or topics..." autocomplete="off">
+                </div>
+                <div class="search-results-dropdown" id="search-results"></div>
+            </div>
+
+            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
+                <span style="font-weight: 600; font-size: 14px;">Teacher&nbsp;<span id="username-display">User</span></span>
+                <i class="fa-solid fa-circle-user fa-xl"></i>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="card" id="text-section">
+                <h1>Communication Strategy v2</h1>
+                <hr>
+                <p>Lesson target: Show reactions and encourage discussion</p>
+                <div class="listening-skills">
+                    <img src="https://img.freepik.com/premium-photo/having-conversation-indoors-new-modern-luxury-restaurant_146671-58152.jpg" alt="Book Cover">
+                </div>
+
+                <ol>
+                     <li> 
+                        <div class="menu-tooltip">
+                            <a href="workplace-ethics-v2.html" class="button-class card-row">
+                                <img src="https://drive.google.com/thumbnail?id=18yg6ojH9oIxUgATWV4JMVxBWD2HBAx09&sz=w80" alt="Book Cover" class="btn-thumb">
+                                <div class="btn-text-content">
+                                    <span class="btn-title">Workplace Ethics and Professional Responsibility</span>
+                                    <span class="btn-target">Lesson target: Speaking and listening</span>
+                                </div>
+                            </a>
+                            <div class="tooltip-box">
+                                <img src="https://drive.google.com/thumbnail?id=18yg6ojH9oIxUgATWV4JMVxBWD2HBAx09&sz=w1000" alt="Full Preview">
+                                <p><strong>Workplace Ethics and Professional Responsibility</strong></p>
+                                <p>Lesson target: Speaking and listening</p>
+                            </div>
+                        </div> 
+                    </li>
+                    
+                </ol>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+
+        const settingsLink = document.getElementById('settings-link');
+        function updateThemeUI(isDark) {
+            const icon = settingsLink.querySelector('i');
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                icon.className = 'fa-solid fa-sun';
+                settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Light Mode';
+            } else {
+                document.body.classList.remove('dark-mode');
+                icon.className = 'fa-solid fa-moon';
+                settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Dark Mode';
+            }
+        }
+        
+        // Safety check if settingsLink exists before binding
+        if (settingsLink) {
+            settingsLink.onclick = (e) => {
+                e.preventDefault();
+                const isDark = !document.body.classList.contains('dark-mode');
+                localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
+                updateThemeUI(isDark);
+            };
+        }
+        const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
+        if (settingsLink) {
+            updateThemeUI(savedTheme === 'dark');
+        } else {
+            if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+        }
+
+        /* --- PREDICTIVE SEARCH SCRIPT --- */
+        const searchInput = document.getElementById('lesson-search');
+        const searchResults = document.getElementById('search-results');
+        
+        // Extract all lessons dynamically from the DOM list items
+        const lessonItems = Array.from(document.querySelectorAll('.menu-tooltip')).map(item => {
+            const link = item.querySelector('a');
+            const img = item.querySelector('.btn-thumb');
+            const title = item.querySelector('.btn-title');
+            const target = item.querySelector('.btn-target');
+            return {
+                url: link ? link.getAttribute('href') : '#',
+                imgSrc: img ? img.getAttribute('src') : '',
+                title: title ? title.textContent.trim() : '',
+                desc: target ? target.textContent.trim() : ''
+            };
+        });
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query === '') {
+                searchResults.style.display = 'none';
+                searchResults.innerHTML = '';
+                return;
+            }
+
+            const filteredLessons = lessonItems.filter(lesson => 
+                lesson.title.toLowerCase().includes(query) || 
+                lesson.desc.toLowerCase().includes(query)
+            );
+
+            if (filteredLessons.length > 0) {
+                searchResults.innerHTML = filteredLessons.map(lesson => `
+                    <a href="${lesson.url}" class="search-result-item">
+                        <img src="${lesson.imgSrc}" alt="${lesson.title}">
+                        <div class="search-result-text">
+                            <span class="search-result-title">${lesson.title}</span>
+                            <span class="search-result-desc">${lesson.desc}</span>
+                        </div>
+                    </a>
+                `).join('');
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.innerHTML = `<div style="padding: 12px 15px; font-size: 13px; color: var(--text-muted); text-align: center;">No matching lessons found</div>`;
+                searchResults.style.display = 'block';
+            }
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // Show results again if focused and has text
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim() !== '') {
+                searchResults.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

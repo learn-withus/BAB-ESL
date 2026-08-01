@@ -626,162 +626,219 @@
     <!-- Load the navigation script last so placeholder exists -->
     <script src="scripts/nav.js"></script>
     <script>
-        // Sidebar Mobile Toggle
-        const menuBtn = document.getElementById('menu-btn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+    // Sidebar Mobile Toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
 
+    if (menuBtn) {
         menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    }
+    if (overlay) {
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+    }
 
-        // --- GOOGLE SPREADSHEET STICKY NOTES LIVE-VIEW LOGIC ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlcQO5V2dM7pMqHBdPos8qoSMlJt4HnolFVhXBiWD-V-uUcWLxfJAexGnbPblXBGdo/exec"; 
-        const GID = "772730659";
+    // --- GOOGLE SPREADSHEET STICKY NOTES LIVE-VIEW LOGIC ---
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec"; 
 
-        // Helper function to check if a string contains a web URL
-        function extractUrl(text) {
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const match = text.match(urlRegex);
-            return match ? match[0] : null;
-        }
+    // Helper function to check if a string contains a web URL
+    function extractUrl(text) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const match = text.match(urlRegex);
+        return match ? match[0] : null;
+    }
 
-        function fetchNotes() {
-            const notesList = document.getElementById('notesList');
-            fetch(`${SCRIPT_URL}?gid=${GID}&action=get`)
-                .then(res => res.json())
-                .then(data => {
-                    notesList.innerHTML = '';
-                    if (data && data.notes && data.notes.length > 0) {
-                        data.notes.forEach(noteText => {
-                            if (noteText && noteText.trim() !== '') {
-                                const item = document.createElement('div');
-                                item.className = 'note-item';
+    // JSONP Helper to reliably bypass CORS restrictions from Google Apps Script
+    function fetchNotesViaJsonp() {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'userDashStickyCallback_' + Math.floor(Math.random() * 1000000);
+            const script = document.createElement('script');
+            script.id = 'sticky-jsonp-loader';
 
-                                // Text container (preserves spacing & breaks typed by teacher)
-                                const textSpan = document.createElement('div');
-                                textSpan.className = 'note-content-text';
-                                textSpan.textContent = noteText;
-                                item.appendChild(textSpan);
+            // Global callback function
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.getElementById('sticky-jsonp-loader')?.remove();
+                resolve(data);
+            };
 
-                                // Check if note contains any link
-                                const foundUrl = extractUrl(noteText);
-                                if (foundUrl) {
-                                    const actionsDiv = document.createElement('div');
-                                    actionsDiv.className = 'note-actions';
+            script.onerror = function(err) {
+                delete window[callbackName];
+                document.getElementById('sticky-jsonp-loader')?.remove();
+                reject(err);
+            };
 
-                                    // Open Link Button
-                                    const openBtn = document.createElement('a');
-                                    openBtn.className = 'note-btn primary';
-                                    openBtn.href = foundUrl;
-                                    openBtn.target = '_blank';
-                                    openBtn.rel = 'noopener noreferrer';
-                                    openBtn.innerHTML = '<i class="fa-solid fa-external-link-alt"></i> Open Link';
-                                    actionsDiv.appendChild(openBtn);
+            // Cache buster + callback
+            script.src = `${SCRIPT_URL}?callback=${callbackName}&_cb=${Date.now()}`;
+            document.body.appendChild(script);
+        });
+    }
 
-                                    // Copy Link Button
-                                    const copyBtn = document.createElement('button');
-                                    copyBtn.className = 'note-btn';
-                                    copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
-                                    copyBtn.onclick = () => {
-                                        navigator.clipboard.writeText(foundUrl).then(() => {
-                                            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-                                            setTimeout(() => {
-                                                copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
-                                            }, 2000);
-                                        }).catch(err => {
-                                            console.error('Failed to copy link:', err);
-                                        });
-                                    };
-                                    actionsDiv.appendChild(copyBtn);
+    async function fetchNotes() {
+        const notesList = document.getElementById('notesList');
+        if (!notesList) return;
 
-                                    item.appendChild(actionsDiv);
-                                }
+        try {
+            const data = await fetchNotesViaJsonp();
+            notesList.innerHTML = '';
 
-                                notesList.appendChild(item);
-                            }
-                        });
-                    }
-                    if (notesList.children.length === 0) {
-                        notesList.innerHTML = '<div class="note-item" style="color: var(--text-muted); border-left-color: var(--text-muted);"><div class="note-content-text">No live updates available right now.</div></div>';
-                    }
-                })
-                .catch(err => {
-                    console.error('Error fetching notes:', err);
-                    notesList.innerHTML = '<div class="note-item" style="color: #ef4444; border-left-color: #ef4444;"><div class="note-content-text">Failed to sync live updates from spreadsheet.</div></div>';
-                });
-        }
+            let noteArray = [];
 
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchNotes();
-            // Automatically poll for live updates every 15 seconds
-            setInterval(fetchNotes, 15000);
-
-            const userRole = localStorage.getItem('role') || "1";
-            const rawBooks = localStorage.getItem('books') || "";
-            
-            const isAdmin = userRole === "2" || userRole.toLowerCase() === "admin";
-
-            const allowedBooks = rawBooks
-                .toLowerCase()
-                .split(',')
-                .map(b => b.trim().replace(/['"]+/g, ''))
-                .filter(b => b.length > 0);
-
-            const bookCards = document.querySelectorAll('.book-card');
-            const searchInput = document.getElementById('bookSearchInput');
-
-            function filterBooks() {
-                const query = searchInput.value.toLowerCase().trim();
-                let visibleCount = 0;
-
-                bookCards.forEach(card => {
-                    const bookFileName = card.getAttribute('data-book').toLowerCase().trim();
-                    const title = card.querySelector('h3').textContent.toLowerCase();
-                    const description = card.querySelector('.description').textContent.toLowerCase();
-                    
-                    const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
-                    const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
-
-                    if (isAllowed && matchesSearch) {
-                        card.style.display = "flex";
-                        visibleCount++;
-                    } else {
-                        card.style.display = "none";
-                    }
-                });
-
-                let fallbackMsg = document.getElementById('no-books-msg');
-                const grid = document.getElementById('bookGrid');
-
-                if (visibleCount === 0) {
-                    if (!fallbackMsg) {
-                        fallbackMsg = document.createElement('div');
-                        fallbackMsg.id = 'no-books-msg';
-                        fallbackMsg.style.gridColumn = '1 / -1';
-                        fallbackMsg.style.textAlign = 'center';
-                        fallbackMsg.style.padding = '40px';
-                        fallbackMsg.style.color = 'var(--text-muted)';
-                        grid.appendChild(fallbackMsg);
-                    }
-                    if (allowedBooks.length === 0 && !isAdmin) {
-                        fallbackMsg.innerHTML = `
-                            <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
-                            <p>No lessons assigned to your account yet.</p>
-                        `;
-                    } else {
-                        fallbackMsg.innerHTML = `
-                            <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 10px;"></i>
-                            <p>No lessons found matching "${searchInput.value}".</p>
-                        `;
-                    }
-                } else if (fallbackMsg) {
-                    fallbackMsg.remove();
-                }
+            // Standardize extracted notes content regardless of data format
+            if (data && data.note !== undefined) {
+                noteArray = [data.note];
+            } else if (data && data.notes && Array.isArray(data.notes)) {
+                noteArray = data.notes;
+            } else if (typeof data === 'string') {
+                noteArray = [data];
             }
 
+            if (noteArray.length > 0) {
+                noteArray.forEach(rawNote => {
+                    if (rawNote && String(rawNote).trim() !== '') {
+                        let noteText = String(rawNote);
+
+                        // Safety check: parse nested JSON if old format exists
+                        try {
+                            const parsed = JSON.parse(noteText);
+                            if (parsed.note) noteText = parsed.note;
+                            if (parsed.notes && parsed.notes[0]) noteText = parsed.notes[0];
+                        } catch (e) {
+                            // Text is clean standard text
+                        }
+
+                        const item = document.createElement('div');
+                        item.className = 'note-item';
+
+                        // Text container
+                        const textSpan = document.createElement('div');
+                        textSpan.className = 'note-content-text';
+                        textSpan.style.whiteSpace = 'pre-wrap'; // Preserves line breaks typed by teacher
+                        textSpan.textContent = noteText;
+                        item.appendChild(textSpan);
+
+                        // Link Detector
+                        const foundUrl = extractUrl(noteText);
+                        if (foundUrl) {
+                            const actionsDiv = document.createElement('div');
+                            actionsDiv.className = 'note-actions';
+
+                            // Open Link Button
+                            const openBtn = document.createElement('a');
+                            openBtn.className = 'note-btn primary';
+                            openBtn.href = foundUrl;
+                            openBtn.target = '_blank';
+                            openBtn.rel = 'noopener noreferrer';
+                            openBtn.innerHTML = '<i class="fa-solid fa-external-link-alt"></i> Open Link';
+                            actionsDiv.appendChild(openBtn);
+
+                            // Copy Link Button
+                            const copyBtn = document.createElement('button');
+                            copyBtn.className = 'note-btn';
+                            copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
+                            copyBtn.onclick = () => {
+                                navigator.clipboard.writeText(foundUrl).then(() => {
+                                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                                    setTimeout(() => {
+                                        copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
+                                    }, 2000);
+                                }).catch(err => {
+                                    console.error('Failed to copy link:', err);
+                                });
+                            };
+                            actionsDiv.appendChild(copyBtn);
+
+                            item.appendChild(actionsDiv);
+                        }
+
+                        notesList.appendChild(item);
+                    }
+                });
+            }
+
+            if (notesList.children.length === 0) {
+                notesList.innerHTML = '<div class="note-item" style="color: var(--text-muted, #6b7280); border-left-color: var(--text-muted, #6b7280);"><div class="note-content-text">No live updates available right now.</div></div>';
+            }
+        } catch (err) {
+            console.error('Error fetching notes via JSONP:', err);
+            notesList.innerHTML = '<div class="note-item" style="color: #ef4444; border-left-color: #ef4444;"><div class="note-content-text">Failed to sync live updates from spreadsheet.</div></div>';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchNotes();
+        // Automatically poll for live updates every 10 seconds
+        setInterval(fetchNotes, 10000);
+
+        const userRole = localStorage.getItem('role') || "1";
+        const rawBooks = localStorage.getItem('books') || "";
+        
+        const isAdmin = userRole === "2" || userRole.toLowerCase() === "admin";
+
+        const allowedBooks = rawBooks
+            .toLowerCase()
+            .split(',')
+            .map(b => b.trim().replace(/['"]+/g, ''))
+            .filter(b => b.length > 0);
+
+        const bookCards = document.querySelectorAll('.book-card');
+        const searchInput = document.getElementById('bookSearchInput');
+
+        function filterBooks() {
+            if (!searchInput) return;
+            const query = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            bookCards.forEach(card => {
+                const bookFileName = card.getAttribute('data-book')?.toLowerCase().trim() || "";
+                const title = card.querySelector('h3')?.textContent.toLowerCase() || "";
+                const description = card.querySelector('.description')?.textContent.toLowerCase() || "";
+                
+                const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
+                const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
+
+                if (isAllowed && matchesSearch) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            let fallbackMsg = document.getElementById('no-books-msg');
+            const grid = document.getElementById('bookGrid');
+
+            if (visibleCount === 0 && grid) {
+                if (!fallbackMsg) {
+                    fallbackMsg = document.createElement('div');
+                    fallbackMsg.id = 'no-books-msg';
+                    fallbackMsg.style.gridColumn = '1 / -1';
+                    fallbackMsg.style.textAlign = 'center';
+                    fallbackMsg.style.padding = '40px';
+                    fallbackMsg.style.color = 'var(--text-muted, #6b7280)';
+                    grid.appendChild(fallbackMsg);
+                }
+                if (allowedBooks.length === 0 && !isAdmin) {
+                    fallbackMsg.innerHTML = `
+                        <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
+                        <p>No lessons assigned to your account yet.</p>
+                    `;
+                } else {
+                    fallbackMsg.innerHTML = `
+                        <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 10px;"></i>
+                        <p>No lessons found matching "${searchInput.value}".</p>
+                    `;
+                }
+            } else if (fallbackMsg) {
+                fallbackMsg.remove();
+            }
+        }
+
+        if (searchInput) {
             searchInput.addEventListener('input', filterBooks);
-            filterBooks();
-        });
-    </script>
+        }
+        filterBooks();
+    });
+</script>
 </body>
 </html>

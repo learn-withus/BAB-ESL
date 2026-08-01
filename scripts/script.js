@@ -1,50 +1,50 @@
 // ================= 0. DYNAMIC CONFIGURATION =================
-const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSLCn5weZR17UsAOd4Z8W0FlRwSnKiuJe2xdgWkrZtnEHObEaVXNAEIfVajhWuSbUi3FFNaITrouxmJ/pub?single=true&output=csv";
+const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5Le80We_5fuOKOBssT2UoU6__He44rpgooYVsspXAgAaoFrJEyluqFt0n14XAswBUqUu6AGYZGROP/pub?output=csv";
 
 function getTargetUrl() {
     const pageName = window.location.pathname.split("/").pop();
-    let gid = "439461232"; // Default sheet (Home/General)
+    let gid = "588839342"; // Default sheet (Home/General)
     
     if (pageName === "work-life-balance.html") { 
-        gid = "2001320284"; 
+        gid = "1046478803"; 
     } else if (pageName === "workplace-ethics.html") { 
-        gid = "2072343238"; 
+        gid = "419566462"; 
     } else if (pageName === "restaurant.html") { 
-        gid = "1968398657"; 
+        gid = "2143243191"; 
     } else if (pageName === "sports-lesson.html") { 
-        gid = "1523259985"; 
+        gid = "701455683"; 
     }else if (pageName === "library.html") { 
-        gid = "793325724"; 
+        gid = "1501469941"; 
     }else if (pageName === "bus-stop.html") { 
-        gid = "2010016043"; 
+        gid = "854914477"; 
     }else if (pageName === "super-market.html") { 
-        gid = "1566605369"; 
+        gid = "194983758"; 
     }else if (pageName === "kitchen-cooking.html") { 
-        gid = "940942358"; 
+        gid = "623093054"; 
     }else if (pageName === "park.html") { 
-        gid = "880505373"; 
+        gid = "554789066"; 
     }else if (pageName === "museums.html") { 
-        gid = "131366028"; 
+        gid = "2014280738"; 
     }else if (pageName === "school-life.html") { 
-        gid = "1750677535"; 
+        gid = "397161364"; 
     }else if (pageName === "hospital-healthcare.html") { 
-        gid = "124706539"; 
+        gid = "430706715"; 
     }else if (pageName === "hotels-airports.html") { 
-        gid = "1190919462"; 
+        gid = "640249755"; 
     }else if (pageName === "commuting-directions.html") { 
-        gid = "1576104761"; 
+        gid = "1276818449"; 
     }else if (pageName === "cafe.html") { 
-        gid = "273304741"; 
+        gid = "1707849456"; 
     }else if (pageName === "driving.html") { 
-        gid = "1605130673"; 
+        gid = "722787312"; 
     }else if (pageName === "managing-busy-schedule.html") { 
-        gid = "765833607"; 
+        gid = "316995005"; 
     }else if (pageName === "zoo.html") { 
-        gid = "1525942912"; 
+        gid = "2026705033"; 
     }else if (pageName === "drugstore.html") { 
-        gid = "841754616"; 
+        gid = "618954762"; 
     }else if (pageName === "workplace-ethics-v2.html") { 
-        gid = "105353041"; 
+        gid = "305843140"; 
     }
     
     
@@ -551,7 +551,7 @@ function resetSection(sIdx) {
 
 
 // ================= 6. TRUE REAL-TIME CRUD ENGINE =================
-const NOTES_API_URL = "https://script.google.com/macros/s/AKfycbwhn8Y4LozU2a8Kd-mPpBb_bQ6k3cQwtzdZ-5UhDVn6Xl66sXWeFldF65iNC1H_ek_H/exec";
+const NOTES_API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
 const noteArea = document.getElementById('sticky-notes');
 const saveStatus = document.getElementById('save-status');
 

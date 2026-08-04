@@ -1,604 +1,522 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bab ESL Pro - Teacher Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --sidebar-width: 260px;
-            --sidebar-bg: #1e293b;
-            --border: #e2e8f0;
-        }
+    <title>ESL Pro Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    .modal-box{
+        margin-top: -10%;
+    }
+    th{
+        text-align: center;
+    }
+    td{
+       text-align: center; 
+    }
+    :root {
+        --primary: #2563eb;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --sidebar-width: 260px;
+        --sidebar-bg: #1e293b;
+        --border: #e2e8f0;
+    }
 
-        /* --- DARK MODE THEME --- */
-        body.dark-mode {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --sidebar-bg: #020617;
-            --border: #334155;
-        }
+    /* --- DARK MODE THEME --- */
+    body.dark-mode {
+        --bg: #0f172a;
+        --card-bg: #1e293b;
+        --text-main: #f1f5f9;
+        --text-muted: #94a3b8;
+        --sidebar-bg: #020617;
+        --border: #334155;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
 
-        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+    body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease, background 0.3s ease; }
+    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease, background 0.3s ease; }
 
-        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } }
+    @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } }
 
-        .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
-        .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .side-link:hover, .side-link.active { background: #334155; color: white; }
+    .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
+    .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+    .side-link:hover, .side-link.active { background: #334155; color: white; }
 
-        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; min-width: 0; }
-        @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+    .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; min-width: 0; }
+    @media (max-width: 1024px) { .main-content { margin-left: 0; } }
 
-        .top-nav { background: var(--card-bg); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
-        .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
-        @media (max-width: 1024px) { .menu-toggle { display: block; } }
+    .top-nav { background: var(--card-bg); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
+    .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
+    @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
-        .dashboard-grid { padding: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); overflow: hidden; }
+    /* --- DASHBOARD GRID --- */
+    .dashboard-grid { 
+        padding: 24px; 
+        display: grid; 
+        grid-template-columns: repeat(12, 1fr); 
+        gap: 20px; 
+        max-width: 1600px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    
+    .card { 
+        background: var(--card-bg); 
+        border-radius: 16px; 
+        padding: 24px; 
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03); 
+        border: 1px solid var(--border); 
+        overflow: hidden; 
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
-        /* Full Width Welcome Banner with Embedded Clock */
-        .welcome-card { 
-            grid-column: 1 / -1; 
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
-            color: white; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .welcome-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: pulseGlow 6s ease-in-out infinite;
-            pointer-events: none;
-        }
+    /* Full Width Welcome Banner */
+    .welcome-card { 
+        grid-column: span 12; 
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
+        color: white; 
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 20px;
+        position: relative;
+        overflow: hidden;
+        padding: 28px 32px;
+        border: none;
+    }
 
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
+    .welcome-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 1;
+        gap: 6px;
+        flex-shrink: 0;
+    }
 
-        .welcome-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 1;
-        }
+    .welcome-right-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        z-index: 1;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+    }
+    
+    .banner-clock-widget {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 16px;
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+    }
 
-        .welcome-right-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            z-index: 1;
-        }
-        
-        /* Integrated Clock Widget inside Welcome Box */
-        .banner-clock-widget {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .analog-clock-mini {
+        width: 34px;
+        height: 34px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .analog-clock-mini::before {
+        content: '';
+        position: absolute;
+        bottom: 50%;
+        left: calc(50% - 1px);
+        width: 2px;
+        height: 9px;
+        background: #ffffff;
+        border-radius: 2px;
+        transform-origin: bottom center;
+    }
+    .analog-clock-mini::after {
+        content: '';
+        position: absolute;
+        bottom: 50%;
+        left: calc(50% - 1px);
+        width: 1.5px;
+        height: 12px;
+        background: #93c5fd;
+        border-radius: 2px;
+        transform-origin: bottom center;
+    }
+    .clock-center-dot {
+        width: 4px;
+        height: 4px;
+        background: #ffffff;
+        border-radius: 50%;
+        z-index: 2;
+    }
+    
+    .brand-logo-container {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(10px);
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        flex-shrink: 0;
+    }
 
-        .analog-clock-mini {
-            width: 34px;
-            height: 34px;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .analog-clock-mini::before {
-            content: '';
-            position: absolute;
-            bottom: 50%;
-            left: calc(50% - 1px);
-            width: 2px;
-            height: 9px;
-            background: #ffffff;
-            border-radius: 2px;
-            transform-origin: bottom center;
-        }
-        .analog-clock-mini::after {
-            content: '';
-            position: absolute;
-            bottom: 50%;
-            left: calc(50% - 1px);
-            width: 1.5px;
-            height: 12px;
-            background: #93c5fd;
-            border-radius: 2px;
-            transform-origin: bottom center;
-        }
-        .clock-center-dot {
-            width: 4px;
-            height: 4px;
-            background: #ffffff;
-            border-radius: 50%;
-            z-index: 2;
-        }
-        
-        /* Larger Brand Logo Container */
-        .brand-logo-container {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            flex-shrink: 0;
-            animation: floatLogo 4s ease-in-out infinite;
-        }
+    .brand-logo-container img {
+        height: 38px;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
 
-        @keyframes floatLogo {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
+    .class-meet-card {
+        grid-column: span 8;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
 
-        .brand-logo-container img {
-            height: 44px;
-            width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-        }
+    .right-sidebar-stack {
+        grid-column: span 4;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-        /* --- PROFESSIONAL REDESIGNED STAT CARD --- */
-        .stat-card { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            gap: 16px;
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(220, 252, 231, 0.08) 100%);
-            position: relative;
-            overflow: hidden;
-        }
+    .stat-card-mini {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px;
+        background: linear-gradient(135deg, var(--card-bg) 0%, rgba(220, 252, 231, 0.05) 100%);
+        position: relative;
+        overflow: hidden;
+    }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: #16a34a;
-        }
+    .stat-card-mini::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: #16a34a;
+    }
 
-        .stat-card-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-width: 0;
-        }
+    .stat-card-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        flex: 1;
+    }
 
-        .stat-card-title {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-        }
+    .stat-card-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        margin-bottom: 2px;
+    }
 
-        .stat-card-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-            white-space: nowrap;
-        }
+    .stat-card-value {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+        white-space: nowrap;
+    }
 
-        .stat-card-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: #16a34a;
-            background: #dcfce7;
-            padding: 2px 8px;
-            border-radius: 20px;
-            margin-top: 4px;
-            width: fit-content;
-        }
-        body.dark-mode .stat-card-badge {
-            background: rgba(22, 163, 74, 0.2);
-            color: #4ade80;
-        }
+    .stat-card-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #16a34a;
+        background: #dcfce7;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-top: 4px;
+        width: fit-content;
+    }
+    body.dark-mode .stat-card-badge {
+        background: rgba(22, 163, 74, 0.2);
+        color: #4ade80;
+    }
 
-        .stat-card-icon {
-            width: 48px;
-            height: 48px;
-            background: #dcfce7;
-            color: #16a34a;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
-        }
-        body.dark-mode .stat-card-icon {
-            background: rgba(22, 163, 74, 0.2);
-            color: #4ade80;
-        }
-        
-        /* Original 3-Column Grid Layout Restored */
-        .class-meet-card {
-            grid-column: span 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .stat-card-icon {
+        width: 48px;
+        height: 48px;
+        background: #dcfce7;
+        color: #16a34a;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.12);
+    }
+    body.dark-mode .stat-card-icon {
+        background: rgba(22, 163, 74, 0.2);
+        color: #4ade80;
+    }
 
-        .sticky-card { grid-column: span 1; grid-row: span 2; }
+    .sticky-card-mini {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
 
-        .icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-        
-        /* --- COMPACT & PROFESSIONAL ACTION BUTTONS --- */
-        .dashboard-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 7px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            width: 100%;
-        }
+    .sticky-card-mini textarea { 
+        width: 100%; 
+        height: 140px; 
+        border: 1px solid var(--border); 
+        background: #fffdec; 
+        padding: 12px; 
+        border-radius: 10px; 
+        resize: none; 
+        color: #1e293b; 
+        font-size: 13.5px; 
+        outline: none;
+    }
+    body.dark-mode .sticky-card-mini textarea { background: #1e293b; color: #f1f5f9; }
 
-        .dashboard-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-        }
+    .sessions-list-card {
+        grid-column: span 12;
+    }
 
-        .dashboard-btn:active {
-            transform: translateY(0);
-        }
+    .dashboard-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
 
-        /* Meet Link Button Theme */
-        .btn-meet {
-            background: #eff6ff;
-            color: #2563eb;
-            border: 1px solid #bfdbfe;
-        }
-        body.dark-mode .btn-meet {
-            background: rgba(37, 99, 235, 0.15);
-            color: #60a5fa;
-            border-color: rgba(37, 99, 235, 0.3);
-        }
-        .btn-meet:hover {
-            background: #dbeafe;
-        }
-        body.dark-mode .btn-meet:hover {
-            background: rgba(37, 99, 235, 0.25);
-        }
+    .dashboard-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
 
-        /* Complete Class Button Theme */
-        .btn-complete {
-            background: #f0fdf4;
-            color: #16a34a;
-            border: 1px solid #bbf7d0;
-        }
-        body.dark-mode .btn-complete {
-            background: rgba(22, 163, 74, 0.15);
-            color: #4ade80;
-            border-color: rgba(22, 163, 74, 0.3);
-        }
-        .btn-complete:hover {
-            background: #dcfce7;
-        }
-        body.dark-mode .btn-complete:hover {
-            background: rgba(22, 163, 74, 0.25);
-        }
+    .clock-text-container {
+        display: flex;
+        flex-direction: column;
+        min-width: 210px;
+    }
 
-        /* Strict Monospace, Tabular Alignment & Fixed Sizing for Jitter-Free Display */
-        .clock-text-container {
-            display: flex;
-            flex-direction: column;
-            min-width: 210px;
-        }
+    #ph-date {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.85);
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+        margin-bottom: 2px;
+        font-family: monospace, 'Inter', sans-serif;
+    }
 
-        #ph-date {
-            font-size: 10px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.85);
-            letter-spacing: 0.4px;
-            white-space: nowrap;
-            margin-bottom: 2px;
-            font-family: monospace, 'Inter', sans-serif;
-            font-variant-numeric: tabular-nums;
-        }
+    #ph-time { 
+        font-size: 1.1rem; 
+        font-weight: 700; 
+        color: #ffffff; 
+        letter-spacing: -0.5px;
+        font-family: monospace, 'Inter', sans-serif;
+        white-space: nowrap;
+    }
 
-        #ph-time { 
-            font-size: 1.05rem; 
-            font-weight: 700; 
-            color: #ffffff; 
-            letter-spacing: -0.5px;
-            font-family: monospace, 'Inter', sans-serif;
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-        }
+    #ph-timezone {
+        font-size: 9px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        text-transform: uppercase;
+        white-space: nowrap;
+        margin-top: 1px;
+    }
 
-        #ph-timezone {
-            font-size: 9px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.85);
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            white-space: nowrap;
-            margin-top: 1px;
-        }
+    /* --- TOAST & MODAL STYLES --- */
+    #toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toast {
+        background: var(--card-bg);
+        color: var(--text-main);
+        padding: 12px 20px;
+        border-radius: 10px;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success i { color: #10b981; }
+    .toast.error i { color: #ef4444; }
 
-        .sticky-card textarea { width: 100%; height: 180px; border: none; background: #fffdec; padding: 12px; border-radius: 8px; resize: none; color: #1e293b; font-size: 14px; }
-        body.dark-mode .sticky-card textarea { background: #334155; color: #f1f5f9; }
+    .custom-modal {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+    .custom-modal.active { opacity: 1; pointer-events: auto; }
+    .modal-box {
+        background: var(--card-bg);
+        padding: 24px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        border: 1px solid var(--border);
+        text-align: center;
+    }
 
-        @media (max-width: 1100px) { 
-            .dashboard-grid { grid-template-columns: repeat(2, 1fr); } 
-            .class-meet-card { grid-column: span 1; }
-            .sticky-card { grid-column: span 2; grid-row: auto; } 
-        }
-        
-        @media (max-width: 768px) { 
-            .dashboard-grid { grid-template-columns: 1fr; padding: 12px; gap: 12px; } 
-            .class-meet-card { grid-column: span 1; }
-            .welcome-card { flex-direction: column; align-items: stretch; padding: 16px; } 
-            .welcome-right-section { width: 100%; flex-direction: column; align-items: stretch; gap: 12px; }
-            .brand-logo-container { width: 100%; justify-content: center; padding: 10px; }
-            .brand-logo-container img { height: 36px; }
-            .banner-clock-widget { justify-content: center; background: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 10px; }
-            .card { padding: 16px; }
-            .user-profile span { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
-        }
+    @media (max-width: 1200px) { 
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); } 
+        .welcome-card, .class-meet-card, .right-sidebar-stack, .sessions-list-card { grid-column: span 2; }
+    }
+    @media (max-width: 768px) { 
+        .dashboard-grid { grid-template-columns: 1fr; padding: 16px; gap: 16px; } 
+        .welcome-card { grid-column: span 1; flex-direction: column; align-items: stretch; padding: 20px; } 
+        .welcome-right-section { width: 100%; flex-direction: column; align-items: stretch; gap: 12px; }
+        .brand-logo-container { width: 100%; justify-content: center; }
+    }
 
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        .sidebar-overlay.active { display: block; }
-
-        /* --- MODERN TOAST NOTIFICATION SYSTEM --- */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .toast {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--card-bg);
-            color: var(--text-main);
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            font-size: 14px;
-            font-weight: 500;
-            pointer-events: auto;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-            max-width: 380px;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast.success { border-left: 4px solid #10b981; }
-        .toast.success i { color: #10b981; }
-
-        .toast.error { border-left: 4px solid #ef4444; }
-        .toast.error i { color: #ef4444; }
-
-        /* --- MODERN CUSTOM MODAL DIALOG (Shifted Upwards) --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 90px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.25s ease, visibility 0.25s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-card {
-            background: var(--card-bg);
-            color: var(--text-main);
-            width: 100%;
-            max-width: 420px;
-            border-radius: 20px;
-            padding: 28px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            transform: scale(0.95) translateY(-10px);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: center;
-        }
-
-        .modal-overlay.active .modal-card {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-icon-wrapper {
-            width: 56px;
-            height: 56px;
-            background: #dcfce7;
-            color: #16a34a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 18px auto;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .modal-desc {
-            font-size: 13.5px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s;
-        }
-
-        .modal-btn-cancel {
-            background: var(--border);
-            color: var(--text-main);
-        }
-
-        .modal-btn-cancel:hover {
-            opacity: 0.85;
-        }
-
-        .modal-btn-confirm {
-            background: #16a34a;
-            color: white;
-        }
-
-        .modal-btn-confirm:hover {
-            background: #15803d;
-        }
-    </style>
-</head>
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+    .sidebar-overlay.active { display: block; }
+</style>
 <body>
 
-    <div class="sidebar-overlay" id="overlay"></div>
+<div class="sidebar-overlay" id="overlay"></div>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="logo">ESL PRO TOOL</div>
+    <div id="navbar-placeholder"></div>
+</aside>
 
-    <!-- Modern Friendly Modal Component -->
-    <div class="modal-overlay" id="confirm-modal">
-        <div class="modal-card">
-            <div class="modal-icon-wrapper">
-                <i class="fa-solid fa-circle-check"></i>
+<main class="main-content">
+    <header class="top-nav">
+        <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+        <div class="user-profile" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+            <span style="font-weight: 600; font-size: 13px;">Welcome <span id="username-display">User</span>!</span>
+            <i class="fa-solid fa-circle-user fa-xl"></i>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        <!-- Full Width Welcome Banner -->
+        <div class="card welcome-card">
+            <div class="welcome-content">
+                <h2 style="font-size: 22px; font-weight: 700;">Good Day! 👋</h2>
+                <p style="opacity: 0.9; margin-top: 4px; font-size: 13px;">Ready for your lessons today?</p>
             </div>
-            <div class="modal-title">Complete This Class?</div>
-            <div class="modal-desc">
-                Are you sure you want to mark this class as done? This will update your status to <strong>Completed</strong> and add <strong>+1</strong> to your completed lessons.
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn modal-btn-cancel" id="modal-cancel-btn">Cancel</button>
-                <button class="modal-btn modal-btn-confirm" id="modal-confirm-btn">Yes, Complete</button>
+            <div class="welcome-right-section">
+                <div class="banner-clock-widget">
+                    <div class="analog-clock-mini" id="mini-clock">
+                        <div class="clock-center-dot"></div>
+                    </div>
+                    <div class="clock-text-container">
+                        <div id="ph-date">LOADING...</div>
+                        <div id="ph-time">00:00:00 AM</div>
+                        <div id="ph-timezone">Philippine Standard Time</div>
+                    </div>
+                </div>
+                <div class="brand-logo-container">
+                    <img src="images/bab.png" alt="BAB ESL Pro Logo">
+                </div>
             </div>
         </div>
-    </div>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">ESL PRO TOOL</div>
-        <div id="navbar-placeholder"></div>
-    </aside>
-
-    <main class="main-content">
-        <header class="top-nav">
-            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
-            <div class="user-profile" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 13px;">Welcome <span id="username-display">User</span>&nbsp;!</span>
-                <i class="fa-solid fa-circle-user fa-xl"></i>
-            </div>
-        </header>
-
-        <div class="dashboard-grid">
-            <!-- Full Width Welcome Banner with Embedded Live Clock & Logo -->
-            <div class="card welcome-card">
-                <div class="welcome-content">
-                    <h2 style="font-size: 22px; font-weight: 700;">Good Day! 👋</h2>
-                    <p style="opacity: 0.9; margin-top: 4px; font-size: 13px;">Ready for your lessons today?</p>
-                </div>
-                <div class="welcome-right-section">
-                    <div class="banner-clock-widget">
-                        <div class="analog-clock-mini" id="mini-clock">
-                            <div class="clock-center-dot"></div>
-                        </div>
-                        <div class="clock-text-container">
-                            <div id="ph-date">LOADING...</div>
-                            <div id="ph-time">00:00:00 AM</div>
-                            <div id="ph-timezone">Philippine Standard Time</div>
-                        </div>
+        <!-- LEFT SIDE: Schedule Class Session Form -->
+        <div class="card class-meet-card">
+            <h3 style="font-size: 15px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-calendar-plus" style="color: var(--primary);"></i> Generate Google Meet Class Link
+            </h3>
+            <form id="schedule-session-form" style="display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: space-between;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
+                    <div>
+                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Student</label>
+                        <select id="session-student-select" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required>
+                            <option value="">Select Student...</option>
+                            <option value="toshi">toshi</option>
+                            <option value="masa">masa</option>
+                        </select>
                     </div>
-                    <div class="brand-logo-container">
-                        <img src="images/bab.png" alt="BAB ESL Pro Logo">
+                    <div>
+                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Date</label>
+                        <input type="date" id="session-date" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required />
                     </div>
                 </div>
-            </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
+                    <div>
+                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Lesson Material / Custom Title</label>
+                        <input type="text" id="session-lesson-input" list="lesson-suggestions" placeholder="Select or type custom lesson..." style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required />
+                        <datalist id="lesson-suggestions"></datalist>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Time</label>
+                        <input type="time" id="session-time" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required />
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center; margin-top: 8px;">
+                    <button type="submit" id="btn-create-session" class="dashboard-btn" style="background: var(--primary); color: white; border: none; padding: 11px 26px; border-radius: 8px; font-weight: 600; cursor: pointer; width: auto;">
+                        <i class="fa-solid fa-paper-plane" id="btn-icon"></i> <span id="btn-text">Generate Link</span>
+                    </button>
+                </div>
+            </form>
+        </div>
 
-            <!-- Redesigned Completed Lessons Card -->
-            <div class="card stat-card">
+        <!-- RIGHT SIDE: Stack Container -->
+        <div class="right-sidebar-stack">
+            <!-- Completed Lessons Card -->
+            <div class="card stat-card-mini">
                 <div class="stat-card-content">
                     <div class="stat-card-title">Completed Lessons</div>
                     <div id="completed-lessons-text" class="stat-card-value">0 Lessons</div>
@@ -610,343 +528,442 @@
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
             </div>
+        </div>
 
-            <!-- Class Status Card with Side-by-Side Status and Meet Link -->
-            <div class="card class-meet-card">
-                <div>
-                    <!-- Header Row with Class Status on Left and Meet Link Box on Right -->
-                    <div style="display: flex; align-items: stretch; justify-content: space-between; gap: 12px; margin-bottom: 12px;">
-                        
-                        <!-- Left Side: Class Status Info -->
-                        <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
-                            <div class="icon-box" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-video"></i></div>
-                            <div>
-                                <div style="font-size: 11px; color: var(--text-muted);">Class Status</div>
-                                <div id="class-status-text" style="font-size: 14px; font-weight: 700;">No link yet</div>
-                            </div>
-                        </div>
-
-                        <!-- Right Side: Google Meet Link Panel -->
-                        <div style="flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
-                            <div style="font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 2px;">Google Meet Link</div>
-                            <div id="meet-link-display" style="font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">
-                                <span style="color: var(--text-muted); font-weight: 400; font-size: 11.5px;">No link generated</span>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div id="complete-action-container" style="width: 100%;">
-                    <!-- Dynamic Action Buttons -->
-                </div>
-            </div>
-
-            <!-- Notes Card -->
-            <div class="card sticky-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h3 style="font-size: 14px;"><i class="fa-solid fa-thumbtack"></i> Notes</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <button id="save-note" title="Save to Cloud" style="border:none; background:none; color: var(--primary); cursor:pointer; padding: 4px;"><i class="fa-solid fa-cloud-arrow-up"></i></button>
-                        <button id="delete-note" title="Clear Note" style="border:none; background:none; color: #f87171; cursor:pointer; padding: 4px;"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                </div>
-                <textarea id="sticky-notes" placeholder="Loading your notes..."></textarea>
-                <div id="save-status" style="font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right;">Connecting...</div>
+        <!-- UPCOMING SCHEDULED SESSIONS TABLE -->
+        <div class="card sessions-list-card">
+            <h3 style="font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Scheduled Class Sessions
+            </h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); text-align: left; color: var(--text-muted);">
+                            <th style="padding: 10px;">Student</th>
+                            <th style="padding: 10px;">Lesson</th>
+                            <th style="padding: 10px;">Date</th>
+                            <th style="padding: 10px;">Time</th>
+                            <th style="padding: 10px;">Meet Link</th>
+                            <th style="padding: 10px; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessions-table-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 16px; color: var(--text-muted);">Loading scheduled sessions...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <script src="scripts/nav.js"></script>
-    <script src="scripts/script.js"></script>
-    
-    <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const API_URL = "https://script.google.com/macros/s/AKfycbzlcQO5V2dM7pMqHBdPos8qoSMlJt4HnolFVhXBiWD-V-uUcWLxfJAexGnbPblXBGdo/exec";
+<!-- TOAST & MODAL CONTAINERS -->
+<div id="toast-container"></div>
 
-        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
-        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+<!-- Confirmation Modal -->
+<div class="custom-modal" id="confirm-modal">
+    <div class="modal-box">
+        <h3 style="font-size: 16px; margin-bottom: 8px;">Mark Class as Complete?</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">This will increment your completed lessons count and remove this session.</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="modal-cancel-btn" class="dashboard-btn" style="background: var(--border); color: var(--text-main);">Cancel</button>
+            <button id="modal-confirm-btn" class="dashboard-btn" style="background: #10b981; color: white;">Confirm Done</button>
+        </div>
+    </div>
+</div>
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const nameSpan = document.querySelector('.user-profile span span');
-            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
-            if (nameSpan && storedName) {
-                nameSpan.textContent = "Teacher " + storedName;
-            }
+<!-- View / Copy Link Modal -->
+<div class="custom-modal" id="link-modal">
+    <div class="modal-box" style="max-width: 440px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 16px; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-link" style="color: var(--primary);"></i> Meeting Link</h3>
+            <button id="close-link-modal" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">You can copy the meeting URL below or open it directly.</p>
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="modal-link-input" readonly style="flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12.5px; background: var(--bg); color: var(--text-main); outline: none;" />
+            <button id="copy-link-btn" class="dashboard-btn" style="background: var(--primary); color: white; padding: 9px 14px;">
+                <i class="fa-solid fa-copy"></i> Copy
+            </button>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <a id="modal-open-link-btn" href="#" target="_blank" class="dashboard-btn" style="background: #10b981; color: white; text-decoration: none;">
+                <i class="fa-solid fa-external-link-alt"></i> Open in New Tab
+            </a>
+        </div>
+    </div>
+</div>
 
-            if (storedName) {
-                fetchAccountDetails(storedName);
-                fetchStickyNotes(storedName);
-            } else {
-                document.getElementById('sticky-notes').placeholder = "Please log in to use cloud notes.";
-                document.getElementById('save-status').textContent = "Not logged in";
-            }
+<script src="scripts/nav.js"></script>
+<script src="scripts/script.js"></script>
+<script>
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
 
-            // Start live clock update loop
-            updateClock();
-            setInterval(updateClock, 1000);
-            
-            // Setup Event Listeners for Cloud Notes
-            const saveBtn = document.getElementById('save-note');
-            const deleteBtn = document.getElementById('delete-note');
+    menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
-            if (saveBtn) {
-                saveBtn.addEventListener('click', () => {
-                    saveStickyNotes();
+    function formatLessonTitle(lessonStr) {
+        if (!lessonStr) return '';
+        return lessonStr
+            .replace(/\.[^/.]+$/, '')            
+            .replace(/[-_]/g, ' ')              
+            .toLowerCase()                       
+            .replace(/\b\w/g, char => char.toUpperCase()); 
+    }
+
+    function formatFriendlyDate(dateStr) {
+        if (!dateStr) return '';
+        const parsedDate = new Date(dateStr);
+        if (isNaN(parsedDate)) return dateStr;
+        return parsedDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
+
+    function formatFriendlyTime(timeStr) {
+        if (!timeStr) return '';
+        const parts = timeStr.split(':');
+        if (parts.length < 2) return timeStr;
+        let hours = parseInt(parts[0], 10);
+        const minutes = parts[1];
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const nameSpan = document.querySelector('.user-profile span span');
+        let storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
+        
+        if (storedName.toLowerCase().startsWith('teacher ')) {
+            storedName = storedName.substring(8).trim();
+        }
+
+        if (nameSpan && storedName) {
+            nameSpan.textContent = "Teacher " + storedName;
+        }
+
+        if (storedName) {
+            initDashboardData(storedName);
+            fetchScheduledSessions();
+        } else {
+            document.getElementById('sessions-table-body').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 16px; color: var(--text-muted);">Please log in as a teacher to view your schedules.</td></tr>';
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        const sessionForm = document.getElementById('schedule-session-form');
+        if (sessionForm) {
+            sessionForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                scheduleNewSession(storedName);
+            });
+        }
+
+        const copyBtn = document.getElementById('copy-link-btn');
+        const linkInput = document.getElementById('modal-link-input');
+        if (copyBtn && linkInput) {
+            copyBtn.addEventListener('click', () => {
+                linkInput.select();
+                navigator.clipboard.writeText(linkInput.value).then(() => {
+                    showToast("Link copied to clipboard!", "success");
+                }).catch(() => {
+                    showToast("Failed to copy link", "error");
                 });
-            }
+            });
+        }
 
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', () => {
-                    clearStickyNotes();
-                });
-            }
+        const closeLinkModalBtn = document.getElementById('close-link-modal');
+        const linkModal = document.getElementById('link-modal');
+        if (closeLinkModalBtn && linkModal) {
+            closeLinkModalBtn.addEventListener('click', () => linkModal.classList.remove('active'));
+            linkModal.addEventListener('click', (e) => { if (e.target === linkModal) linkModal.classList.remove('active'); });
+        }
+    });
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+        toast.innerHTML = `<i class="fa-solid ${iconClass} fa-lg"></i><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
+    function openLinkModal(url) {
+        const modal = document.getElementById('link-modal');
+        const input = document.getElementById('modal-link-input');
+        const openBtn = document.getElementById('modal-open-link-btn');
+        if (!modal || !input || !openBtn) return;
+
+        input.value = url;
+        openBtn.href = url;
+        modal.classList.add('active');
+    }
+
+    function openConfirmModal(onConfirm) {
+        const modal = document.getElementById('confirm-modal');
+        const confirmBtn = document.getElementById('modal-confirm-btn');
+        const cancelBtn = document.getElementById('modal-cancel-btn');
+        if (!modal) return;
+
+        modal.classList.add('active');
+
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            if (typeof onConfirm === 'function') onConfirm();
         });
 
-        // Modern Toast Notification Function
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-            toast.innerHTML = `
-                <i class="fa-solid ${iconClass} fa-lg"></i>
-                <span>${message}</span>
-            `;
-            
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10);
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 3500);
+        newCancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const optionsTime = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const optionsDate = { timeZone: 'Asia/Manila', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+        
+        const timeString = new Intl.DateTimeFormat('en-US', optionsTime).format(now);
+        const dateString = new Intl.DateTimeFormat('en-US', optionsDate).format(now);
+
+        const timeEl = document.getElementById('ph-time');
+        const dateEl = document.getElementById('ph-date');
+
+        if (timeEl && timeEl.textContent !== timeString) timeEl.textContent = timeString;
+        if (dateEl && dateEl.textContent !== dateString) dateEl.textContent = dateString;
+
+        const manilaTimeStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(now);
+        const [h, m, s] = manilaTimeStr.split(':').map(Number);
+
+        const minuteDeg = (m * 6) + (s * 0.1);
+        const hourDeg = ((h % 12) * 30) + (m * 0.5);
+
+        let clockStyleTag = document.getElementById('live-clock-style');
+        if (!clockStyleTag) {
+            clockStyleTag = document.createElement('style');
+            clockStyleTag.id = 'live-clock-style';
+            document.head.appendChild(clockStyleTag);
         }
 
-        // Custom Modal Confirm Handler
-        function openConfirmModal(onConfirm) {
-            const modal = document.getElementById('confirm-modal');
-            const confirmBtn = document.getElementById('modal-confirm-btn');
-            const cancelBtn = document.getElementById('modal-cancel-btn');
+        clockStyleTag.innerHTML = `
+            .analog-clock-mini::before { transform: rotate(${hourDeg}deg); }
+            .analog-clock-mini::after { transform: rotate(${minuteDeg}deg); }
+        `;
+    }
 
-            modal.classList.add('active');
-
-            // Clean up previous event listeners by cloning nodes
-            const newConfirmBtn = confirmBtn.cloneNode(true);
-            const newCancelBtn = cancelBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-
-            newConfirmBtn.addEventListener('click', () => {
-                modal.classList.remove('active');
-                if (typeof onConfirm === 'function') onConfirm();
-            });
-
-            newCancelBtn.addEventListener('click', () => {
-                modal.classList.remove('active');
-            });
-
-            // Close when clicking outside the card
-            modal.onclick = (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                }
-            };
-        }
-
-        function updateClock() {
-            const now = new Date();
-
-            const optionsTime = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const optionsDate = { timeZone: 'Asia/Manila', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-            
-            const timeString = new Intl.DateTimeFormat('en-US', optionsTime).format(now);
-            const dateString = new Intl.DateTimeFormat('en-US', optionsDate).format(now);
-
-            const timeEl = document.getElementById('ph-time');
-            const dateEl = document.getElementById('ph-date');
-
-            if (timeEl && timeEl.textContent !== timeString) timeEl.textContent = timeString;
-            if (dateEl && dateEl.textContent !== dateString) dateEl.textContent = dateString;
-
-            const manilaTimeStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(now);
-            const [h, m, s] = manilaTimeStr.split(':').map(Number);
-
-            const minuteDeg = (m * 6) + (s * 0.1);
-            const hourDeg = ((h % 12) * 30) + (m * 0.5);
-
-            let clockStyleTag = document.getElementById('live-clock-style');
-            if (!clockStyleTag) {
-                clockStyleTag = document.createElement('style');
-                clockStyleTag.id = 'live-clock-style';
-                document.head.appendChild(clockStyleTag);
-            }
-
-            clockStyleTag.innerHTML = `
-                .analog-clock-mini::before { transform: rotate(${hourDeg}deg); }
-                .analog-clock-mini::after { transform: rotate(${minuteDeg}deg); }
-            `;
-        }
-
-        function fetchAccountDetails(username) {
-            const callbackName = 'account_cb_' + Math.round(Math.random() * 1000000);
-
-            window[callbackName] = function(accounts) {
-                if (Array.isArray(accounts)) {
-                    const currentUser = accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
+    function initDashboardData(username) {
+        const cbName = 'init_cb_' + Math.round(Math.random() * 1000000);
+        window[cbName] = function(res) {
+            if (res && res.status === "success") {
+                if (Array.isArray(res.accounts)) {
+                    const currentUser = res.accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
                     if (currentUser) {
-                        const linkContainer = document.getElementById('meet-link-display');
-                        const actionContainer = document.getElementById('complete-action-container');
-                        const statusContainer = document.getElementById('class-status-text');
-                        const meetLink = currentUser.meetLink ? String(currentUser.meetLink).trim() : "";
-
-                        let rawStatus = currentUser.classStatus ? String(currentUser.classStatus).trim() : "";
-                        let statusText = rawStatus;
-                        
-                        // Map status codes/values cleanly
-                        if (rawStatus === "1" || rawStatus.toLowerCase() === "ongoing") {
-                            statusText = "Ongoing";
-                        } else if (rawStatus === "2" || rawStatus.toLowerCase() === "completed" || rawStatus.toLowerCase() === "done") {
-                            statusText = "Completed";
-                        } else if (!rawStatus || rawStatus.toLowerCase() === "no link yet") {
-                            statusText = "No link yet";
-                        }
-                        
-                        statusContainer.textContent = statusText;
-
-                        if (statusText === "Ongoing") {
-                            statusContainer.style.color = "#0284c7";
-                        } else if (statusText === "Completed") {
-                            statusContainer.style.color = "#16a34a";
-                        } else {
-                            statusContainer.style.color = "var(--text-muted)";
-                        }
-
-                        if (meetLink !== "" && meetLink !== "undefined") {
-                            linkContainer.innerHTML = `
-                                <a href="${meetLink}" target="_blank" style="color: var(--primary); text-decoration: underline; font-weight: 500;">
-                                    ${meetLink}
-                                </a>
-                            `;
-                            actionContainer.innerHTML = `
-                                <div style="display: flex; gap: 8px; width: 100%;">
-                                    <a href="${meetLink}" target="_blank" class="dashboard-btn btn-meet" style="flex: 1;">
-                                        <i class="fa-solid fa-video"></i> Join Meet
-                                    </a>
-                                    <button onclick="completeClass('${username}')" class="dashboard-btn btn-complete" style="flex: 1;">
-                                        <i class="fa-solid fa-circle-check"></i> Complete
-                                    </button>
-                                </div>
-                            `;
-                        } else {
-                            linkContainer.innerHTML = `<span style="color: var(--text-muted); font-weight: 400; font-size: 11.5px;">No link generated</span>`;
-                            actionContainer.innerHTML = ``;
-                        }
-
                         const lessonsContainer = document.getElementById('completed-lessons-text');
-                        if (currentUser.completedLessons !== undefined) {
+                        if (lessonsContainer && currentUser.completedLessons !== undefined) {
                             lessonsContainer.textContent = currentUser.completedLessons + " Lessons";
                         }
                     }
-                }
-                document.body.removeChild(script);
-                delete window[callbackName];
-            };
 
-            const script = document.createElement('script');
-            script.src = `${API_URL}?action=getAccounts&callback=${callbackName}`;
-            document.body.appendChild(script);
-        }
-
-        function completeClass(username) {
-            openConfirmModal(() => {
-                const callbackName = 'complete_cb_' + Math.round(Math.random() * 1000000);
-
-                window[callbackName] = function(response) {
-                    if (response && response.status === "success") {
-                        showToast("Class completed! Status set to Completed.", "success");
-                        fetchAccountDetails(username);
-                    } else {
-                        showToast("Failed to update: " + (response ? response.message : "Unknown error"), "error");
+                    const studentSelect = document.getElementById('session-student-select');
+                    if (studentSelect) {
+                        studentSelect.innerHTML = '<option value="">Select Student...</option>';
+                        res.accounts.forEach(acc => {
+                            if (String(acc.role) === "1" || String(acc.role).toLowerCase() === "student") {
+                                const opt = document.createElement('option');
+                                opt.value = acc.username;
+                                opt.textContent = acc.username;
+                                studentSelect.appendChild(opt);
+                            }
+                        });
                     }
-                    document.body.removeChild(script);
-                    delete window[callbackName];
-                };
-
-                const script = document.createElement('script');
-                script.src = `${API_URL}?action=completeClass&username=${encodeURIComponent(username)}&callback=${callbackName}`;
-                document.body.appendChild(script);
-            });
-        }
-
-        function fetchStickyNotes(username) {
-            const statusEl = document.getElementById('save-status');
-            const textarea = document.getElementById('sticky-notes');
-            statusEl.textContent = "Loading notes...";
-
-            const callbackName = 'notes_get_cb_' + Math.round(Math.random() * 1000000);
-
-            window[callbackName] = function(response) {
-                if (response && response.status === "success") {
-                    textarea.value = response.note || "";
-                    statusEl.textContent = "Synced with cloud";
-                } else {
-                    statusEl.textContent = "Could not load notes";
                 }
-                document.body.removeChild(script);
-                delete window[callbackName];
-            };
 
-            const script = document.createElement('script');
-            script.src = `${API_URL}?action=getNote&username=${encodeURIComponent(username)}&callback=${callbackName}`;
-            document.body.appendChild(script);
-        }
-
-        function saveStickyNotes() {
-            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
-            if (!storedName) {
-                showToast("Please log in first!", "error");
-                return;
+                if (Array.isArray(res.lessons)) {
+                    const lessonDatalist = document.getElementById('lesson-suggestions');
+                    if (lessonDatalist) {
+                        lessonDatalist.innerHTML = '';
+                        res.lessons.forEach(lesson => {
+                            const opt = document.createElement('option');
+                            opt.value = formatLessonTitle(lesson);
+                            lessonDatalist.appendChild(opt);
+                        });
+                    }
+                }
             }
+            if (script.parentNode) document.body.removeChild(script);
+            delete window[cbName];
+        };
 
-            const statusEl = document.getElementById('save-status');
-            const textarea = document.getElementById('sticky-notes');
-            const noteContent = textarea.value;
-            statusEl.textContent = "Saving to cloud...";
+        const script = document.createElement('script');
+        script.src = `${API_URL}?action=initDashboard&callback=${cbName}`;
+        document.body.appendChild(script);
+    }
 
-            const callbackName = 'notes_save_cb_' + Math.round(Math.random() * 1000000);
-
+    function completeClass(username, sessionId) {
+        openConfirmModal(() => {
+            const callbackName = 'complete_cb_' + Math.round(Math.random() * 1000000);
             window[callbackName] = function(response) {
                 if (response && response.status === "success") {
-                    statusEl.textContent = "Synced with cloud";
-                    showToast("Notes saved successfully!", "success");
+                    deleteSession(sessionId, username);
                 } else {
-                    statusEl.textContent = "Failed to save";
-                    showToast("Failed to save notes.", "error");
+                    showToast("Failed to update: " + (response ? response.message : "Unknown error"), "error");
                 }
-                document.body.removeChild(script);
+                if (script.parentNode) document.body.removeChild(script);
                 delete window[callbackName];
             };
-
             const script = document.createElement('script');
-            script.src = `${API_URL}?action=saveNote&username=${encodeURIComponent(storedName)}&note=${encodeURIComponent(noteContent)}&callback=${callbackName}`;
+            script.src = `${API_URL}?action=completeClass&username=${encodeURIComponent(username)}&callback=${callbackName}`;
             document.body.appendChild(script);
+        });
+    }
+
+    function deleteSession(sessionId, username) {
+        const delCallback = 'del_session_cb_' + Math.round(Math.random() * 1000000);
+        window[delCallback] = function(res) {
+            if (res && res.status === "success") {
+                showToast("Class completed and removed from schedule!", "success");
+                initDashboardData(username);
+                fetchScheduledSessions();
+            } else {
+                showToast("Class completed, but failed to clear session row.", "error");
+                fetchScheduledSessions();
+            }
+            if (script.parentNode) document.body.removeChild(script);
+            delete window[delCallback];
+        };
+        const script = document.createElement('script');
+        script.src = `${API_URL}?action=deleteSession&id=${encodeURIComponent(sessionId)}&callback=${delCallback}`;
+        document.body.appendChild(script);
+    }
+
+    function scheduleNewSession(teacherName) {
+        const student = document.getElementById('session-student-select').value;
+        const lesson = document.getElementById('session-lesson-input').value.trim();
+        const sessionDate = document.getElementById('session-date').value;
+        const sessionTime = document.getElementById('session-time').value;
+
+        if (!student || !lesson || !sessionDate || !sessionTime) {
+            showToast("Please fill out all session details.", "error");
+            return;
         }
 
-        function clearStickyNotes() {
-            const textarea = document.getElementById('sticky-notes');
-            textarea.value = "";
-            saveStickyNotes();
+        // Add loading spinner and disable button
+        const submitBtn = document.getElementById('btn-create-session');
+        const btnIcon = document.getElementById('btn-icon');
+        const btnText = document.getElementById('btn-text');
+        
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.8';
+        if (btnIcon) btnIcon.className = 'fa-solid fa-spinner fa-spin';
+        if (btnText) btnText.textContent = 'Generating...';
+
+        const callbackName = 'create_session_cb_' + Math.round(Math.random() * 1000000);
+        window[callbackName] = function(resp) {
+            // Restore button state
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            if (btnIcon) btnIcon.className = 'fa-solid fa-paper-plane';
+            if (btnText) btnText.textContent = 'Generate Link';
+
+            if (resp && resp.status === "success") {
+                showToast("Class session scheduled successfully!", "success");
+                document.getElementById('schedule-session-form').reset();
+                fetchScheduledSessions();
+            } else {
+                showToast("Failed to schedule session.", "error");
+            }
+            if (script.parentNode) document.body.removeChild(script);
+            delete window[callbackName];
+        };
+
+        const script = document.createElement('script');
+        script.src = `${API_URL}?action=createSession&teacher=${encodeURIComponent(teacherName)}&student=${encodeURIComponent(student)}&lesson=${encodeURIComponent(lesson)}&sessionDate=${encodeURIComponent(sessionDate)}&sessionTime=${encodeURIComponent(sessionTime)}&callback=${callbackName}`;
+        document.body.appendChild(script);
+    }
+
+    function fetchScheduledSessions() {
+        let storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
+        if (storedName.toLowerCase().startsWith('teacher ')) {
+            storedName = storedName.substring(8).trim();
         }
-    </script>
+
+        const callbackName = 'get_sessions_cb_' + Math.round(Math.random() * 1000000);
+
+        window[callbackName] = function(sessions) {
+            const tbody = document.getElementById('sessions-table-body');
+            tbody.innerHTML = '';
+
+            const teacherSessions = Array.isArray(sessions) ? sessions.filter(s => {
+                if (!s.teacher) return true; 
+                let sheetTeacher = String(s.teacher).trim().toLowerCase();
+                if (sheetTeacher.startsWith('teacher ')) sheetTeacher = sheetTeacher.substring(8).trim();
+                return sheetTeacher === storedName.toLowerCase();
+            }) : [];
+
+            if (teacherSessions.length > 0) {
+                teacherSessions.reverse().forEach(s => {
+                    const formattedTitle = formatLessonTitle(s.lesson);
+                    const sessionId = s.id;
+                    const friendlyDate = formatFriendlyDate(s.sessionDate);
+                    const friendlyTime = formatFriendlyTime(s.sessionTime);
+
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid var(--border)';
+                    tr.innerHTML = `
+                        <td style="padding: 10px; font-weight: 600;">${s.student}</td>
+                        <td style="padding: 10px;">${formattedTitle}</td>
+                        <td style="padding: 10px;">${friendlyDate}</td>
+                        <td style="padding: 10px;">${friendlyTime}</td>
+                        <td style="padding: 10px; text-align: center;">
+                        ${s.link ? `
+                                <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
+                                    <a href="${s.link}" target="_blank" class="dashboard-btn" style="background: var(--primary); color: white; padding: 5px 10px; font-size: 11px; text-decoration: none;">
+                                        <i class="fa-solid fa-video"></i> Join Class
+                                    </a>
+                                    <button onclick="openLinkModal('${s.link.replace(/'/g, "\\'")}')" class="dashboard-btn" style="background: var(--border); color: var(--text-main); padding: 5px 10px; font-size: 11px;">
+                                        <i class="fa-solid fa-link"></i> View Link
+                                    </button>
+                                </div>
+                            ` : '<span style="color:var(--text-muted)">No Link</span>'}
+                        </td>
+                        <td style="padding: 10px; text-align: center;">
+                            <button onclick="completeClass('${storedName}', '${sessionId}')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-check"></i> Done
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 16px; color: var(--text-muted);">No scheduled sessions found.</td></tr>';
+            }
+            if (script.parentNode) document.body.removeChild(script);
+            delete window[callbackName];
+        };
+
+        const script = document.createElement('script');
+        script.src = `${API_URL}?action=getSessions&callback=${callbackName}`;
+        document.body.appendChild(script);
+    }
+</script>
 </body>
-</html>

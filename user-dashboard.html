@@ -698,7 +698,7 @@
             const title = card.querySelector('h3')?.textContent.toLowerCase() || "";
             const description = card.querySelector('.description')?.textContent.toLowerCase() || "";
             
-            const isAllowed = isAdmin || allowedBooks.length === 0 || allowedBooks.some(b => bookFileName.includes(b) || b.includes(bookFileName));
+            const isAllowed = isAdmin || allowedBooks.some(b => bookFileName.includes(b) || b.includes(bookFileName));
             const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
 
             if (isAllowed && matchesSearch) {
@@ -718,24 +718,28 @@
                 fallbackMsg.id = 'no-books-msg';
                 fallbackMsg.style.gridColumn = '1 / -1';
                 fallbackMsg.style.textAlign = 'center';
-                fallbackMsg.style.padding = '40px';
+                fallbackMsg.style.padding = '50px 20px';
                 fallbackMsg.style.color = 'var(--text-muted, #6b7280)';
                 grid.appendChild(fallbackMsg);
             }
-            if (allowedBooks.length === 0 && !isAdmin && rawBooks === "") {
+
+            // Directly show the Professional Lock State if allowedBooks is empty and user is not an admin
+            if (allowedBooks.length === 0 && !isAdmin) {
                 fallbackMsg.innerHTML = `
-                    <i class="fa-solid fa-book-open fa-2x" style="margin-bottom: 10px;"></i>
-                    <p>Loading assigned lessons from Account-info...</p>
-                `;
-            } else if (allowedBooks.length === 0 && !isAdmin) {
-                fallbackMsg.innerHTML = `
-                    <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
-                    <p>No lessons assigned to your account in Account-info yet.</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
+                        <div style="width: 56px; height: 56px; background: rgba(99, 102, 241, 0.1); color: var(--primary, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main, #111827); margin: 0;">No Lessons Available</h3>
+                        <p style="font-size: 14px; max-width: 320px; margin: 0; color: var(--text-muted, #6b7280);">There are currently no lessons assigned to your account. Please contact your teacher or administrator for access.</p>
+                    </div>
                 `;
             } else {
                 fallbackMsg.innerHTML = `
-                    <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 10px;"></i>
-                    <p>No lessons found matching "${searchInput ? searchInput.value : ''}".</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 5px; opacity: 0.6;"></i>
+                        <p style="font-size: 14px; margin: 0;">No lessons found matching "${searchInput ? searchInput.value : ''}".</p>
+                    </div>
                 `;
             }
         } else if (fallbackMsg) {
@@ -772,14 +776,7 @@
                     if (myAccount.role !== undefined) localStorage.setItem('role', myAccount.role);
                     
                     if (myAccount.books !== undefined) {
-                        let existingBooks = localStorage.getItem('books') || "";
-                        let newBooksFromSheet = String(myAccount.books);
-                        
-                        let combinedSet = new Set([
-                            ...existingBooks.split(',').map(b => b.trim()).filter(Boolean),
-                            ...newBooksFromSheet.split(',').map(b => b.trim()).filter(Boolean)
-                        ]);
-                        localStorage.setItem('books', Array.from(combinedSet).join(','));
+                        localStorage.setItem('books', String(myAccount.books));
                     }
                 }
             }
@@ -837,7 +834,6 @@
                     const teacherName = session.teacher || 'Teacher';
                     const meetLink = session.link || '#';
 
-                    // Modern Interactive Flex Card Item
                     const cardItem = document.createElement('div');
                     cardItem.style.cssText = `
                         background: var(--bg-main, #f9fafb);

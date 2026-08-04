@@ -47,17 +47,20 @@ function getTargetUrl() {
         gid = "305843140"; 
     }
     
-    
-    
     return `${BASE_CSV_URL}&gid=${gid}`;
 }
 const CSV_URL = getTargetUrl();
 let quizData = [];
 let dialogue = [];
 let normalTexts = []; 
+let studentSchedules = []; // Added storage array for pre-booked/assigned classes & links
 let voices = [];
 let currentLine = 0;
 let isSpeaking = false; 
+
+// Global variables for Line Matching Quiz
+let savedThreadLinks = {};
+let activeSourceDot = null;
 
 
 // ================= 1. FETCH & PARSE =================
@@ -78,14 +81,15 @@ async function loadData() {
         }
         if (quizData.length > 0) loadQuestion();
 
-        loadNoteFromSheet(); 
+        // Render student dashboard sidebar schedule upon initial load execution
+        renderStudentSidebar();
 
     } catch (e) { console.error("Connection Error:", e); }
 }
 
 function parseCSV(text) {
     const rows = text.split(/\r?\n/);
-    quizData = []; dialogue = []; normalTexts = [];
+    quizData = []; dialogue = []; normalTexts = []; studentSchedules = [];
     rows.forEach((row, index) => {
         if (index === 0 || !row.trim()) return;
         const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
@@ -109,8 +113,53 @@ function parseCSV(text) {
             quizData.push({ type: "SPELLING", hint: cleanCols[1], correctAnswer: cleanCols[2]?.toLowerCase().trim() });
         }
         else if (type === "SCRAMBLE") {
-         quizData.push({ type: "SCRAMBLE", hint: cleanCols[1], correctAnswer: cleanCols[2]?.toUpperCase().trim() });
+            quizData.push({ type: "SCRAMBLE", hint: cleanCols[1], correctAnswer: cleanCols[2]?.toUpperCase().trim() });
         }
+        else if (type === "SCHEDULE" || type === "BOOKING") {
+            // Parses pre-booked rows from Account-info / Sheets to explicitly map student ID, class info, and meeting links
+            studentSchedules.push({
+                studentId: cleanCols[1],
+                teacher: cleanCols[2],
+                subject: cleanCols[3],
+                datetime: cleanCols[4],
+                link: cleanCols[5],
+                status: cleanCols[6] || 'prebooked'
+            });
+        }
+    });
+}
+
+// ================= STUDENT SIDEBAR RENDERER =================
+function renderStudentSidebar() {
+    const container = document.getElementById("student-schedule-sidebar");
+    if (!container) return;
+    
+    // Retrieve the active student account identifier selected or logged into the dashboard
+    const activeStudentId = document.getElementById("active-student-view")?.value || "";
+    
+    container.innerHTML = "";
+
+    // Filter parsed records strictly bound to this student's account ID and allow prebooked/confirmed status
+    const assignedClasses = studentSchedules.filter(item => 
+        item.studentId === activeStudentId && 
+        (item.status.toLowerCase() === 'prebooked' || item.status.toLowerCase() === 'confirmed')
+    );
+
+    if (assignedClasses.length === 0) {
+        container.innerHTML = `<p style="color: #888; font-size: 0.9em; font-style: italic;">No upcoming classes scheduled.</p>`;
+        return;
+    }
+
+    // Render the class info and link directly on the student's dashboard sidebar
+    assignedClasses.forEach(cls => {
+        container.innerHTML += `
+            <div style="background: #e3f2fd; border-left: 4px solid #007bff; padding: 12px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <strong style="color: #0056b3; font-size: 1.05em;">📚 ${cls.subject}</strong><br>
+                <span style="font-size: 0.9em; display: block; margin-top: 4px;">📅 ${cls.datetime}</span>
+                <span style="font-size: 0.85em; color: #555; display: block; margin-top: 2px;">👨‍🏫 Teacher: ${cls.teacher}</span>
+                ${cls.link ? `<a href="${cls.link}" target="_blank" style="display: inline-block; margin-top: 8px; padding: 4px 10px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 0.85em; font-weight: bold;">🔗 Join Class Link</a>` : ''}
+            </div>
+        `;
     });
 }
 
@@ -159,7 +208,6 @@ function playDialogue() {
     speakLine(); 
 }
 
-// Optimized helper function to handle whole phrase shuffling safely
 function scrambleWordPhrase(phrase) {
     if (!phrase || phrase.length <= 1) return phrase;
     
@@ -167,7 +215,6 @@ function scrambleWordPhrase(phrase) {
     let scrambled;
     let attempts = 0;
 
-    // Perform standard Fisher-Yates shuffle on the entire sequence (including spaces)
     do {
         for (let i = letters.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -175,16 +222,14 @@ function scrambleWordPhrase(phrase) {
         }
         scrambled = letters.join('');
         attempts++;
-    } while (scrambled === phrase && attempts < 20); // Prevent infinite loops but ensure it alternates
+    } while (scrambled === phrase && attempts < 20);
 
-    // Fallback if shuffle randomly hits perfect structure
     if (scrambled === phrase) {
         return phrase.substring(1) + phrase.charAt(0);
     }
     return scrambled;
 }
 
-// Handler logic for clicking interaction on letter blocks (Adjusted to hide styling for space tokens inside target zone)
 function handleScrambleLetterClick(letterEl, realIndex) {
     const targetBox = document.getElementById(`scramble-target-${realIndex}`);
     const poolBox = document.getElementById(`scramble-pool-${realIndex}`);
@@ -195,42 +240,104 @@ function handleScrambleLetterClick(letterEl, realIndex) {
 
     const isSpace = letterEl.getAttribute('data-letter') === ' ';
 
-    // Toggle location between pool box and assignment zone
     if (letterEl.parentNode === poolBox) {
         targetBox.appendChild(letterEl);
         
         if (isSpace) {
-            // Make it look like an unstyled clear spacing bar within target box
             letterEl.style.backgroundColor = 'transparent';
             letterEl.style.boxShadow = 'none';
             letterEl.style.color = 'transparent';
             letterEl.style.border = 'none';
         } else {
-            letterEl.style.backgroundColor = '#28a745'; // Highlight positive text element change
+            letterEl.style.backgroundColor = '#28a745';
         }
     } else {
         poolBox.appendChild(letterEl);
         
         if (isSpace) {
-            // Restore normal slate look back in pool layout
             letterEl.style.backgroundColor = '#7f8c8d';
             letterEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
             letterEl.style.color = '#fff';
             letterEl.style.border = 'none';
         } else {
-            letterEl.style.backgroundColor = '#e67e22'; // Revert text element back to original base orange
+            letterEl.style.backgroundColor = '#e67e22';
         }
     }
 
-    // Build the string representation to pass on to the submission field
     const currentLetters = Array.from(targetBox.querySelectorAll('span:not(#placeholder-' + realIndex + ')'))
-                                .map(el => el.getAttribute('data-letter'));
+                            .map(el => el.getAttribute('data-letter'));
     hiddenInput.value = currentLetters.join('');
 
-    // Restore contextual text helper if user clears the board
     if (currentLetters.length === 0 && placeholder) {
         placeholder.style.display = 'block';
     }
+}
+
+
+// ================= LINE MATCHING QUIZ LOGIC =================
+function connectQuizThreads(index) {
+    const container = document.getElementById(`line-quiz-${index}`);
+    if (!container) return;
+    
+    const sourceDot = container.querySelector('.source-dot');
+    const targetDots = container.querySelectorAll('.target-dot');
+    const svg = container.querySelector(`#svg-${index}`);
+    const hiddenInput = document.getElementById(`match-${index}`);
+
+    if (!sourceDot || !svg) return;
+
+    sourceDot.onclick = (e) => {
+        e.stopPropagation();
+        if (activeSourceDot === sourceDot) {
+            activeSourceDot.classList.remove('active-link');
+            activeSourceDot = null;
+        } else {
+            if (activeSourceDot) activeSourceDot.classList.remove('active-link');
+            activeSourceDot = sourceDot;
+            activeSourceDot.classList.add('active-link');
+        }
+    };
+
+    targetDots.forEach(targetDot => {
+        targetDot.onclick = (e) => {
+            e.stopPropagation();
+            if (!activeSourceDot) return;
+
+            const parentContainerId = activeSourceDot.getAttribute('data-idx');
+            if (parentContainerId !== index.toString()) return;
+
+            // Draw line
+            svg.innerHTML = '';
+            const containerRect = container.getBoundingClientRect();
+            const sourceRect = activeSourceDot.getBoundingClientRect();
+            const targetRect = targetDot.getBoundingClientRect();
+
+            const x1 = sourceRect.left + sourceRect.width / 2 - containerRect.left;
+            const y1 = sourceRect.top + sourceRect.height / 2 - containerRect.top;
+            const x2 = targetRect.left + targetRect.width / 2 - containerRect.left;
+            const y2 = targetRect.top + targetRect.height / 2 - containerRect.top;
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', '#007bff');
+            line.setAttribute('stroke-width', '3');
+            svg.appendChild(line);
+
+            container.querySelectorAll('.quiz-anchor-dot').forEach(d => d.classList.remove('linked'));
+            activeSourceDot.classList.add('linked');
+            targetDot.classList.add('linked');
+
+            activeSourceDot.classList.remove('active-link');
+            activeSourceDot = null;
+
+            if (hiddenInput) {
+                hiddenInput.value = targetDot.getAttribute('data-val');
+            }
+        };
+    });
 }
 
 
@@ -304,7 +411,6 @@ function renderQuestionElement(q, realIndex, displayNum, shuffledDefs) {
                    style="border:none; border-bottom:2px solid #28a745; width:220px; text-align:center; background: #f0fff4; font-size:1em; font-weight:bold; outline:none; padding:5px;">
             <div id="fb-${realIndex}" style="font-weight:bold; margin-top:5px; font-size:0.9em;"></div>`;
     }
-    // Interactive, dynamic click block grid implementation for SCRAMBLE questions (Adjusted for spaces)
     else if (q.type === "SCRAMBLE") {
         const scrambledText = scrambleWordPhrase(q.correctAnswer);
         const letterArray = scrambledText.split(''); 
@@ -322,8 +428,6 @@ function renderQuestionElement(q, realIndex, displayNum, shuffledDefs) {
             const isSpace = letter === ' ';
             const displayChar = isSpace ? 'space' : letter;
             const bgColor = isSpace ? '#7f8c8d' : '#e67e22';
-            
-            // Dynamically set width: 60px for spaces, 35px for letters
             const blockWidth = isSpace ? '60px' : '35px';
 
             return `
@@ -339,21 +443,21 @@ function renderQuestionElement(q, realIndex, displayNum, shuffledDefs) {
     }
     else if (q.type === "MATCHING") {
         qDiv.innerHTML = `
-            <div class="line-quiz-container" id="line-quiz-${realIndex}">
-                <svg class="line-quiz-svg" id="svg-${realIndex}"></svg>
+            <div class="line-quiz-container" id="line-quiz-${realIndex}" style="position: relative; display: flex; justify-content: space-between; align-items: stretch; gap: 20px; padding: 15px; background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 8px;">
+                <svg class="line-quiz-svg" id="svg-${realIndex}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>
                 
-                <div class="line-quiz-column line-quiz-column-left">
-                    <div class="line-quiz-item">
+                <div class="line-quiz-column line-quiz-column-left" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="line-quiz-item" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
                         <span><strong>${displayNum}.</strong> ${q.term}</span>
-                        <div class="quiz-anchor-dot source-dot" data-idx="${realIndex}" data-val="${q.term}"></div>
+                        <div class="quiz-anchor-dot source-dot" data-idx="${realIndex}" data-val="${q.term}" style="width: 14px; height: 14px; background: #fff; border: 3px solid #007bff; border-radius: 50%; cursor: pointer; z-index: 15; transition: transform 0.1s;"></div>
                     </div>
                 </div>
 
-                <div class="line-quiz-column line-quiz-column-right">
+                <div class="line-quiz-column line-quiz-column-right" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
                     ${shuffledDefs.map(d => `
-                        <div class="line-quiz-item">
-                            <div class="quiz-anchor-dot target-dot" data-idx="${realIndex}" data-val="${d}"></div>
-                            <span>${d}</span>
+                        <div class="line-quiz-item" style="display: flex; align-items: center; gap: 10px; position: relative;">
+                            <div class="quiz-anchor-dot target-dot" data-idx="${realIndex}" data-val="${d}" style="width: 14px; height: 14px; background: #fff; border: 3px solid #28a745; border-radius: 50%; cursor: pointer; z-index: 15; transition: transform 0.1s;"></div>
+                            <span style="font-size: 0.95em;">${d}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -508,7 +612,6 @@ function resetSection(sIdx) {
     section.querySelectorAll('[id^="fb-"]').forEach(f => f.innerHTML="");
     section.querySelectorAll('[id^="label-q"]').forEach(l => l.style.background = "none");
     
-    // Custom structural reset processing for the interactive block workspace (Restoring baseline styling configurations)
     section.querySelectorAll('[id^="scramble-target-"]').forEach(target => {
         const realIndex = target.id.split('-').pop();
         const pool = section.querySelector(`#scramble-pool-${realIndex}`);
@@ -519,13 +622,10 @@ function resetSection(sIdx) {
             const letters = target.querySelectorAll('span:not([id^="placeholder-"])');
             letters.forEach(letter => {
                 const isSpace = letter.getAttribute('data-letter') === ' ';
-                
-                // Fully reset visual structures back to their base pool styling profiles
                 letter.style.color = '#fff';
                 letter.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
                 letter.style.border = 'none';
                 letter.style.backgroundColor = isSpace ? '#7f8c8d' : '#e67e22';
-                
                 pool.appendChild(letter);
             });
             hiddenInput.value = "";
@@ -533,7 +633,6 @@ function resetSection(sIdx) {
         }
     });
 
-    // Custom structural reset for line connection containers
     section.querySelectorAll('.line-quiz-container').forEach(container => {
         const index = container.id.split('-').pop();
         savedThreadLinks[index] = null;
@@ -547,94 +646,6 @@ function resetSection(sIdx) {
     const scoreDiv = document.getElementById(`score-${sIdx}`);
     if (scoreDiv) scoreDiv.style.display = "none";
 }
-
-
-
-// ================= 6. TRUE REAL-TIME CRUD ENGINE =================
-const NOTES_API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
-const noteArea = document.getElementById('sticky-notes');
-const saveStatus = document.getElementById('save-status');
-
-// A global window handler to catch Google's JSONP confirmation response bypasses CORS rules
-window.logCloudStatus = function(data) {
-    if (data && data.status === "success") {
-        if (saveStatus) saveStatus.innerText = "Synced with Spreadsheet ✅";
-    }
-    // Clean up our temporary script connection channel
-    document.getElementById('cloud-transport')?.remove();
-};
-
-// 1. READ (Fetches from Cell A1 automatically when the page opens)
-async function loadNoteFromSheet() {
-    if (!noteArea) return;
-    try {
-        if (saveStatus) saveStatus.innerText = "Loading cloud notes...";
-        // Cache bust using Date.now() ensures Google doesn't send old text
-        const response = await fetch(`${NOTES_API_URL}?_cb=${Date.now()}`);
-        const data = await response.text();
-        
-        // If the sheet returns our fallback error text or no data, keep text area clean
-        if (data === "No parameters found.") {
-            noteArea.value = "";
-        } else {
-            noteArea.value = data;
-        }
-        
-        if (saveStatus) saveStatus.innerText = "Notes synced";
-    } catch (err) { 
-        console.error("Load failed:", err); 
-        if (saveStatus) saveStatus.innerText = "Load error ❌";
-    }
-}
-
-// 2. UPDATE (Real-time Cloud Write to Cell A1)
-function saveNoteToSheet() {
-    if (!noteArea) return;
-    if (saveStatus) saveStatus.innerText = "Syncing to spreadsheet...";
-    
-    // Clear any previous transport elements out of the DOM 
-    document.getElementById('cloud-transport')?.remove();
-
-    // Dynamically inject a script tag to achieve a 100% CORS-proof background push
-    const script = document.createElement('script');
-    script.id = 'cloud-transport';
-    script.src = `${NOTES_API_URL}?action=update&note=${encodeURIComponent(noteArea.value)}&callback=logCloudStatus&_cb=${Date.now()}`;
-    document.body.appendChild(script);
-}
-
-// 3. DELETE (Real-time Cloud Wipe of Cell A1)
-function deleteNoteFromSheet() {
-    if (!confirm("Wipe this note from the spreadsheet database?")) return;
-    if (saveStatus) saveStatus.innerText = "Clearing row...";
-    
-    document.getElementById('cloud-transport')?.remove();
-
-    const script = document.createElement('script');
-    script.id = 'cloud-transport';
-    script.src = `${NOTES_API_URL}?action=delete&callback=logCloudStatus&_cb=${Date.now()}`;
-    document.body.appendChild(script);
-    
-    noteArea.value = "";
-}
-
-// Attach action handlers to your exact index.html layout button IDs
-document.getElementById('save-note')?.addEventListener('click', saveNoteToSheet);
-document.getElementById('delete-note')?.addEventListener('click', deleteNoteFromSheet);
-
-// True Real-Time CRUD Listener
-// This listens to EVERY SINGLE KEYSTROKE you input.
-// It waits exactly 400 milliseconds after you stop typing a character to save, preventing network spam.
-let typingTimer = null;
-noteArea?.addEventListener('input', () => {
-    if (saveStatus) saveStatus.innerText = "Typing...";
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(saveNoteToSheet, 400); 
-});
-
-// Run the data load function immediately when the browser finishes unpacking the layout
-window.addEventListener('DOMContentLoaded', loadNoteFromSheet);
-
-
 
 // ================= INITIALIZATION =================
 function loadVoices() { voices = speechSynthesis.getVoices().filter(v => v.lang.includes('en')); }
@@ -697,7 +708,6 @@ function initializeTheme() {
 }
 
 initializeTheme();
-
 
 // ================= 8. MATCHING QUESTION LINE WRAPPER ENGINE =================
 let drawingAnchor = null;

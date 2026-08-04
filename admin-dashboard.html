@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        td,th{
+            text-align: center;
+        }
         :root {
             --primary: #2563eb;
             --bg: #f8fafc;
@@ -44,14 +47,20 @@
         .side-link { padding: 12px 14px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 14px; font-weight: 500; }
         .side-link:hover, .side-link.active { background: #334155; color: white; }
 
-        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
-        @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: calc(100% - var(--sidebar-width)); }
+        @media (max-width: 1024px) { 
+            .main-content { margin-left: 0; width: 100%; } 
+        }
 
-        .top-nav { background: var(--card-bg); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
+        .top-nav { background: var(--card-bg); padding: 16px 30px; display: flex; justify-content: space-between; width: 100%; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
+        @media (max-width: 768px) {
+            .top-nav { padding: 14px 16px; }
+        }
+
         .menu-toggle { display: none; font-size: 20px; cursor: pointer; color: var(--text-main); }
         @media (max-width: 1024px) { .menu-toggle { display: block; } }
 
-        .dashboard-grid { padding: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .dashboard-grid { padding: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; }
         .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid var(--border); animation: fadeInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
         @keyframes fadeInCard {
@@ -250,12 +259,12 @@
         }
 
         @media (max-width: 768px) { 
-            .dashboard-grid { grid-template-columns: 1fr; padding: 15px; } 
-            .welcome-card, .table-card { grid-column: span 1; } 
+            .dashboard-grid { grid-template-columns: 1fr; padding: 12px; } 
+            .welcome-card, .table-card { grid-column: span 1; padding: 16px; } 
             .welcome-card { flex-direction: column; align-items: flex-start; gap: 15px; }
             .welcome-clock { width: 100%; justify-content: center; }
             .dashboard-controls-bar { flex-direction: column; align-items: stretch; }
-            .controls-group { justify-content: stretch; flex-direction: column; }
+            .controls-group { justify-content: stretch; flex-direction: column; width: 100%; }
             .search-container-wrapper, .role-sort-select, .btn-add-user { width: 100%; justify-content: center; }
         }
 
@@ -293,23 +302,49 @@
         .btn-delete:hover { background: #fecaca; }
 
         /* --- MODAL STYLING (Standard Centered) --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease; padding: 20px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease; padding: 15px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
         .modal { 
             background: var(--card-bg); 
             width: 100%; 
             max-width: 640px; 
-            padding: 40px; 
+            padding: 30px 24px; 
             border-radius: 20px; 
             border: 1px solid var(--border); 
             box-shadow: 0 20px 35px -5px rgba(0,0,0,0.15), 0 10px 15px -5px rgba(0,0,0,0.05); 
             max-height: 90vh; 
             overflow-y: auto; 
             transform: scale(0.95) translateY(10px); 
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; 
         }
         .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+
+        /* --- X CLOSE BUTTON STYLING --- */
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .modal-close-btn:hover {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+            transform: scale(1.05);
+        }
 
         /* --- EXTRA WIDE & SPACIOUS CREATE ACCOUNT MODAL STYLING --- */
         .modal-overlay#createModalOverlay {
@@ -317,12 +352,12 @@
         }
         .modal-overlay#createModalOverlay .modal {
             max-width: 820px;
-            padding: 45px 50px;
+            padding: 40px 30px;
         }
         .modal-overlay#createModalOverlay .books-grid-container {
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            max-height: 260px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            max-height: 220px;
+            padding: 12px;
         }
         
         .modal-header-icon {
@@ -338,10 +373,10 @@
             margin-bottom: 14px;
         }
 
-        .modal h3 { margin-bottom: 6px; font-size: 22px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
-        .modal .modal-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.4; }
+        .modal h3 { margin-bottom: 6px; font-size: 20px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; padding-right: 30px; }
+        .modal .modal-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
         
-        .form-group { margin-bottom: 22px; }
+        .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.2px; }
         
         /* Bigger, wide input fields matching the signup form style */
@@ -349,7 +384,7 @@
         .form-group input[type="password"], 
         .form-group select { 
             width: 100%; 
-            padding: 14px 16px; 
+            padding: 12px 14px; 
             border-radius: 10px; 
             border: 1px solid var(--border); 
             background: var(--bg); 
@@ -366,13 +401,13 @@
         /* Spacious Books Toggle Grid Styling inside Modal */
         .books-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
             background: var(--bg);
-            padding: 16px;
+            padding: 12px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            max-height: 220px;
+            max-height: 200px;
             overflow-y: auto;
         }
 
@@ -381,7 +416,7 @@
             align-items: center;
             justify-content: space-between;
             background: var(--card-bg);
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid var(--border);
             cursor: pointer;
@@ -424,8 +459,12 @@
             color: white;
         }
 
-        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
-        .btn-modal { padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+        .btn-modal { padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; width: auto; }
+        @media (max-width: 480px) {
+            .modal-actions { flex-direction: column-reverse; }
+            .btn-modal { width: 100%; text-align: center; }
+        }
         .btn-modal:active { transform: scale(0.96); }
         .btn-cancel { background: var(--border); color: var(--text-main); }
         .btn-cancel:hover { opacity: 0.8; }
@@ -522,6 +561,9 @@
     <!-- Create User Modal (Wider and Spaced Out) -->
     <div class="modal-overlay" id="createModalOverlay">
         <div class="modal">
+            <button type="button" class="modal-close-btn" onclick="closeCreateModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div class="modal-header-icon">
                 <i class="fa-solid fa-user-plus"></i>
             </div>
@@ -561,6 +603,9 @@
     <!-- Edit User Modal -->
     <div class="modal-overlay" id="editModalOverlay">
         <div class="modal">
+            <button type="button" class="modal-close-btn" onclick="closeEditModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div class="modal-header-icon">
                 <i class="fa-solid fa-user-pen"></i>
             </div>
@@ -601,6 +646,9 @@
     <!-- Delete Confirmation Modal (Positioned Higher Up) -->
     <div class="modal-overlay" id="deleteModalOverlay">
         <div class="modal" style="max-width: 440px;">
+            <button type="button" class="modal-close-btn" onclick="closeDeleteModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             <div class="modal-warning-icon">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
@@ -695,14 +743,15 @@
             </div>
         </div>
     </main>
-
+</body>
+</html>
     <script src="scripts/nav.js"></script>
     
     <script>
         const menuBtn = document.getElementById('menu-btn');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzlcQO5V2dM7pMqHBdPos8qoSMlJt4HnolFVhXBiWD-V-uUcWLxfJAexGnbPblXBGdo/exec'; 
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec'; 
 
         // Global store for fetched accounts data to enable instant predictive filtering
         let allAccountsData = [];

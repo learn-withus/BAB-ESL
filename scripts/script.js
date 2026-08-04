@@ -43,6 +43,8 @@ function getTargetUrl() {
         gid = "2026705033"; 
     }else if (pageName === "drugstore.html") { 
         gid = "618954762"; 
+    }else if (pageName === "workplace-ethics.html") { 
+        gid = "305843140"; 
     }
     
     

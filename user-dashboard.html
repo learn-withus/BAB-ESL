@@ -342,9 +342,11 @@
             </div>
         </header>
 
-        <!-- CONTENT HEADER: LESSON LIBRARY & SEARCH BAR ALONGSIDE STICKY WIDGET -->
-        <div class="content-header">
-            <div class="header-left">
+        <!-- CONTENT HEADER: LESSON LIBRARY, SEARCH BAR & SCHEDULED CLASSES (Responsive Grid) -->
+        <div class="content-header" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start; margin-bottom: 30px;">
+            
+            <!-- SEARCH / HEADER TITLE -->
+            <div class="header-left" style="display: flex; flex-direction: column; gap: 15px;">
                 <div class="header-title-wrapper">
                     <h1>Lesson Library</h1>
                     <span class="header-subtitle">Browse and search through available study materials</span>
@@ -355,18 +357,29 @@
                 </div>
             </div>
 
-            <!-- LIVE NOTES / ANNOUNCEMENT FEED WIDGET -->
-            <div class="sticky-notes-header-widget">
-                <div class="sticky-card-header">
-                    <h3><i class="fa-solid fa-note-sticky" style="color: var(--primary);"></i> Live Class Updates</h3>
-                    <div class="live-indicator">
-                        <span class="live-dot"></span> Live Feed
+            <!-- SCHEDULED CLASSES WIDGET (Modern Detailed Card List) -->
+            <div class="scheduled-classes-widget" style="background: var(--bg-card, #fff); border-radius: 16px; padding: 20px; box-shadow: var(--shadow, 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.05)); border: 1px solid var(--border-color, #e5e7eb);">
+                <div class="sticky-card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color, #f3f4f6); padding-bottom: 12px;">
+                    <h3 style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-main, #111827);">
+                        <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(99, 102, 241, 0.1); color: var(--primary, #6366f1); border-radius: 8px; font-size: 14px;">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </span>
+                        Class Schedules
+                    </h3>
+                    <span style="font-size: 11px; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 10px; border-radius: 20px; font-weight: 600;" id="scheduled-badge">Online</span>
+                </div>
+                
+                <!-- Scrollable Container with Custom Scrollbar -->
+                <div style="max-height: 260px; overflow-y: auto; padding-right: 4px;" class="custom-scroll">
+                    <div id="scheduledClassesBody" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Dynamic Content Will Inject Here -->
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px;">
+                            Syncing database schedules...
+                        </div>
                     </div>
                 </div>
-                <div class="notes-list" id="notesList">
-                    <div class="note-item" style="color: var(--text-muted); border-left-color: var(--text-muted);">Syncing live updates...</div>
-                </div>
             </div>
+
         </div>
 
         <div class="book-grid" id="bookGrid">
@@ -625,7 +638,7 @@
 
     <!-- Load the navigation script last so placeholder exists -->
     <script src="scripts/nav.js"></script>
-    <script>
+<script>
     // Sidebar Mobile Toggle
     const menuBtn = document.getElementById('menu-btn');
     const sidebar = document.getElementById('sidebar');
@@ -638,207 +651,258 @@
         overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
     }
 
-    // --- GOOGLE SPREADSHEET STICKY NOTES LIVE-VIEW LOGIC ---
+    // --- GOOGLE SPREADSHEET DASHBOARD DATA SYNC LOGIC ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec"; 
 
-    // Helper function to check if a string contains a web URL
-    function extractUrl(text) {
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const match = text.match(urlRegex);
-        return match ? match[0] : null;
-    }
-
-    // JSONP Helper to reliably bypass CORS restrictions from Google Apps Script
-    function fetchNotesViaJsonp() {
+    function fetchJsonp(action) {
         return new Promise((resolve, reject) => {
-            const callbackName = 'userDashStickyCallback_' + Math.floor(Math.random() * 1000000);
+            const callbackName = 'jsonp_cb_' + Math.floor(Math.random() * 1000000);
             const script = document.createElement('script');
-            script.id = 'sticky-jsonp-loader';
+            script.id = 'jsonp-loader-' + action;
 
-            // Global callback function
             window[callbackName] = function(data) {
                 delete window[callbackName];
-                document.getElementById('sticky-jsonp-loader')?.remove();
+                document.getElementById('jsonp-loader-' + action)?.remove();
                 resolve(data);
             };
 
             script.onerror = function(err) {
                 delete window[callbackName];
-                document.getElementById('sticky-jsonp-loader')?.remove();
+                document.getElementById('jsonp-loader-' + action)?.remove();
                 reject(err);
             };
 
-            // Cache buster + callback
-            script.src = `${SCRIPT_URL}?callback=${callbackName}&_cb=${Date.now()}`;
+            script.src = `${SCRIPT_URL}?action=${action}&callback=${callbackName}&_cb=${Date.now()}`;
             document.body.appendChild(script);
         });
     }
 
-    async function fetchNotes() {
-        const notesList = document.getElementById('notesList');
-        if (!notesList) return;
-
-        try {
-            const data = await fetchNotesViaJsonp();
-            notesList.innerHTML = '';
-
-            let noteArray = [];
-
-            // Standardize extracted notes content regardless of data format
-            if (data && data.note !== undefined) {
-                noteArray = [data.note];
-            } else if (data && data.notes && Array.isArray(data.notes)) {
-                noteArray = data.notes;
-            } else if (typeof data === 'string') {
-                noteArray = [data];
-            }
-
-            if (noteArray.length > 0) {
-                noteArray.forEach(rawNote => {
-                    if (rawNote && String(rawNote).trim() !== '') {
-                        let noteText = String(rawNote);
-
-                        // Safety check: parse nested JSON if old format exists
-                        try {
-                            const parsed = JSON.parse(noteText);
-                            if (parsed.note) noteText = parsed.note;
-                            if (parsed.notes && parsed.notes[0]) noteText = parsed.notes[0];
-                        } catch (e) {
-                            // Text is clean standard text
-                        }
-
-                        const item = document.createElement('div');
-                        item.className = 'note-item';
-
-                        // Text container
-                        const textSpan = document.createElement('div');
-                        textSpan.className = 'note-content-text';
-                        textSpan.style.whiteSpace = 'pre-wrap'; // Preserves line breaks typed by teacher
-                        textSpan.textContent = noteText;
-                        item.appendChild(textSpan);
-
-                        // Link Detector
-                        const foundUrl = extractUrl(noteText);
-                        if (foundUrl) {
-                            const actionsDiv = document.createElement('div');
-                            actionsDiv.className = 'note-actions';
-
-                            // Open Link Button
-                            const openBtn = document.createElement('a');
-                            openBtn.className = 'note-btn primary';
-                            openBtn.href = foundUrl;
-                            openBtn.target = '_blank';
-                            openBtn.rel = 'noopener noreferrer';
-                            openBtn.innerHTML = '<i class="fa-solid fa-external-link-alt"></i> Open Link';
-                            actionsDiv.appendChild(openBtn);
-
-                            // Copy Link Button
-                            const copyBtn = document.createElement('button');
-                            copyBtn.className = 'note-btn';
-                            copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
-                            copyBtn.onclick = () => {
-                                navigator.clipboard.writeText(foundUrl).then(() => {
-                                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-                                    setTimeout(() => {
-                                        copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Link';
-                                    }, 2000);
-                                }).catch(err => {
-                                    console.error('Failed to copy link:', err);
-                                });
-                            };
-                            actionsDiv.appendChild(copyBtn);
-
-                            item.appendChild(actionsDiv);
-                        }
-
-                        notesList.appendChild(item);
-                    }
-                });
-            }
-
-            if (notesList.children.length === 0) {
-                notesList.innerHTML = '<div class="note-item" style="color: var(--text-muted, #6b7280); border-left-color: var(--text-muted, #6b7280);"><div class="note-content-text">No live updates available right now.</div></div>';
-            }
-        } catch (err) {
-            console.error('Error fetching notes via JSONP:', err);
-            notesList.innerHTML = '<div class="note-item" style="color: #ef4444; border-left-color: #ef4444;"><div class="note-content-text">Failed to sync live updates from spreadsheet.</div></div>';
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchNotes();
-        // Automatically poll for live updates every 10 seconds
-        setInterval(fetchNotes, 10000);
-
+    function filterBooks() {
+        const searchInput = document.getElementById('bookSearchInput');
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
         const userRole = localStorage.getItem('role') || "1";
         const rawBooks = localStorage.getItem('books') || "";
-        
-        const isAdmin = userRole === "2" || userRole.toLowerCase() === "admin";
+        const isAdmin = userRole === "2" || String(userRole).toLowerCase() === "admin";
 
         const allowedBooks = rawBooks
             .toLowerCase()
-            .split(',')
+            .split(/[,|\n]+/)
             .map(b => b.trim().replace(/['"]+/g, ''))
             .filter(b => b.length > 0);
 
         const bookCards = document.querySelectorAll('.book-card');
-        const searchInput = document.getElementById('bookSearchInput');
+        let visibleCount = 0;
 
-        function filterBooks() {
-            if (!searchInput) return;
-            const query = searchInput.value.toLowerCase().trim();
-            let visibleCount = 0;
+        bookCards.forEach(card => {
+            const bookFileName = card.getAttribute('data-book')?.toLowerCase().trim() || "";
+            const title = card.querySelector('h3')?.textContent.toLowerCase() || "";
+            const description = card.querySelector('.description')?.textContent.toLowerCase() || "";
+            
+            const isAllowed = isAdmin || allowedBooks.length === 0 || allowedBooks.some(b => bookFileName.includes(b) || b.includes(bookFileName));
+            const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
 
-            bookCards.forEach(card => {
-                const bookFileName = card.getAttribute('data-book')?.toLowerCase().trim() || "";
-                const title = card.querySelector('h3')?.textContent.toLowerCase() || "";
-                const description = card.querySelector('.description')?.textContent.toLowerCase() || "";
-                
-                const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
-                const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
+            if (isAllowed && matchesSearch) {
+                card.style.display = "flex";
+                visibleCount++;
+            } else {
+                card.style.display = "none";
+            }
+        });
 
-                if (isAllowed && matchesSearch) {
-                    card.style.display = "flex";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
+        let fallbackMsg = document.getElementById('no-books-msg');
+        const grid = document.getElementById('bookGrid');
+
+        if (visibleCount === 0 && grid) {
+            if (!fallbackMsg) {
+                fallbackMsg = document.createElement('div');
+                fallbackMsg.id = 'no-books-msg';
+                fallbackMsg.style.gridColumn = '1 / -1';
+                fallbackMsg.style.textAlign = 'center';
+                fallbackMsg.style.padding = '40px';
+                fallbackMsg.style.color = 'var(--text-muted, #6b7280)';
+                grid.appendChild(fallbackMsg);
+            }
+            if (allowedBooks.length === 0 && !isAdmin && rawBooks === "") {
+                fallbackMsg.innerHTML = `
+                    <i class="fa-solid fa-book-open fa-2x" style="margin-bottom: 10px;"></i>
+                    <p>Loading assigned lessons from Account-info...</p>
+                `;
+            } else if (allowedBooks.length === 0 && !isAdmin) {
+                fallbackMsg.innerHTML = `
+                    <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
+                    <p>No lessons assigned to your account in Account-info yet.</p>
+                `;
+            } else {
+                fallbackMsg.innerHTML = `
+                    <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 10px;"></i>
+                    <p>No lessons found matching "${searchInput ? searchInput.value : ''}".</p>
+                `;
+            }
+        } else if (fallbackMsg) {
+            fallbackMsg.remove();
+        }
+    }
+
+    async function fetchDashboardData() {
+        const scheduleBody = document.getElementById('scheduledClassesBody');
+        if (!scheduleBody) return;
+
+        try {
+            const dashData = await fetchJsonp('initDashboard');
+            
+            let currentUsername = (
+                localStorage.getItem('username') || 
+                localStorage.getItem('userName') || 
+                localStorage.getItem('currentUser') || 
+                localStorage.getItem('studentName') || 
+                localStorage.getItem('name') || ""
+            ).toLowerCase().trim();
+
+            if (!currentUsername && dashData && dashData.accounts && dashData.accounts.length > 0) {
+                const uiUsernameEl = document.getElementById('username-display');
+                if (uiUsernameEl && uiUsernameEl.textContent.trim() !== "") {
+                    currentUsername = uiUsernameEl.textContent.toLowerCase().trim();
+                    localStorage.setItem('username', currentUsername);
                 }
+            }
+
+            if (dashData && dashData.accounts) {
+                const myAccount = dashData.accounts.find(acc => acc && acc.username && String(acc.username).toLowerCase().trim() === currentUsername);
+                if (myAccount) {
+                    if (myAccount.role !== undefined) localStorage.setItem('role', myAccount.role);
+                    
+                    if (myAccount.books !== undefined) {
+                        let existingBooks = localStorage.getItem('books') || "";
+                        let newBooksFromSheet = String(myAccount.books);
+                        
+                        let combinedSet = new Set([
+                            ...existingBooks.split(',').map(b => b.trim()).filter(Boolean),
+                            ...newBooksFromSheet.split(',').map(b => b.trim()).filter(Boolean)
+                        ]);
+                        localStorage.setItem('books', Array.from(combinedSet).join(','));
+                    }
+                }
+            }
+
+            filterBooks();
+
+            scheduleBody.innerHTML = '';
+            const sessions = Array.isArray(dashData.schedules) ? dashData.schedules : [];
+
+            if (!currentUsername) {
+                scheduleBody.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #ef4444; font-size: 13px;">
+                        Please log in with a student account to view scheduled classes.
+                    </div>
+                `;
+                return;
+            }
+
+            const mySessions = sessions.filter(s => {
+                const dbStudent = String(
+                    s.student || 
+                    s.studentName || 
+                    s.name || 
+                    s.username || ""
+                ).toLowerCase().trim();
+                
+                return dbStudent === currentUsername || dbStudent.includes(currentUsername);
             });
 
-            let fallbackMsg = document.getElementById('no-books-msg');
-            const grid = document.getElementById('bookGrid');
+            if (mySessions.length > 0) {
+                mySessions.forEach(session => {
+                    let formattedDate = session.sessionDate || session.date || '';
+                    if (formattedDate) {
+                        try {
+                            const d = new Date(formattedDate);
+                            if (!isNaN(d)) {
+                                formattedDate = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                            }
+                        } catch(e) {}
+                    }
 
-            if (visibleCount === 0 && grid) {
-                if (!fallbackMsg) {
-                    fallbackMsg = document.createElement('div');
-                    fallbackMsg.id = 'no-books-msg';
-                    fallbackMsg.style.gridColumn = '1 / -1';
-                    fallbackMsg.style.textAlign = 'center';
-                    fallbackMsg.style.padding = '40px';
-                    fallbackMsg.style.color = 'var(--text-muted, #6b7280)';
-                    grid.appendChild(fallbackMsg);
-                }
-                if (allowedBooks.length === 0 && !isAdmin) {
-                    fallbackMsg.innerHTML = `
-                        <i class="fa-solid fa-lock fa-2x" style="margin-bottom: 10px;"></i>
-                        <p>No lessons assigned to your account yet.</p>
+                    let formattedTime = session.sessionTime || session.time || '';
+                    if (formattedTime && String(formattedTime).includes(':')) {
+                        try {
+                            const parts = formattedTime.split(':');
+                            let hours = parseInt(parts[0], 10);
+                            const minutes = parts[1];
+                            const ampm = hours >= 12 ? 'PM' : 'AM';
+                            hours = hours % 12 || 12;
+                            formattedTime = `${hours}:${minutes} ${ampm}`;
+                        } catch(e) {}
+                    }
+
+                    const lessonTitle = session.lessonPrebook || session.lesson || 'Class Session';
+                    const teacherName = session.teacher || 'Teacher';
+                    const meetLink = session.link || '#';
+
+                    // Modern Interactive Flex Card Item
+                    const cardItem = document.createElement('div');
+                    cardItem.style.cssText = `
+                        background: var(--bg-main, #f9fafb);
+                        border: 1px solid var(--border-color, #e5e7eb);
+                        border-radius: 12px;
+                        padding: 12px 15px;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+                        transition: all 0.2s ease-in-out;
                     `;
-                } else {
-                    fallbackMsg.innerHTML = `
-                        <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 10px;"></i>
-                        <p>No lessons found matching "${searchInput.value}".</p>
+
+                    cardItem.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                            <div>
+                                <span style="font-size: 13px; font-weight: 700; color: var(--text-main, #111827); display: block; margin-bottom: 2px;">${lessonTitle}</span>
+                                <span style="font-size: 12px; color: var(--text-muted, #6b7280); display: flex; align-items: center; gap: 5px;">
+                                    <i class="fa-solid fa-chalkboard-user" style="color: var(--primary);"></i> ${teacherName}
+                                </span>
+                            </div>
+                            <a href="${meetLink}" target="_blank" style="background: #10b981; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); white-space: nowrap;">
+                                <i class="fa-solid fa-video"></i> Join Classroom
+                            </a>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px dashed var(--border-color, #e5e7eb); padding-top: 8px; font-size: 11px; color: var(--text-muted);">
+                            <span style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: var(--text-main);">
+                                <i class="fa-regular fa-calendar" style="color: var(--primary);"></i> ${formattedDate}
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: var(--text-main);">
+                                <i class="fa-regular fa-clock" style="color: var(--primary);"></i> ${formattedTime}
+                            </span>
+                        </div>
                     `;
-                }
-            } else if (fallbackMsg) {
-                fallbackMsg.remove();
+                    scheduleBody.appendChild(cardItem);
+                });
+            } else {
+                scheduleBody.innerHTML = `
+                    <div style="text-align: center; padding: 25px 15px; color: var(--text-muted); font-size: 13px;">
+                        <i class="fa-regular fa-calendar-xmark fa-2x" style="margin-bottom: 8px; opacity: 0.5;"></i>
+                        <p>No classes scheduled for you right now.</p>
+                    </div>
+                `;
             }
+
+        } catch (err) {
+            console.error('Error fetching dashboard data:', err);
+            scheduleBody.innerHTML = `<div style="text-align: center; padding: 20px; color: #ef4444; font-size: 13px;">Failed to load account database.</div>`;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const usernameDisplay = document.getElementById('username-display');
+        const storedName = localStorage.getItem('username') || localStorage.getItem('userName') || localStorage.getItem('currentUser') || localStorage.getItem('name');
+        
+        if (usernameDisplay && storedName) {
+            usernameDisplay.textContent = storedName;
         }
 
+        filterBooks();
+        fetchDashboardData();
+        setInterval(fetchDashboardData, 10000);
+
+        const searchInput = document.getElementById('bookSearchInput');
         if (searchInput) {
             searchInput.addEventListener('input', filterBooks);
         }
-        filterBooks();
     });
 </script>
-</body>
-</html>

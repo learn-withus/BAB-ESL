@@ -45,7 +45,13 @@ function getTargetUrl() {
         gid = "618954762"; 
     }else if (pageName === "workplace-ethics-v2.html") { 
         gid = "305843140"; 
+    }else if (pageName === "music.html") { 
+        gid = "1612140327"; 
+    }else if (pageName === "seminar-meeting.html") { 
+        gid = "976937025"; 
     }
+
+    
     
     
     

@@ -55,7 +55,10 @@ function getTargetUrl() {
         gid = "804218952"; 
     }else if (pageName === "barber.html") { 
         gid = "2112999551"; 
+    }else if (pageName === "security.html") { 
+        gid = "2143141595"; 
     }
+
 
     
     

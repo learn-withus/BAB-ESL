@@ -57,11 +57,11 @@ function getTargetUrl() {
         gid = "2112999551"; 
     }else if (pageName === "security.html") { 
         gid = "2143141595"; 
+    }else if (pageName === "festival.html") { 
+        gid = "1336216649"; 
     }
 
 
-    
-    
     
     
     return `${BASE_CSV_URL}&gid=${gid}`;

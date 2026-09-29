@@ -588,6 +588,11 @@
                 </div>
                 <div class="form-group">
                     <label>Allowed Books Access (From Config / Folder)</label>
+                    <!-- Search input for books -->
+                    <div style="margin-bottom: 8px; position: relative;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted);"></i>
+                        <input type="text" id="createBookSearch" placeholder="Search lessons/books..." oninput="filterBooks('create')" autocomplete="off" style="width: 100%; padding: 6px 10px 6px 30px; font-size: 13px; border: 1px solid var(--border-color, #ccc); border-radius: 4px;">
+                    </div>
                     <div id="createBooksContainer" class="books-grid-container">
                         <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
                     </div>
@@ -631,6 +636,11 @@
                 </div>
                 <div class="form-group">
                     <label>Allowed Books Access (From Config / Folder)</label>
+                    <!-- Search input for books -->
+                    <div style="margin-bottom: 8px; position: relative;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted);"></i>
+                        <input type="text" id="editBookSearch" placeholder="Search lessons/books..." oninput="filterBooks('edit')" autocomplete="off" style="width: 100%; padding: 6px 10px 6px 30px; font-size: 13px; border: 1px solid var(--border-color, #ccc); border-radius: 4px;">
+                    </div>
                     <div id="editBooksContainer" class="books-grid-container">
                         <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
                     </div>
@@ -743,8 +753,6 @@
             </div>
         </div>
     </main>
-</body>
-</html>
     <script src="scripts/nav.js"></script>
     
     <script>
@@ -903,6 +911,25 @@
             }
         }
 
+        // Real-time filtering function for modal lesson/book checkboxes
+        function filterBooks(modalType) {
+            const searchInputId = modalType === 'create' ? 'createBookSearch' : 'editBookSearch';
+            const containerId = modalType === 'create' ? 'createBooksContainer' : 'editBooksContainer';
+            
+            const query = document.getElementById(searchInputId).value.toLowerCase().trim();
+            const container = document.getElementById(containerId);
+            const labels = container.getElementsByClassName('book-toggle-label');
+
+            Array.from(labels).forEach(label => {
+                const text = label.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    label.style.display = '';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+        }
+
         async function fetchGoogleSheetAccounts() {
             const tbody = document.getElementById('account-table-body');
             
@@ -1002,6 +1029,8 @@
             document.getElementById('createUsername').value = '';
             document.getElementById('createPassword').value = '';
             document.getElementById('createRole').value = '1';
+            document.getElementById('createBookSearch').value = '';
+            filterBooks('create'); // Reset search filter view
             document.querySelectorAll('input[name="createAllowedBook"]').forEach(cb => cb.checked = false);
             document.getElementById('createModalOverlay').classList.add('active');
         }
@@ -1067,6 +1096,8 @@
             document.getElementById('editUsername').value = username;
             document.getElementById('editPassword').value = password;
             document.getElementById('editRole').value = role;
+            document.getElementById('editBookSearch').value = '';
+            filterBooks('edit'); // Reset search filter view
             
             const checkboxes = document.querySelectorAll('input[name="allowedBook"]');
             checkboxes.forEach(cb => {

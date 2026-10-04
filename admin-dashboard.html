@@ -1,771 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <link rel="icon" type="image/png" href="images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bab ESL Pro - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>ESL Pro - Admin Dashboard</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <style>
-        td,th{
-            text-align: center;
-        }
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --sidebar-width: 260px;
-            --sidebar-bg: #1e293b;
-            --border: #e2e8f0;
-            --table-header: #f1f5f9;
-        }
-
-        /* --- DARK MODE THEME --- */
-        body.dark-mode {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --sidebar-bg: #020617;
-            --border: #334155;
-            --table-header: #1e293b;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
-
-        body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-        /* Unified Sidebar & Nav Styling */
-        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 24px 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; overflow-y: auto; }
-        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } }
-        .sidebar .logo { font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 30px; padding-left: 10px; letter-spacing: -0.5px; }
-        
-        /* Consistent Side Links */
-        .side-link { padding: 12px 14px; color: #94a3b8; text-decoration: none; border-radius: 8px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 14px; font-weight: 500; }
-        .side-link:hover, .side-link.active { background: #334155; color: white; }
-
-        .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: calc(100% - var(--sidebar-width)); }
-        @media (max-width: 1024px) { 
-            .main-content { margin-left: 0; width: 100%; } 
-        }
-
-        .top-nav { background: var(--card-bg); padding: 16px 30px; display: flex; justify-content: space-between; width: 100%; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
-        @media (max-width: 768px) {
-            .top-nav { padding: 14px 16px; }
-        }
-
-        .menu-toggle { display: none; font-size: 20px; cursor: pointer; color: var(--text-main); }
-        @media (max-width: 1024px) { .menu-toggle { display: block; } }
-
-        .dashboard-grid { padding: 30px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid var(--border); animation: fadeInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        @keyframes fadeInCard {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .welcome-card { 
-            grid-column: span 2; 
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.88) 0%, rgba(29, 78, 216, 0.92) 100%), url('images/bab.png');
-            background-size: cover;
-            background-position: center;
-            color: white; 
-            border: none; 
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-        }
-        .welcome-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-        .welcome-card p { font-size: 14px; opacity: 0.95; }
-        
-        .welcome-clock {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-variant-numeric: tabular-nums;
-            white-space: nowrap;
-        }
-
-        .table-card { grid-column: span 2; }
-        .table-card h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; color: var(--text-main); }
-
-        /* --- CONTROL BAR & ANALYTICS COUNTER --- */
-        .dashboard-controls-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .accounts-counter-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-            padding: 8px 14px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid rgba(37, 99, 235, 0.2);
-        }
-
-        .controls-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            flex: 1;
-            justify-content: flex-end;
-        }
-
-        /* --- ADD USER BUTTON --- */
-        .btn-add-user {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.2s, transform 0.15s;
-        }
-        .btn-add-user:hover { background: #1d4ed8; }
-        .btn-add-user:active { transform: scale(0.96); }
-
-        /* --- PREDICTIVE SEARCH BAR --- */
-        .search-container-wrapper {
-            position: relative;
-            min-width: 240px;
-        }
-
-        .search-input-box {
-            width: 100%;
-            padding: 10px 14px 10px 36px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text-main);
-            font-size: 13px;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        .search-input-box:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-        }
-
-        .search-container-wrapper i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        /* Predictive Dropdown Suggestions Box */
-        .predictive-dropdown {
-            position: absolute;
-            top: calc(100% + 6px);
-            left: 0;
-            width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 500;
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-            animation: fadeInDown 0.2s ease forwards;
-        }
-
-        .predictive-dropdown.active {
-            display: block;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .predictive-item {
-            padding: 10px 14px;
-            font-size: 13px;
-            color: var(--text-main);
-            cursor: pointer;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.15s ease;
-        }
-
-        .predictive-item:last-child {
-            border-bottom: none;
-        }
-
-        .predictive-item:hover {
-            background: rgba(37, 99, 235, 0.08);
-            color: var(--primary);
-        }
-
-        /* --- ROLE SORTATION DROPDOWN --- */
-        .role-sort-select {
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text-main);
-            font-size: 13px;
-            outline: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .role-sort-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-        }
-
-        @media (max-width: 768px) { 
-            .dashboard-grid { grid-template-columns: 1fr; padding: 12px; } 
-            .welcome-card, .table-card { grid-column: span 1; padding: 16px; } 
-            .welcome-card { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .welcome-clock { width: 100%; justify-content: center; }
-            .dashboard-controls-bar { flex-direction: column; align-items: stretch; }
-            .controls-group { justify-content: stretch; flex-direction: column; width: 100%; }
-            .search-container-wrapper, .role-sort-select, .btn-add-user { width: 100%; justify-content: center; }
-        }
-
-        .table-responsive-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 5px; }
-        th, td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { background-color: var(--table-header); font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
-        
-        tr {
-            animation: fadeInRow 0.3s ease forwards;
-        }
-
-        @keyframes fadeInRow {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        tr:hover { background-color: rgba(0, 0, 0, 0.015); }
-        body.dark-mode tr:hover { background-color: rgba(255, 255, 255, 0.015); }
-
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
-        .badge-admin { background: #fee2e2; color: #dc2626; }
-        .badge-teacher { background: #dcfce7; color: #16a34a; }
-        .badge-student { background: #e0f2fe; color: #0284c7; }
-
-        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; display: inline-flex; align-items: center; gap: 5px; transition: transform 0.15s ease, background 0.2s; }
-        .btn-action:active { transform: scale(0.95); }
-        .btn-edit { background: #e0f2fe; color: #0284c7; }
-        .btn-edit:hover { background: #bae6fd; }
-        .btn-delete { background: #fee2e2; color: #dc2626; }
-        .btn-delete:hover { background: #fecaca; }
-
-        /* --- MODAL STYLING (Standard Centered) --- */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease; padding: 15px; }
-        .modal-overlay.active { display: flex; opacity: 1; }
-        
-        .modal { 
-            background: var(--card-bg); 
-            width: 100%; 
-            max-width: 640px; 
-            padding: 30px 24px; 
-            border-radius: 20px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 20px 35px -5px rgba(0,0,0,0.15), 0 10px 15px -5px rgba(0,0,0,0.05); 
-            max-height: 90vh; 
-            overflow-y: auto; 
-            transform: scale(0.95) translateY(10px); 
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative; 
-        }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-
-        /* --- X CLOSE BUTTON STYLING --- */
-        .modal-close-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .modal-close-btn:hover {
-            background: #fee2e2;
-            color: #dc2626;
-            border-color: #fecaca;
-            transform: scale(1.05);
-        }
-
-        /* --- EXTRA WIDE & SPACIOUS CREATE ACCOUNT MODAL STYLING --- */
-        .modal-overlay#createModalOverlay {
-            align-items: center;
-        }
-        .modal-overlay#createModalOverlay .modal {
-            max-width: 820px;
-            padding: 40px 30px;
-        }
-        .modal-overlay#createModalOverlay .books-grid-container {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            max-height: 220px;
-            padding: 12px;
-        }
-        
-        .modal-header-icon {
-            width: 44px;
-            height: 44px;
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            margin-bottom: 14px;
-        }
-
-        .modal h3 { margin-bottom: 6px; font-size: 20px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; padding-right: 30px; }
-        .modal .modal-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
-        
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); letter-spacing: -0.2px; }
-        
-        /* Bigger, wide input fields matching the signup form style */
-        .form-group input[type="text"], 
-        .form-group input[type="password"], 
-        .form-group select { 
-            width: 100%; 
-            padding: 12px 14px; 
-            border-radius: 10px; 
-            border: 1px solid var(--border); 
-            background: var(--bg); 
-            color: var(--text-main); 
-            font-size: 14px; 
-            outline: none; 
-            transition: border-color 0.2s, box-shadow 0.2s; 
-        }
-        .form-group input:focus, .form-group select:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); 
-        }
-
-        /* Spacious Books Toggle Grid Styling inside Modal */
-        .books-grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 10px;
-            background: var(--bg);
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
         .book-toggle-label {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--card-bg);
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            padding: 6px 10px;
+            background: hsl(var(--b1));
+            border: 1px solid hsl(var(--bc) / 0.15);
+            border-radius: 0.375rem;
+            font-size: 12px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-main);
-            transition: all 0.2s ease;
+            transition: background 0.2s;
         }
-
         .book-toggle-label:hover {
-            border-color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: hsl(var(--b2));
         }
-
         .book-toggle-label input[type="checkbox"] {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-            outline: none;
-            background: var(--bg);
+            accent-color: hsl(var(--p));
+        }
+        .badge-admin { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: none; font-weight: 600; }
+        .badge-teacher { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; border: none; font-weight: 600; }
+        .badge-student { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: none; font-weight: 600; }
+        .predictive-item {
+            padding: 8px 12px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: background 0.2s, border-color 0.2s;
+            gap: 8px;
+            border-bottom: 1px solid hsl(var(--bc) / 0.1);
         }
-
-        .book-toggle-label input[type="checkbox"]:checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .book-toggle-label input[type="checkbox"]:checked::after {
-            content: "\f00c";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            font-size: 10px;
-            color: white;
-        }
-
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
-        .btn-modal { padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; width: auto; }
-        @media (max-width: 480px) {
-            .modal-actions { flex-direction: column-reverse; }
-            .btn-modal { width: 100%; text-align: center; }
-        }
-        .btn-modal:active { transform: scale(0.96); }
-        .btn-cancel { background: var(--border); color: var(--text-main); }
-        .btn-cancel:hover { opacity: 0.8; }
-        .btn-save { background: var(--primary); color: white; }
-        .btn-save:hover { background: #1d4ed8; }
-
-        /* --- DELETE WARNING MODAL STYLING (Positioned Higher up on the screen) --- */
-        .modal-overlay#deleteModalOverlay {
-            align-items: flex-start;
-            padding-top: 80px;
-        }
-        @media (min-height: 700px) {
-            .modal-overlay#deleteModalOverlay {
-                padding-top: 110px;
-            }
-        }
-
-        .modal-warning-icon {
-            width: 52px;
-            height: 52px;
-            background: #fee2e2;
-            color: #dc2626;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            margin-bottom: 18px;
-        }
-        .btn-delete-confirm { background: #dc2626; color: white; }
-        .btn-delete-confirm:hover { background: #b91c1c; }
-
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        .sidebar-overlay.active { display: block; }
-
-        /* --- MODERN TOAST NOTIFICATION SYSTEM --- */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .toast {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--card-bg);
-            color: var(--text-main);
-            padding: 14px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            font-size: 14px;
-            font-weight: 500;
-            pointer-events: auto;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-            max-width: 380px;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast.success {
-            border-left: 4px solid #10b981;
-        }
-        .toast.success i {
-            color: #10b981;
-        }
-
-        .toast.error {
-            border-left: 4px solid #ef4444;
-        }
-        .toast.error i {
-            color: #ef4444;
+        .predictive-item:hover {
+            background-color: hsl(var(--b2));
         }
     </style>
 </head>
-<body>
+<body class="bg-base-200 min-h-screen font-sans">
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+            <nav class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30">
+                <div class="flex-none lg:hidden">
+                    <label for="main-drawer" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </label>
+                </div> 
 
-    <div class="sidebar-overlay" id="overlay"></div>
+                <div class="px-2 flex-1 whitespace-nowrap font-bold">
+                    <span class="text-base sm:text-lg text-primary"><i class="fa-solid fa-shield-halved mr-2"></i>Admin Control Center</span>
+                </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container"></div>
+                <div class="flex flex-row gap-4 items-center">
+                    <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
+                        <input type="checkbox" id="theme-checkbox" />
+                        <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path></svg>
+                        <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"></path></svg>
+                    </label>
 
-    <!-- Create User Modal (Wider and Spaced Out) -->
-    <div class="modal-overlay" id="createModalOverlay">
-        <div class="modal">
-            <button type="button" class="modal-close-btn" onclick="closeCreateModal()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="modal-header-icon">
-                <i class="fa-solid fa-user-plus"></i>
+                    <div id="account-settings" class="flex flex-row items-center gap-2">
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="avatar avatar-online cursor-pointer">
+                                <div class="ring-primary ring-offset-base-100 ring-2 ring-offset-2 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                                    <i class="fa-solid fa-user-shield text-xs"></i>
+                                </div>
+                            </div>
+                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow border border-base-300">
+                                <li><a href="#" class="py-2">Profile</a></li>
+                                <li><button onclick="logout()" class="text-error py-2 w-full text-left">Logout</button></li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col text-left mr-2">
+                            <span id="username-display" class="font-bold text-xs sm:text-sm">Admin</span>
+                            <span class="font-bold text-[10px] text-primary">Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+                <div class="card bg-base-100 shadow-sm border border-base-300 lg:col-span-3 p-6 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">Admin Control Center 🛡️</h2>
+                        <p class="text-base-content/70 text-sm mt-1">Manage accounts and system controls efficiently.</p>
+                    </div>
+                    <div class="flex items-center gap-6 flex-wrap">
+                        <div class="flex items-center gap-4 bg-base-200 px-4 py-3 rounded-xl border border-base-300">
+                            <div class="p-2 bg-primary/10 text-primary rounded-lg text-lg">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+                            <div class="text-xs">
+                                <div id="live-clock" class="font-bold text-primary text-sm">--:--:-- --</div>
+                                <div class="text-base-content/50 text-[10px]">System Clock</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 lg:col-span-3">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                        <h3 class="text-base font-bold flex items-center gap-2 text-primary">
+                            <i class="fa-solid fa-users-gear"></i> User Accounts
+                        </h3>
+
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <div id="accounts-counter" class="badge badge-neutral gap-2 py-3 px-4 font-semibold text-xs">
+                                <i class="fa-solid fa-users"></i>
+                                <span>Loading accounts...</span>
+                            </div>
+
+                            <button onclick="openCreateModal()" class="btn btn-primary btn-sm gap-2">
+                                <i class="fa-solid fa-user-plus"></i> Add Account
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            </div>
+                            <input type="text" id="usernameSearchInput" class="input input-bordered input-sm w-full pl-9 text-xs" placeholder="Search by username..." autocomplete="off">
+                            <div class="absolute left-0 right-0 top-full mt-1 bg-base-100 shadow-xl rounded-box border border-base-300 max-h-60 overflow-y-auto z-50 hidden" id="predictiveDropdown"></div>
+                        </div>
+                        <div class="w-full sm:w-48">
+                            <select id="roleSortSelect" class="select select-bordered select-sm w-full text-xs" onchange="filterAndRenderAccounts()">
+                                <option value="all">All Roles</option>
+                                <option value="3">Admin (Role 3)</option>
+                                <option value="2">Teacher (Role 2)</option>
+                                <option value="1">Student (Role 1)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="table w-full text-sm">
+                            <thead>
+                                <tr class="text-base-content/70 border-b border-base-300">
+                                    <th>User Name</th>
+                                    <th>Password</th>
+                                    <th>Role</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="account-table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center py-6 text-base-content/50">Fetching accounts from Google Sheet...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <h3>Create New Account</h3>
-            <div class="modal-subtitle">Fill out the information below to add a new user to the system database</div>
-            <form id="createForm" onsubmit="submitCreateForm(event)">
-                <div class="form-group">
-                    <label for="createUsername">Username</label>
-                    <input type="text" id="createUsername" placeholder="Enter username" required autocomplete="off">
+        </div>
+
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast toast-end toast-bottom z-50"></div>
+
+    <div class="modal" id="createModalOverlay">
+        <div class="modal-box max-w-lg p-0 overflow-hidden shadow-2xl bg-base-100 border border-base-300">
+            <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i> Create New Account
+                </h3>
+                <button onclick="closeCreateModal()" class="btn btn-sm btn-circle btn-ghost text-primary-content">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="createForm" onsubmit="submitCreateForm(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Username</label>
+                    <input type="text" id="createUsername" class="input input-bordered w-full text-sm bg-base-100" placeholder="Enter username" required autocomplete="off">
                 </div>
-                <div class="form-group">
-                    <label for="createPassword">Password</label>
-                    <input type="password" id="createPassword" placeholder="Enter secure password" required>
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Password</label>
+                    <input type="password" id="createPassword" class="input input-bordered w-full text-sm bg-base-100" placeholder="Enter secure password" required>
                 </div>
-                <div class="form-group">
-                    <label for="createRole">Account Role</label>
-                    <select id="createRole">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Account Role</label>
+                    <select id="createRole" class="select select-bordered w-full text-sm bg-base-100">
                         <option value="1">1 - Student / Normal User</option>
                         <option value="2">2 - Teacher</option>
                         <option value="3">3 - Admin</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Allowed Books Access (From Config / Folder)</label>
-                    <!-- Search input for books -->
-                    <div style="margin-bottom: 8px; position: relative;">
-                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted);"></i>
-                        <input type="text" id="createBookSearch" placeholder="Search lessons/books..." oninput="filterBooks('create')" autocomplete="off" style="width: 100%; padding: 6px 10px 6px 30px; font-size: 13px; border: 1px solid var(--border-color, #ccc); border-radius: 4px;">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Allowed Books Access</label>
+                    <div class="relative mb-2">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" id="createBookSearch" class="input input-bordered input-sm w-full pl-9 text-xs" placeholder="Search lessons/books..." oninput="filterBooks('create')" autocomplete="off">
                     </div>
-                    <div id="createBooksContainer" class="books-grid-container">
-                        <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
+                    <div id="createBooksContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 bg-base-200 rounded-box border border-base-300">
+                        <span class="text-xs text-base-content/50 col-span-full text-center py-2">Loading books list...</span>
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-modal btn-cancel" onclick="closeCreateModal()">Cancel</button>
-                    <button type="submit" class="btn-modal btn-save" id="btnCreateSubmit">Create Account</button>
+                <div class="modal-action bg-base-200 px-6 py-4 -mx-6 -mb-6 mt-6 border-t border-base-300 flex justify-end gap-2">
+                    <button type="button" class="btn btn-sm" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" id="btnCreateSubmit" class="btn btn-primary btn-sm">Create Account</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Edit User Modal -->
-    <div class="modal-overlay" id="editModalOverlay">
-        <div class="modal">
-            <button type="button" class="modal-close-btn" onclick="closeEditModal()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="modal-header-icon">
-                <i class="fa-solid fa-user-pen"></i>
+    <div class="modal" id="editModalOverlay">
+        <div class="modal-box max-w-lg p-0 overflow-hidden shadow-2xl bg-base-100 border border-base-300">
+            <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen"></i> Edit Account Details
+                </h3>
+                <button onclick="closeEditModal()" class="btn btn-sm btn-circle btn-ghost text-primary-content">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
-            <h3>Edit Account Details</h3>
-            <div class="modal-subtitle">Update user profile information and access permissions</div>
-            <form id="editForm" onsubmit="submitEditForm(event)">
+            <form id="editForm" onsubmit="submitEditForm(event)" class="p-6 space-y-4">
                 <input type="hidden" id="editOldUsername">
-                <div class="form-group">
-                    <label for="editUsername">Username</label>
-                    <input type="text" id="editUsername" required autocomplete="off">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Username</label>
+                    <input type="text" id="editUsername" class="input input-bordered w-full text-sm bg-base-100" required autocomplete="off">
                 </div>
-                <div class="form-group">
-                    <label for="editPassword">Password</label>
-                    <input type="text" id="editPassword" required>
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Password</label>
+                    <input type="text" id="editPassword" class="input input-bordered w-full text-sm bg-base-100" required>
                 </div>
-                <div class="form-group">
-                    <label for="editRole">Account Role</label>
-                    <select id="editRole">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Account Role</label>
+                    <select id="editRole" class="select select-bordered w-full text-sm bg-base-100">
                         <option value="3">3 - Admin</option>
                         <option value="2">2 - Teacher</option>
                         <option value="1">1 - Student / Normal User</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Allowed Books Access (From Config / Folder)</label>
-                    <!-- Search input for books -->
-                    <div style="margin-bottom: 8px; position: relative;">
-                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text-muted);"></i>
-                        <input type="text" id="editBookSearch" placeholder="Search lessons/books..." oninput="filterBooks('edit')" autocomplete="off" style="width: 100%; padding: 6px 10px 6px 30px; font-size: 13px; border: 1px solid var(--border-color, #ccc); border-radius: 4px;">
+                <div>
+                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Allowed Books Access</label>
+                    <div class="relative mb-2">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" id="editBookSearch" class="input input-bordered input-sm w-full pl-9 text-xs" placeholder="Search lessons/books..." oninput="filterBooks('edit')" autocomplete="off">
                     </div>
-                    <div id="editBooksContainer" class="books-grid-container">
-                        <span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">Loading books list...</span>
+                    <div id="editBooksContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 bg-base-200 rounded-box border border-base-300">
+                        <span class="text-xs text-base-content/50 col-span-full text-center py-2">Loading books list...</span>
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-modal btn-cancel" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="btn-modal btn-save">Save Changes</button>
+                <div class="modal-action bg-base-200 px-6 py-4 -mx-6 -mb-6 mt-6 border-t border-base-300 flex justify-end gap-2">
+                    <button type="button" class="btn btn-sm" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal (Positioned Higher Up) -->
-    <div class="modal-overlay" id="deleteModalOverlay">
-        <div class="modal" style="max-width: 440px;">
-            <button type="button" class="modal-close-btn" onclick="closeDeleteModal()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="modal-warning-icon">
+    <div class="modal" id="deleteModalOverlay">
+        <div class="modal-box max-w-sm text-center bg-base-100 border border-base-300">
+            <div class="w-12 h-12 rounded-full bg-error/10 text-error flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h3>Are you sure you want to delete user <span id="deleteUsernameDisplay" style="color: var(--primary);"></span>?</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.4;">This action is permanent and cannot be undone from the system database.</p>
+            <h3 class="text-lg font-bold mb-2">Delete User Account?</h3>
+            <p class="text-sm text-base-content/70 mb-6">Are you sure you want to delete user <span id="deleteUsernameDisplay" class="font-bold text-error"></span>? This action is permanent.</p>
             <input type="hidden" id="deleteTargetUsername">
-            <div class="modal-actions" style="margin-top: 0;">
-                <button type="button" class="btn-modal btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="btn-modal btn-delete-confirm" onclick="confirmDeleteAccount()">Yes, Delete</button>
+            <div class="modal-action justify-center">
+                <button type="button" class="btn btn-sm" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn btn-sm btn-error text-white" onclick="confirmDeleteAccount()">Yes, Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">ESL PRO TOOL</div>
-        
-        <!-- Navigation injected via nav.js -->
-        <div id="navbar-placeholder"></div>
-    </aside>
+    <script src="./scripts/nav.js"></script>
 
-    <main class="main-content">
-        <header class="top-nav">
-            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
-            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 13px; color: var(--text-main);">Welcome <span id="username-display">Admin</span>&nbsp;!</span>
-                <i class="fa-solid fa-circle-user fa-xl" style="color: var(--text-muted);"></i>
-            </div>
-        </header>
-
-        <div class="dashboard-grid">
-            <div class="card welcome-card">
-                <div class="welcome-content">
-                    <h2>Admin Control Center 🛡️</h2>
-                    <p>Manage accounts and system controls efficiently.</p>
-                </div>
-                <div class="welcome-clock" id="live-clock">
-                    <i class="fa-regular fa-clock"></i> <span>--:--:-- --</span>
-                </div>
-            </div>
-
-            <div class="card table-card">
-                <h2><i class="fa-solid fa-users-gear" style="margin-right: 8px;"></i>User Accounts</h2>
-                
-                <!-- Controls Bar with Indicator, Add Account Button, Predictive Search, and Role Sortation -->
-                <div class="dashboard-controls-bar">
-                    <div class="accounts-counter-badge" id="accounts-counter">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Loading accounts indicator...</span>
-                    </div>
-
-                    <div class="controls-group">
-                        <!-- Add User Modal Trigger Button -->
-                        <button class="btn-add-user" onclick="openCreateModal()">
-                            <i class="fa-solid fa-user-plus"></i> Add Account
-                        </button>
-
-                        <!-- Predictive Username Search Bar -->
-                        <div class="search-container-wrapper">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="usernameSearchInput" class="search-input-box" placeholder="Search by username..." autocomplete="off">
-                            <div class="predictive-dropdown" id="predictiveDropdown"></div>
-                        </div>
-
-                        <!-- Role Sortation Dropdown -->
-                        <select id="roleSortSelect" class="role-sort-select" onchange="filterAndRenderAccounts()">
-                            <option value="all">All Roles (Show All)</option>
-                            <option value="3">Admin (Role 3)</option>
-                            <option value="2">Teacher (Role 2)</option>
-                            <option value="1">Student / Normal User (Role 1)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="table-responsive-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>User Name</th>
-                                <th>Password</th>
-                                <th>Role</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="account-table-body">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-muted);">Fetching accounts from Google Sheet...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
-    <script src="scripts/nav.js"></script>
-    
     <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec'; 
 
-        // Global store for fetched accounts data to enable instant predictive filtering
         let allAccountsData = [];
-
-        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
-        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
         window.addEventListener('DOMContentLoaded', () => {
             const nameSpan = document.getElementById('username-display');
@@ -779,7 +301,6 @@
             updateClock();
             setInterval(updateClock, 1000);
 
-            // Event Listeners for Predictive Search Bar
             const searchInput = document.getElementById('usernameSearchInput');
             const dropdown = document.getElementById('predictiveDropdown');
 
@@ -788,7 +309,7 @@
                 filterAndRenderAccounts();
 
                 if (!query) {
-                    dropdown.classList.remove('active');
+                    dropdown.classList.add('hidden');
                     dropdown.innerHTML = '';
                     return;
                 }
@@ -804,61 +325,57 @@
                         const uname = match.username || match.Username || match.Name || "Unknown";
                         const item = document.createElement('div');
                         item.className = 'predictive-item';
-                        item.innerHTML = `<i class="fa-solid fa-user" style="font-size: 11px; color: var(--primary);"></i> <span>${uname}</span>`;
+                        item.innerHTML = `<i class="fa-solid fa-user text-primary text-xs"></i> <span>${uname}</span>`;
                         item.onclick = () => {
                             searchInput.value = uname;
-                            dropdown.classList.remove('active');
+                            dropdown.classList.add('hidden');
                             filterAndRenderAccounts();
                         };
                         dropdown.appendChild(item);
                     });
-                    dropdown.classList.add('active');
+                    dropdown.classList.remove('hidden');
                 } else {
-                    dropdown.classList.remove('active');
+                    dropdown.classList.add('hidden');
                     dropdown.innerHTML = '';
                 }
             });
 
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.search-container-wrapper')) {
-                    dropdown.classList.remove('active');
+                if (!e.target.closest('.relative')) {
+                    dropdown.classList.add('hidden');
                 }
             });
         });
 
-        // Toast Notification System Function
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            toast.className = `alert ${alertClass} text-white shadow-lg text-xs py-2 px-4 mb-2 transition-all duration-300`;
             
             const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
             toast.innerHTML = `
-                <i class="fa-solid ${iconClass} fa-lg"></i>
-                <span>${message}</span>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid ${iconClass}"></i>
+                    <span>${message}</span>
+                </div>
             `;
             
             container.appendChild(toast);
-            setTimeout(() => { toast.classList.add('show'); }, 10);
-            
             setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => { toast.remove(); }, 300);
+                toast.remove();
             }, 3500);
         }
 
-        // Live Clock Function
         function updateClock() {
             const clockEl = document.getElementById('live-clock');
             if (clockEl) {
                 const now = new Date();
                 const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const span = clockEl.querySelector('span');
-                if (span) span.textContent = timeString;
+                clockEl.textContent = timeString;
             }
         }
 
-        // Dynamically populate books lists for both Create and Edit modals
         async function loadDynamicBooksLists() {
             const createContainer = document.getElementById('createBooksContainer');
             const editContainer = document.getElementById('editBooksContainer');
@@ -880,7 +397,7 @@
                 }
 
                 if (keys.length === 0) {
-                    const emptyMsg = `<span style="font-size: 13px; color: var(--text-muted); grid-column: 1 / -1; text-align: center; padding: 10px;">No books found in Config sheet.</span>`;
+                    const emptyMsg = `<span class="text-xs text-base-content/50 col-span-full text-center py-2">No books found in Config sheet.</span>`;
                     createContainer.innerHTML = emptyMsg;
                     editContainer.innerHTML = emptyMsg;
                     return;
@@ -890,28 +407,25 @@
                 editContainer.innerHTML = '';
 
                 keys.forEach(pageName => {
-                    // Create Modal Checkbox
                     const createLabel = document.createElement('label');
                     createLabel.className = 'book-toggle-label';
-                    createLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="createAllowedBook" value="${pageName}">`;
+                    createLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="createAllowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
                     createContainer.appendChild(createLabel);
 
-                    // Edit Modal Checkbox
                     const editLabel = document.createElement('label');
                     editLabel.className = 'book-toggle-label';
-                    editLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="allowedBook" value="${pageName}">`;
+                    editLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="allowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
                     editContainer.appendChild(editLabel);
                 });
 
             } catch (err) {
                 console.error("Failed to load dynamic config books:", err);
-                const errorMsg = `<span style="font-size: 13px; color: #f87171; grid-column: 1 / -1; text-align: center; padding: 10px;">Failed to load book options.</span>`;
+                const errorMsg = `<span class="text-xs text-error col-span-full text-center py-2">Failed to load book options.</span>`;
                 createContainer.innerHTML = errorMsg;
                 editContainer.innerHTML = errorMsg;
             }
         }
 
-        // Real-time filtering function for modal lesson/book checkboxes
         function filterBooks(modalType) {
             const searchInputId = modalType === 'create' ? 'createBookSearch' : 'editBookSearch';
             const containerId = modalType === 'create' ? 'createBooksContainer' : 'editBooksContainer';
@@ -939,7 +453,7 @@
 
                 if (!result || result.length === 0) {
                     allAccountsData = [];
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No accounts found in sheet.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-base-content/50">No accounts found in sheet.</td></tr>`;
                     updateAccountsCounter(0, 0);
                     return;
                 }
@@ -949,7 +463,7 @@
 
             } catch (error) {
                 console.error('Error fetching sheet data:', error);
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f87171;">Failed to load data from Google Sheet. Check your Web App URL.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-error">Failed to load data from Google Sheet. Check your Web App URL.</td></tr>`;
                 updateAccountsCounter(0, 0);
             }
         }
@@ -972,7 +486,7 @@
             updateAccountsCounter(filtered.length, allAccountsData.length);
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">No accounts matching criteria.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-base-content/50">No accounts matching criteria.</td></tr>`;
                 return;
             }
 
@@ -998,13 +512,13 @@
                 const userBooks = acc.books || acc.Books || "";
 
                 const row = `
-                    <tr>
+                    <tr class="hover">
                         <td><strong>${username}</strong></td>
-                        <td><span style="font-family: monospace; font-size: 13px; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px;">${password}</span></td>
-                        <td><span class="badge ${roleBadge}">${roleName}</span></td>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="openEditModal('${username}', '${password}', '${roleStr}', '${userBooks}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                            <button class="btn-action btn-delete" onclick="openDeleteModal('${username}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                        <td><code class="text-xs bg-base-200 px-2 py-1 rounded">${password}</code></td>
+                        <td><span class="badge ${roleBadge} px-3 py-2 text-xs">${roleName}</span></td>
+                        <td class="text-center space-x-2">
+                            <button class="btn btn-ghost btn-xs text-primary" onclick="openEditModal('${username}', '${password}', '${roleStr}', '${userBooks}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            <button class="btn btn-ghost btn-xs text-error" onclick="openDeleteModal('${username}')"><i class="fa-solid fa-trash"></i> Delete</button>
                         </td>
                     </tr>
                 `;
@@ -1024,19 +538,18 @@
             }
         }
 
-        /* --- CREATE ACCOUNT MODAL FUNCTIONS --- */
         function openCreateModal() {
             document.getElementById('createUsername').value = '';
             document.getElementById('createPassword').value = '';
             document.getElementById('createRole').value = '1';
             document.getElementById('createBookSearch').value = '';
-            filterBooks('create'); // Reset search filter view
+            filterBooks('create');
             document.querySelectorAll('input[name="createAllowedBook"]').forEach(cb => cb.checked = false);
-            document.getElementById('createModalOverlay').classList.add('active');
+            document.getElementById('createModalOverlay').classList.add('modal-open');
         }
 
         function closeCreateModal() {
-            document.getElementById('createModalOverlay').classList.remove('active');
+            document.getElementById('createModalOverlay').classList.remove('modal-open');
         }
 
         async function submitCreateForm(event) {
@@ -1058,7 +571,7 @@
             });
             const booksParam = selectedBooks.join(',');
 
-            btn.innerText = "Creating...";
+            btn.textContent = "Creating...";
             btn.disabled = true;
 
             try {
@@ -1066,13 +579,7 @@
                 const response = await fetch(url);
                 const textResponse = await response.text();
                 
-                let result;
-                try {
-                    result = JSON.parse(textResponse);
-                } catch (parseErr) {
-                    console.error("Non-JSON Response received:", textResponse);
-                    throw new Error("Server returned an invalid response.");
-                }
+                let result = JSON.parse(textResponse);
 
                 if (result.status === "success") {
                     showToast("Account created successfully!", "success");
@@ -1083,32 +590,31 @@
                 }
             } catch (err) {
                 console.error(err);
-                showToast(err.message || "Connection failed. Check Deployment URL.", "error");
+                showToast("Connection failed. Check Deployment URL.", "error");
             } finally {
-                btn.innerText = "Create Account";
+                btn.textContent = "Create Account";
                 btn.disabled = false;
             }
         }
 
-        /* --- EDIT ACCOUNT MODAL FUNCTIONS --- */
         function openEditModal(username, password, role, booksString = "") {
             document.getElementById('editOldUsername').value = username;
             document.getElementById('editUsername').value = username;
             document.getElementById('editPassword').value = password;
             document.getElementById('editRole').value = role;
             document.getElementById('editBookSearch').value = '';
-            filterBooks('edit'); // Reset search filter view
+            filterBooks('edit');
             
             const checkboxes = document.querySelectorAll('input[name="allowedBook"]');
             checkboxes.forEach(cb => {
                 cb.checked = booksString.includes(cb.value);
             });
 
-            document.getElementById('editModalOverlay').classList.add('active');
+            document.getElementById('editModalOverlay').classList.add('modal-open');
         }
 
         function closeEditModal() {
-            document.getElementById('editModalOverlay').classList.remove('active');
+            document.getElementById('editModalOverlay').classList.remove('modal-open');
         }
 
         async function submitEditForm(event) {
@@ -1143,15 +649,14 @@
             }
         }
 
-        /* --- DELETE ACCOUNT MODAL FUNCTIONS --- */
         function openDeleteModal(username) {
             document.getElementById('deleteTargetUsername').value = username;
             document.getElementById('deleteUsernameDisplay').textContent = `"${username}"`;
-            document.getElementById('deleteModalOverlay').classList.add('active');
+            document.getElementById('deleteModalOverlay').classList.add('modal-open');
         }
 
         function closeDeleteModal() {
-            document.getElementById('deleteModalOverlay').classList.remove('active');
+            document.getElementById('deleteModalOverlay').classList.remove('modal-open');
         }
 
         async function confirmDeleteAccount() {

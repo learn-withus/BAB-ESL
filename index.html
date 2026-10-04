@@ -1,970 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <link rel="icon" type="image/png" href="images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESL Pro Dashboard</title>
+    <title>BAB - ESL Dashboard</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    .modal-box{
-        margin-top: -10%;
-    }
-    th{
-        text-align: center;
-    }
-    td{
-       text-align: center; 
-    }
-    :root {
-        --primary: #2563eb;
-        --bg: #f8fafc;
-        --card-bg: #ffffff;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --sidebar-width: 260px;
-        --sidebar-bg: #1e293b;
-        --border: #e2e8f0;
-    }
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="bg-base-200 min-h-screen font-sans">
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+            <nav class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30">
+                <div class="flex-none lg:hidden">
+                    <label for="main-drawer" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </label>
+                </div> 
 
-    /* --- DARK MODE THEME --- */
-    body.dark-mode {
-        --bg: #0f172a;
-        --card-bg: #1e293b;
-        --text-main: #f1f5f9;
-        --text-muted: #94a3b8;
-        --sidebar-bg: #020617;
-        --border: #334155;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
-
-    body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease, background 0.3s ease; }
-
-    @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.active { transform: translateX(0); } }
-
-    .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
-    .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-    .side-link:hover, .side-link.active { background: #334155; color: white; }
-
-    .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; min-width: 0; }
-    @media (max-width: 1024px) { .main-content { margin-left: 0; } }
-
-    .top-nav { background: var(--card-bg); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 900; border-bottom: 1px solid var(--border); }
-    .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
-    @media (max-width: 1024px) { .menu-toggle { display: block; } }
-
-    /* --- DASHBOARD GRID --- */
-    .dashboard-grid { 
-        padding: 24px; 
-        display: grid; 
-        grid-template-columns: repeat(12, 1fr); 
-        gap: 20px; 
-        max-width: 1600px;
-        margin: 0 auto;
-        width: 100%;
-    }
-    
-    .card { 
-        background: var(--card-bg); 
-        border-radius: 16px; 
-        padding: 24px; 
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03); 
-        border: 1px solid var(--border); 
-        overflow: hidden; 
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    /* Full Width Welcome Banner */
-    .welcome-card { 
-        grid-column: span 12; 
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
-        color: white; 
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: nowrap;
-        gap: 20px;
-        position: relative;
-        overflow: hidden;
-        padding: 28px 32px;
-        border: none;
-    }
-
-    .welcome-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        z-index: 1;
-        gap: 6px;
-        flex-shrink: 0;
-    }
-
-    .welcome-right-section {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        z-index: 1;
-        flex-wrap: nowrap;
-        justify-content: flex-end;
-    }
-    
-    .banner-clock-widget {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 10px 16px;
-        border-radius: 12px;
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        flex-shrink: 0;
-    }
-
-    .analog-clock-mini {
-        width: 34px;
-        height: 34px;
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        border-radius: 50%;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    .analog-clock-mini::before {
-        content: '';
-        position: absolute;
-        bottom: 50%;
-        left: calc(50% - 1px);
-        width: 2px;
-        height: 9px;
-        background: #ffffff;
-        border-radius: 2px;
-        transform-origin: bottom center;
-    }
-    .analog-clock-mini::after {
-        content: '';
-        position: absolute;
-        bottom: 50%;
-        left: calc(50% - 1px);
-        width: 1.5px;
-        height: 12px;
-        background: #93c5fd;
-        border-radius: 2px;
-        transform-origin: bottom center;
-    }
-    .clock-center-dot {
-        width: 4px;
-        height: 4px;
-        background: #ffffff;
-        border-radius: 50%;
-        z-index: 2;
-    }
-    
-    .brand-logo-container {
-        background: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(10px);
-        padding: 10px 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        flex-shrink: 0;
-    }
-
-    .brand-logo-container img {
-        height: 38px;
-        width: auto;
-        object-fit: contain;
-        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-    }
-
-    .class-meet-card {
-        grid-column: span 8;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .right-sidebar-stack {
-        grid-column: span 4;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .stat-card-mini {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 20px;
-        background: linear-gradient(135deg, var(--card-bg) 0%, rgba(220, 252, 231, 0.05) 100%);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .stat-card-mini::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: #16a34a;
-    }
-
-    .stat-card-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-width: 0;
-        flex: 1;
-    }
-
-    .stat-card-title {
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: var(--text-muted);
-        margin-bottom: 2px;
-    }
-
-    .stat-card-value {
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--text-main);
-        letter-spacing: -0.5px;
-        white-space: nowrap;
-    }
-
-    .stat-card-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 10.5px;
-        font-weight: 600;
-        color: #16a34a;
-        background: #dcfce7;
-        padding: 2px 8px;
-        border-radius: 20px;
-        margin-top: 4px;
-        width: fit-content;
-    }
-    body.dark-mode .stat-card-badge {
-        background: rgba(22, 163, 74, 0.2);
-        color: #4ade80;
-    }
-
-    .stat-card-icon {
-        width: 48px;
-        height: 48px;
-        background: #dcfce7;
-        color: #16a34a;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.12);
-    }
-    body.dark-mode .stat-card-icon {
-        background: rgba(22, 163, 74, 0.2);
-        color: #4ade80;
-    }
-
-    .sticky-card-mini {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .sticky-card-mini textarea { 
-        width: 100%; 
-        height: 140px; 
-        border: 1px solid var(--border); 
-        background: #fffdec; 
-        padding: 12px; 
-        border-radius: 10px; 
-        resize: none; 
-        color: #1e293b; 
-        font-size: 13.5px; 
-        outline: none;
-    }
-    body.dark-mode .sticky-card-mini textarea { background: #1e293b; color: #f1f5f9; }
-
-    .sessions-list-card {
-        grid-column: span 12;
-    }
-
-    .dashboard-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 9px 14px;
-        border-radius: 8px;
-        font-size: 12.5px;
-        font-weight: 500;
-        text-decoration: none;
-        cursor: pointer;
-        border: none;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        transition: all 0.2s ease;
-        white-space: nowrap;
-    }
-
-    .dashboard-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-    }
-
-    .clock-text-container {
-        display: flex;
-        flex-direction: column;
-        min-width: 210px;
-    }
-
-    #ph-date {
-        font-size: 10.5px;
-        font-weight: 600;
-        color: rgba(255,255,255,0.85);
-        letter-spacing: 0.4px;
-        white-space: nowrap;
-        margin-bottom: 2px;
-        font-family: monospace, 'Inter', sans-serif;
-    }
-
-    #ph-time { 
-        font-size: 1.1rem; 
-        font-weight: 700; 
-        color: #ffffff; 
-        letter-spacing: -0.5px;
-        font-family: monospace, 'Inter', sans-serif;
-        white-space: nowrap;
-    }
-
-    #ph-timezone {
-        font-size: 9px;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.85);
-        text-transform: uppercase;
-        white-space: nowrap;
-        margin-top: 1px;
-    }
-
-    /* --- TOAST & MODAL STYLES --- */
-    #toast-container {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    .toast {
-        background: var(--card-bg);
-        color: var(--text-main);
-        padding: 12px 20px;
-        border-radius: 10px;
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 13px;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-    .toast.success i { color: #10b981; }
-    .toast.error i { color: #ef4444; }
-
-    .custom-modal {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(4px);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease;
-    }
-    .custom-modal.active { opacity: 1; pointer-events: auto; }
-    .modal-box {
-        background: var(--card-bg);
-        padding: 24px;
-        border-radius: 16px;
-        width: 100%;
-        max-width: 380px;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        border: 1px solid var(--border);
-        text-align: center;
-    }
-
-    @media (max-width: 1200px) { 
-        .dashboard-grid { grid-template-columns: repeat(2, 1fr); } 
-        .welcome-card, .class-meet-card, .right-sidebar-stack, .sessions-list-card { grid-column: span 2; }
-    }
-    @media (max-width: 768px) { 
-        .dashboard-grid { grid-template-columns: 1fr; padding: 16px; gap: 16px; } 
-        .welcome-card { grid-column: span 1; flex-direction: column; align-items: stretch; padding: 20px; } 
-        .welcome-right-section { width: 100%; flex-direction: column; align-items: stretch; gap: 12px; }
-        .brand-logo-container { width: 100%; justify-content: center; }
-    }
-
-    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-    .sidebar-overlay.active { display: block; }
-</style>
-<body>
-
-<div class="sidebar-overlay" id="overlay"></div>
-
-<aside class="sidebar" id="sidebar">
-    <div class="logo">ESL PRO TOOL</div>
-    <div id="navbar-placeholder"></div>
-</aside>
-
-<main class="main-content">
-    <header class="top-nav">
-        <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
-        <div class="user-profile" style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
-            <span style="font-weight: 600; font-size: 13px;">Welcome <span id="username-display">User</span>!</span>
-            <i class="fa-solid fa-circle-user fa-xl"></i>
-        </div>
-    </header>
-
-    <div class="dashboard-grid">
-        <!-- Full Width Welcome Banner -->
-        <div class="card welcome-card">
-            <div class="welcome-content">
-                <h2 style="font-size: 22px; font-weight: 700;">Good Day! 👋</h2>
-                <p style="opacity: 0.9; margin-top: 4px; font-size: 13px;">Ready for your lessons today?</p>
-            </div>
-            <div class="welcome-right-section">
-                <div class="banner-clock-widget">
-                    <div class="analog-clock-mini" id="mini-clock">
-                        <div class="clock-center-dot"></div>
-                    </div>
-                    <div class="clock-text-container">
-                        <div id="ph-date">LOADING...</div>
-                        <div id="ph-time">00:00:00 AM</div>
-                        <div id="ph-timezone">Philippine Standard Time</div>
+                <div class="px-2 flex-1 whitespace-nowrap font-bold">
+                    <div class="flex flex-row flex-nowrap items-center gap-4">
+                        <div class="hidden sm:block relative">
+                            <label class="input input-bordered input-sm flex items-center gap-2 input-primary w-80">
+                                <svg class="h-4 w-4 opacity-50 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+                                <input type="search" id="lesson-search" class="grow text-xs" placeholder="Search lessons"> 
+                                <kbd class="kbd kbd-xs">⌘</kbd> <kbd class="kbd kbd-xs">K</kbd>
+                            </label>
+                            <div id="search-results" class="absolute left-0 right-0 top-full mt-1 bg-base-100 shadow-xl rounded-box border border-base-300 max-h-60 overflow-y-auto z-50" style="display: none;"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="brand-logo-container">
-                    <img src="images/bab.png" alt="BAB ESL Pro Logo">
+                <div class="flex flex-row gap-4 items-center">
+                    <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
+                        <input type="checkbox" id="theme-checkbox" />
+                        <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path></svg>
+                        <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"></path></svg>
+                    </label>
+                    <div id="account-settings" class="flex flex-row items-center gap-2">
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="avatar avatar-online cursor-pointer">
+                                <div class="ring-primary ring-offset-base-100 ring-2 ring-offset-2 w-8 rounded-full">
+                                    <img alt="Teacher Profile" src="#" id="header-avatar-img">
+                                </div>
+                            </div>
+                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow border border-base-300">
+                                <li><a href="#" class="py-2">Profile</a></li>
+                                <li><button onclick="logout()" class="text-error py-2 w-full text-left">Logout</button></li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col text-left mr-2">
+                            <span id="username-display" class="font-bold text-xs sm:text-sm">User</span>
+                            <span class="font-bold text-[10px] text-primary">Teacher</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+                <div class="card bg-base-100 shadow-sm border border-base-300 lg:col-span-3 p-6 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">Good Day! 👋</h2>
+                        <p class="text-base-content/70 text-sm mt-1">Ready for your lessons today?</p>
+                    </div>
+                    <div class="flex items-center gap-6 flex-wrap">
+                        <div class="flex items-center gap-4 bg-base-200 px-4 py-3 rounded-xl border border-base-300">
+                            <div class="relative w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center analog-clock-mini" id="mini-clock">
+                                <div class="w-1.5 h-1.5 bg-primary rounded-full absolute clock-center-dot"></div>
+                            </div>
+                            <div class="text-xs">
+                                <div id="ph-date" class="font-semibold">LOADING...</div>
+                                <div id="ph-time" class="text-primary font-bold text-sm">00:00:00 AM</div>
+                                <div class="text-base-content/50 text-[10px]">Philippine Standard Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 lg:col-span-2">
+                    <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-primary">
+                        <i class="fa-solid fa-calendar-plus"></i> Generate Google Meet Class Link
+                    </h3>
+                    <form id="schedule-session-form" class="flex flex-col gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Student</label>
+                                <select id="session-student-select" class="select select-bordered w-full text-sm bg-base-100" required>
+                                    <option value="">Select Student...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Date</label>
+                                <input type="date" id="session-date" class="input input-bordered w-full text-sm bg-base-100" required />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Lesson Title / Topic</label>
+                                <input type="text" id="session-lesson-input" list="lesson-suggestions" placeholder="Type custom title or select lesson..." class="input input-bordered w-full text-sm bg-base-100" required />
+                                <datalist id="lesson-suggestions"></datalist>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Time</label>
+                                <input type="time" id="session-time" class="input input-bordered w-full text-sm bg-base-100" required />
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-2">
+                            <button type="submit" id="btn-create-session" class="btn btn-primary px-6">
+                                <i class="fa-solid fa-paper-plane" id="btn-icon"></i> <span id="btn-text">Generate Link</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 flex flex-col justify-between">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-sm font-medium text-base-content/70">Completed Lessons</div>
+                            <div id="completed-lessons-text" class="text-3xl font-extrabold mt-2">0 Lessons</div>
+                            <div class="badge badge-success badge-sm gap-1 mt-3 text-white">
+                                <i class="fa-solid fa-arrow-trend-up text-[9px]"></i> On Track
+                            </div>
+                        </div>
+                        <div class="p-3 bg-primary/10 text-primary rounded-xl text-xl">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 lg:col-span-3">
+                    <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-primary">
+                        <i class="fa-solid fa-list-check"></i> Scheduled Class Sessions
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="table w-full text-sm">
+                            <thead>
+                                <tr class="text-base-content/70 border-b border-base-300">
+                                    <th>Student</th>
+                                    <th>Lesson</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th class="text-center">Meet Link</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessions-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center py-6 text-base-content/50">Loading scheduled sessions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- LEFT SIDE: Schedule Class Session Form -->
-        <div class="card class-meet-card">
-            <h3 style="font-size: 15px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-calendar-plus" style="color: var(--primary);"></i> Generate Google Meet Class Link
-            </h3>
-            <form id="schedule-session-form" style="display: flex; flex-direction: column; gap: 14px; flex: 1; justify-content: space-between;">
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
-                    <div>
-                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Student</label>
-                        <select id="session-student-select" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required>
-                            <option value="">Select Student...</option>
-                            <option value="toshi">toshi</option>
-                            <option value="masa">masa</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Date</label>
-                        <input type="date" id="session-date" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required />
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
-                    <div>
-                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Lesson Material / Custom Title</label>
-                        <input type="text" id="session-lesson-input" list="lesson-suggestions" placeholder="Select or type custom lesson..." style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required />
-                        <datalist id="lesson-suggestions"></datalist>
-                    </div>
-                    <div>
-                        <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Time</label>
-                        <input type="time" id="session-time" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; background: var(--card-bg); color: var(--text-main);" required />
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: center; margin-top: 8px;">
-                    <button type="submit" id="btn-create-session" class="dashboard-btn" style="background: var(--primary); color: white; border: none; padding: 11px 26px; border-radius: 8px; font-weight: 600; cursor: pointer; width: auto;">
-                        <i class="fa-solid fa-paper-plane" id="btn-icon"></i> <span id="btn-text">Generate Link</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- RIGHT SIDE: Stack Container -->
-        <div class="right-sidebar-stack">
-            <!-- Completed Lessons Card -->
-            <div class="card stat-card-mini">
-                <div class="stat-card-content">
-                    <div class="stat-card-title">Completed Lessons</div>
-                    <div id="completed-lessons-text" class="stat-card-value">0 Lessons</div>
-                    <div class="stat-card-badge">
-                        <i class="fa-solid fa-arrow-trend-up" style="font-size: 9px;"></i> On Track
-                    </div>
-                </div>
-                <div class="stat-card-icon">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- UPCOMING SCHEDULED SESSIONS TABLE -->
-        <div class="card sessions-list-card">
-            <h3 style="font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Scheduled Class Sessions
-            </h3>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid var(--border); text-align: left; color: var(--text-muted);">
-                            <th style="padding: 10px;">Student</th>
-                            <th style="padding: 10px;">Lesson</th>
-                            <th style="padding: 10px;">Date</th>
-                            <th style="padding: 10px;">Time</th>
-                            <th style="padding: 10px;">Meet Link</th>
-                            <th style="padding: 10px; text-align: center;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sessions-table-body">
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 16px; color: var(--text-muted);">Loading scheduled sessions...</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
             </div>
         </div>
     </div>
-</main>
 
-<!-- TOAST & MODAL CONTAINERS -->
-<div id="toast-container"></div>
-
-<!-- Confirmation Modal -->
-<div class="custom-modal" id="confirm-modal">
-    <div class="modal-box">
-        <h3 style="font-size: 16px; margin-bottom: 8px;">Mark Class as Complete?</h3>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">This will increment your completed lessons count and remove this session.</p>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button id="modal-cancel-btn" class="dashboard-btn" style="background: var(--border); color: var(--text-main);">Cancel</button>
-            <button id="modal-confirm-btn" class="dashboard-btn" style="background: #10b981; color: white;">Confirm Done</button>
+    <div id="toast-container" class="toast toast-end toast-bottom z-50"></div>
+    
+    <div class="modal" id="confirm-modal">
+        <div class="modal-box text-center">
+            <h3 class="text-lg font-bold">Mark Class as Complete?</h3>
+            <div class="modal-action justify-center">
+                <button id="modal-cancel-btn" class="btn">Cancel</button>
+                <button id="modal-confirm-btn" class="btn btn-success text-white">Confirm Done</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- View / Copy Link Modal -->
-<div class="custom-modal" id="link-modal">
-    <div class="modal-box" style="max-width: 440px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="font-size: 16px; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-link" style="color: var(--primary);"></i> Meeting Link</h3>
-            <button id="close-link-modal" style="background: none; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">You can copy the meeting URL below or open it directly.</p>
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <input type="text" id="modal-link-input" readonly style="flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12.5px; background: var(--bg); color: var(--text-main); outline: none;" />
-            <button id="copy-link-btn" class="dashboard-btn" style="background: var(--primary); color: white; padding: 9px 14px;">
-                <i class="fa-solid fa-copy"></i> Copy
+<div class="modal" id="link-modal">
+    <div class="modal-box max-w-md p-0 overflow-hidden shadow-2xl bg-base-100 border border-base-300">
+        <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
+            <h3 class="font-bold text-lg flex items-center gap-2">
+                <i class="fa-solid fa-video"></i> Class Session Details
+            </h3>
+            <button onclick="closeLinkModal()" class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus">
+                <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 8px;">
-            <a id="modal-open-link-btn" href="#" target="_blank" class="dashboard-btn" style="background: #10b981; color: white; text-decoration: none;">
-                <i class="fa-solid fa-external-link-alt"></i> Open in New Tab
+
+        <div class="p-6 space-y-4">
+            <div class="bg-base-200/60 rounded-xl p-4 border border-base-300 space-y-3 text-sm">
+                <div class="flex justify-between items-center">
+                    <span class="text-base-content/60 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-user-graduate w-4 text-primary"></i> Student:
+                    </span>
+                    <span id="modal-detail-student" class="font-bold text-base-content">--</span>
+                </div>
+                <div class="divider my-0"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-base-content/60 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-book-open w-4 text-primary"></i> Lesson / Topic:
+                    </span>
+                    <span id="modal-detail-title" class="font-bold text-primary text-right max-w-[200px] truncate" title="">--</span>
+                </div>
+                <div class="divider my-0"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-base-content/60 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day w-4 text-primary"></i> Date:
+                    </span>
+                    <span id="modal-detail-date" class="font-semibold text-base-content">--</span>
+                </div>
+                <div class="divider my-0"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-base-content/60 font-medium flex items-center gap-2">
+                        <i class="fa-solid fa-clock w-4 text-primary"></i> Time:
+                    </span>
+                    <span id="modal-detail-time" class="font-semibold text-base-content">--</span>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-semibold text-base-content/70 block mb-1.5 uppercase tracking-wider">Meeting URL</label>
+                <div class="join w-full">
+                    <input type="text" id="modal-link-input" readonly class="input input-bordered join-item w-full text-xs bg-base-100 font-mono" />
+                    <button id="copy-link-btn" class="btn btn-primary join-item px-4">
+                        <i class="fa-solid fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-base-200 px-6 py-4 flex gap-3 justify-end border-t border-base-300">
+            <a id="modal-join-btn" href="#" target="_blank" class="btn btn-success btn-sm text-white gap-2 px-5">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Join Class Now
             </a>
         </div>
     </div>
 </div>
 
-<script src="scripts/nav.js"></script>
-<script src="scripts/script.js"></script>
-<script>
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
-
-    menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
-    overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
-
-    function formatLessonTitle(lessonStr) {
-        if (!lessonStr) return '';
-        return lessonStr
-            .replace(/\.[^/.]+$/, '')            
-            .replace(/[-_]/g, ' ')              
-            .toLowerCase()                       
-            .replace(/\b\w/g, char => char.toUpperCase()); 
-    }
-
-    function formatFriendlyDate(dateStr) {
-        if (!dateStr) return '';
-        const parsedDate = new Date(dateStr);
-        if (isNaN(parsedDate)) return dateStr;
-        return parsedDate.toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-    }
-
-    function formatFriendlyTime(timeStr) {
-        if (!timeStr) return '';
-        const parts = timeStr.split(':');
-        if (parts.length < 2) return timeStr;
-        let hours = parseInt(parts[0], 10);
-        const minutes = parts[1];
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        return `${hours}:${minutes} ${ampm}`;
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const nameSpan = document.querySelector('.user-profile span span');
-        let storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
-        
-        if (storedName.toLowerCase().startsWith('teacher ')) {
-            storedName = storedName.substring(8).trim();
-        }
-
-        if (nameSpan && storedName) {
-            nameSpan.textContent = "Teacher " + storedName;
-        }
-
-        if (storedName) {
-            initDashboardData(storedName);
-            fetchScheduledSessions();
-        } else {
-            document.getElementById('sessions-table-body').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 16px; color: var(--text-muted);">Please log in as a teacher to view your schedules.</td></tr>';
-        }
-
-        updateClock();
-        setInterval(updateClock, 1000);
-
-        const sessionForm = document.getElementById('schedule-session-form');
-        if (sessionForm) {
-            sessionForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                scheduleNewSession(storedName);
-            });
-        }
-
-        const copyBtn = document.getElementById('copy-link-btn');
-        const linkInput = document.getElementById('modal-link-input');
-        if (copyBtn && linkInput) {
-            copyBtn.addEventListener('click', () => {
-                linkInput.select();
-                navigator.clipboard.writeText(linkInput.value).then(() => {
-                    showToast("Link copied to clipboard!", "success");
-                }).catch(() => {
-                    showToast("Failed to copy link", "error");
-                });
-            });
-        }
-
-        const closeLinkModalBtn = document.getElementById('close-link-modal');
-        const linkModal = document.getElementById('link-modal');
-        if (closeLinkModalBtn && linkModal) {
-            closeLinkModalBtn.addEventListener('click', () => linkModal.classList.remove('active'));
-            linkModal.addEventListener('click', (e) => { if (e.target === linkModal) linkModal.classList.remove('active'); });
-        }
-    });
-
-    function showToast(message, type = 'success') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-        toast.innerHTML = `<i class="fa-solid ${iconClass} fa-lg"></i><span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 300);
-        }, 3500);
-    }
-
-    function openLinkModal(url) {
-        const modal = document.getElementById('link-modal');
-        const input = document.getElementById('modal-link-input');
-        const openBtn = document.getElementById('modal-open-link-btn');
-        if (!modal || !input || !openBtn) return;
-
-        input.value = url;
-        openBtn.href = url;
-        modal.classList.add('active');
-    }
-
-    function openConfirmModal(onConfirm) {
-        const modal = document.getElementById('confirm-modal');
-        const confirmBtn = document.getElementById('modal-confirm-btn');
-        const cancelBtn = document.getElementById('modal-cancel-btn');
-        if (!modal) return;
-
-        modal.classList.add('active');
-
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        const newCancelBtn = cancelBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-
-        newConfirmBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-            if (typeof onConfirm === 'function') onConfirm();
-        });
-
-        newCancelBtn.addEventListener('click', () => modal.classList.remove('active'));
-        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
-    }
-
-    function updateClock() {
-        const now = new Date();
-        const optionsTime = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        const optionsDate = { timeZone: 'Asia/Manila', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-        
-        const timeString = new Intl.DateTimeFormat('en-US', optionsTime).format(now);
-        const dateString = new Intl.DateTimeFormat('en-US', optionsDate).format(now);
-
-        const timeEl = document.getElementById('ph-time');
-        const dateEl = document.getElementById('ph-date');
-
-        if (timeEl && timeEl.textContent !== timeString) timeEl.textContent = timeString;
-        if (dateEl && dateEl.textContent !== dateString) dateEl.textContent = dateString;
-
-        const manilaTimeStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).format(now);
-        const [h, m, s] = manilaTimeStr.split(':').map(Number);
-
-        const minuteDeg = (m * 6) + (s * 0.1);
-        const hourDeg = ((h % 12) * 30) + (m * 0.5);
-
-        let clockStyleTag = document.getElementById('live-clock-style');
-        if (!clockStyleTag) {
-            clockStyleTag = document.createElement('style');
-            clockStyleTag.id = 'live-clock-style';
-            document.head.appendChild(clockStyleTag);
-        }
-
-        clockStyleTag.innerHTML = `
-            .analog-clock-mini::before { transform: rotate(${hourDeg}deg); }
-            .analog-clock-mini::after { transform: rotate(${minuteDeg}deg); }
-        `;
-    }
-
-    function initDashboardData(username) {
-        const cbName = 'init_cb_' + Math.round(Math.random() * 1000000);
-        window[cbName] = function(res) {
-            if (res && res.status === "success") {
-                if (Array.isArray(res.accounts)) {
-                    const currentUser = res.accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
-                    if (currentUser) {
-                        const lessonsContainer = document.getElementById('completed-lessons-text');
-                        if (lessonsContainer && currentUser.completedLessons !== undefined) {
-                            lessonsContainer.textContent = currentUser.completedLessons + " Lessons";
-                        }
-                    }
-
-                    const studentSelect = document.getElementById('session-student-select');
-                    if (studentSelect) {
-                        studentSelect.innerHTML = '<option value="">Select Student...</option>';
-                        res.accounts.forEach(acc => {
-                            if (String(acc.role) === "1" || String(acc.role).toLowerCase() === "student") {
-                                const opt = document.createElement('option');
-                                opt.value = acc.username;
-                                opt.textContent = acc.username;
-                                studentSelect.appendChild(opt);
-                            }
-                        });
-                    }
-                }
-
-                if (Array.isArray(res.lessons)) {
-                    const lessonDatalist = document.getElementById('lesson-suggestions');
-                    if (lessonDatalist) {
-                        lessonDatalist.innerHTML = '';
-                        res.lessons.forEach(lesson => {
-                            const opt = document.createElement('option');
-                            opt.value = formatLessonTitle(lesson);
-                            lessonDatalist.appendChild(opt);
-                        });
-                    }
-                }
-            }
-            if (script.parentNode) document.body.removeChild(script);
-            delete window[cbName];
-        };
-
-        const script = document.createElement('script');
-        script.src = `${API_URL}?action=initDashboard&callback=${cbName}`;
-        document.body.appendChild(script);
-    }
-
-    function completeClass(username, sessionId) {
-        openConfirmModal(() => {
-            const callbackName = 'complete_cb_' + Math.round(Math.random() * 1000000);
-            window[callbackName] = function(response) {
-                if (response && response.status === "success") {
-                    deleteSession(sessionId, username);
-                } else {
-                    showToast("Failed to update: " + (response ? response.message : "Unknown error"), "error");
-                }
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[callbackName];
-            };
-            const script = document.createElement('script');
-            script.src = `${API_URL}?action=completeClass&username=${encodeURIComponent(username)}&callback=${callbackName}`;
-            document.body.appendChild(script);
-        });
-    }
-
-    function deleteSession(sessionId, username) {
-        const delCallback = 'del_session_cb_' + Math.round(Math.random() * 1000000);
-        window[delCallback] = function(res) {
-            if (res && res.status === "success") {
-                showToast("Class completed and removed from schedule!", "success");
-                initDashboardData(username);
-                fetchScheduledSessions();
-            } else {
-                showToast("Class completed, but failed to clear session row.", "error");
-                fetchScheduledSessions();
-            }
-            if (script.parentNode) document.body.removeChild(script);
-            delete window[delCallback];
-        };
-        const script = document.createElement('script');
-        script.src = `${API_URL}?action=deleteSession&id=${encodeURIComponent(sessionId)}&callback=${delCallback}`;
-        document.body.appendChild(script);
-    }
-
-    function scheduleNewSession(teacherName) {
-        const student = document.getElementById('session-student-select').value;
-        const lesson = document.getElementById('session-lesson-input').value.trim();
-        const sessionDate = document.getElementById('session-date').value;
-        const sessionTime = document.getElementById('session-time').value;
-
-        if (!student || !lesson || !sessionDate || !sessionTime) {
-            showToast("Please fill out all session details.", "error");
-            return;
-        }
-
-        // Add loading spinner and disable button
-        const submitBtn = document.getElementById('btn-create-session');
-        const btnIcon = document.getElementById('btn-icon');
-        const btnText = document.getElementById('btn-text');
-        
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.8';
-        if (btnIcon) btnIcon.className = 'fa-solid fa-spinner fa-spin';
-        if (btnText) btnText.textContent = 'Generating...';
-
-        const callbackName = 'create_session_cb_' + Math.round(Math.random() * 1000000);
-        window[callbackName] = function(resp) {
-            // Restore button state
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            if (btnIcon) btnIcon.className = 'fa-solid fa-paper-plane';
-            if (btnText) btnText.textContent = 'Generate Link';
-
-            if (resp && resp.status === "success") {
-                showToast("Class session scheduled successfully!", "success");
-                document.getElementById('schedule-session-form').reset();
-                fetchScheduledSessions();
-            } else {
-                showToast("Failed to schedule session.", "error");
-            }
-            if (script.parentNode) document.body.removeChild(script);
-            delete window[callbackName];
-        };
-
-        const script = document.createElement('script');
-        script.src = `${API_URL}?action=createSession&teacher=${encodeURIComponent(teacherName)}&student=${encodeURIComponent(student)}&lesson=${encodeURIComponent(lesson)}&sessionDate=${encodeURIComponent(sessionDate)}&sessionTime=${encodeURIComponent(sessionTime)}&callback=${callbackName}`;
-        document.body.appendChild(script);
-    }
-
-    function fetchScheduledSessions() {
-        let storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
-        if (storedName.toLowerCase().startsWith('teacher ')) {
-            storedName = storedName.substring(8).trim();
-        }
-
-        const callbackName = 'get_sessions_cb_' + Math.round(Math.random() * 1000000);
-
-        window[callbackName] = function(sessions) {
-            const tbody = document.getElementById('sessions-table-body');
-            tbody.innerHTML = '';
-
-            const teacherSessions = Array.isArray(sessions) ? sessions.filter(s => {
-                if (!s.teacher) return true; 
-                let sheetTeacher = String(s.teacher).trim().toLowerCase();
-                if (sheetTeacher.startsWith('teacher ')) sheetTeacher = sheetTeacher.substring(8).trim();
-                return sheetTeacher === storedName.toLowerCase();
-            }) : [];
-
-            if (teacherSessions.length > 0) {
-                teacherSessions.reverse().forEach(s => {
-                    const formattedTitle = formatLessonTitle(s.lesson);
-                    const sessionId = s.id;
-                    const friendlyDate = formatFriendlyDate(s.sessionDate);
-                    const friendlyTime = formatFriendlyTime(s.sessionTime);
-
-                    const tr = document.createElement('tr');
-                    tr.style.borderBottom = '1px solid var(--border)';
-                    tr.innerHTML = `
-                        <td style="padding: 10px; font-weight: 600;">${s.student}</td>
-                        <td style="padding: 10px;">${formattedTitle}</td>
-                        <td style="padding: 10px;">${friendlyDate}</td>
-                        <td style="padding: 10px;">${friendlyTime}</td>
-                        <td style="padding: 10px; text-align: center;">
-                        ${s.link ? `
-                                <div style="display: flex; gap: 6px; align-items: center; justify-content: center;">
-                                    <a href="${s.link}" target="_blank" class="dashboard-btn" style="background: var(--primary); color: white; padding: 5px 10px; font-size: 11px; text-decoration: none;">
-                                        <i class="fa-solid fa-video"></i> Join Class
-                                    </a>
-                                    <button onclick="openLinkModal('${s.link.replace(/'/g, "\\'")}')" class="dashboard-btn" style="background: var(--border); color: var(--text-main); padding: 5px 10px; font-size: 11px;">
-                                        <i class="fa-solid fa-link"></i> View Link
-                                    </button>
-                                </div>
-                            ` : '<span style="color:var(--text-muted)">No Link</span>'}
-                        </td>
-                        <td style="padding: 10px; text-align: center;">
-                            <button onclick="completeClass('${storedName}', '${sessionId}')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
-                                <i class="fa-solid fa-check"></i> Done
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 16px; color: var(--text-muted);">No scheduled sessions found.</td></tr>';
-            }
-            if (script.parentNode) document.body.removeChild(script);
-            delete window[callbackName];
-        };
-
-        const script = document.createElement('script');
-        script.src = `${API_URL}?action=getSessions&callback=${callbackName}`;
-        document.body.appendChild(script);
-    }
-</script>
+    <script src="./scripts/nav.js"></script>
+    <script src="./scripts/script.js"></script>
 </body>
+</html>

@@ -1,824 +1,797 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <link rel="icon" type="image/png" href="../images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bab ESL Pro - Lessons</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>BAB - ESL Communication Strategy</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
-<style>
-    /* Force dark mode styling for card rows and states */
-    .button-class.card-row,
-    .button-class.card-row:hover,
-    .button-class.card-row:focus {
-        background-color: var(--card-bg) !important;
-        color: var(--text-main) !important;
-        border-color: var(--border) !important;
-    }
+<body class="bg-base-200 min-h-screen font-sans">
 
-    /* Ensure all text inside the row adapts */
-    .button-class.card-row * {
-        color: inherit;
-    }
-    
-    /* --- MENU TOOLTIP & LIST ROWS DARK MODE FIX --- */
-    .button-class.card-row {
-        background-color: var(--card-bg);
-        color: var(--text-main);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        text-decoration: none;
-        margin-bottom: 8px;
-    }
+    <div id="top-section"></div>
 
-    .btn-title {
-        color: var(--text-main);
-        font-weight: 600;
-    }
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+            <nav class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30">
+                <div class="flex-none lg:hidden">
+                    <label for="main-drawer" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </label>
+                </div> 
 
-    .btn-target {
-        color: var(--text-muted);
-        font-size: 13px;
-    }
+                <div class="px-2 flex-1 whitespace-nowrap font-bold">
+                    <div class="flex flex-row flex-nowrap items-center gap-4">
+                        <div class="hidden sm:block relative">
+                            <label class="input input-bordered input-sm flex items-center gap-2 input-primary w-80">
+                                <svg class="h-4 w-4 opacity-50 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+                                <input type="search" id="lesson-search" class="grow text-xs" placeholder="Search lessons"> 
+                                <kbd class="kbd kbd-xs">⌘</kbd> <kbd class="kbd kbd-xs">K</kbd>
+                            </label>
+                            <div id="search-results" class="absolute left-0 right-0 top-full mt-1 bg-base-100 shadow-xl rounded-box border border-base-300 max-h-60 overflow-y-auto z-50" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
 
-    .tooltip-box {
-        background-color: var(--card-bg);
-        color: var(--text-main);
-        border: 1px solid var(--border);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
+                <div class="flex flex-row gap-4 items-center">
+                    <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
+                        <input type="checkbox" id="theme-checkbox" />
+                        <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path></svg>
+                        <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"></path></svg>
+                    </label>
 
-    .tooltip-box p {
-        color: var(--text-main);
-    }
+                    <div id="account-settings" class="flex flex-row items-center gap-2">
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="avatar avatar-online cursor-pointer">
+                                <div class="ring-primary ring-offset-base-100 ring-2 ring-offset-2 w-8 rounded-full">
+                                    <img alt="Teacher Profile" src="#" id="header-avatar-img">
+                                </div>
+                            </div>
+                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow border border-base-300">
+                                <li><a href="#" class="py-2">Profile</a></li>
+                                <li><button onclick="logout()" class="text-error py-2 w-full text-left">Logout</button></li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col text-left mr-2">
+                            <span id="username-display" class="font-bold text-xs sm:text-sm">User</span>
+                            <span class="font-bold text-[10px] text-primary">Teacher</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
-    :root {
-        --primary: #2563eb;
-        --bg: #f8fafc;
-        --card-bg: #ffffff;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --sidebar-width: 260px;
-        --sidebar-bg: #1e293b;
-        --border: #e2e8f0;
-    }
+            <div class="p-4 sm:p-6 flex-1 max-w-5xl w-full mx-auto space-y-6">
+                <div class="card bg-base-100 border border-base-300 shadow-sm overflow-hidden">
+                    <div class="relative h-64 sm:h-80 bg-base-200">
+                        <img src="https://img.freepik.com/premium-photo/having-conversation-indoors-new-modern-luxury-restaurant_146671-58152.jpg" alt="Communication Strategy Advanced" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-transparent"></div>
+                        <span class="absolute top-4 left-4 badge badge-primary font-semibold shadow-md">Advanced</span>
+                    </div>
+                    <div class="card-body p-6 sm:p-8">
+                        <h1 class="text-2xl sm:text-3xl font-bold mb-2">Communication Strategy: Advanced Discourse</h1>
+                        <p class="text-sm sm:text-base text-base-content/70">Master high-level pragmatic nuance, strategic redirection, diplomacy, and multi-layered argumentation in complex professional and academic environments.</p>
+                    </div>
+                </div>
 
-    body.dark-mode {
-        --bg: #0f172a;
-        --card-bg: #1e293b;
-        --text-main: #f1f5f9;
-        --text-muted: #94a3b8;
-        --sidebar-bg: #020617;
-        --border: #334155;
-    }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card bg-base-100 border border-base-300 shadow-sm p-6">
+                        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-primary"></i> Learning Objectives
+                        </h2>
+                        <ul class="list-disc list-inside space-y-2 text-sm text-base-content/80">
+                            <li>Execute diplomatic pushback and strategic framing during high-stakes negotiations.</li>
+                            <li>Analyze and deploy subtle pragmatic markers for tone mitigation and emphasis.</li>
+                            <li>Manage extended turns and pivot complex multi-party conversations seamlessly.</li>
+                        </ul>
+                    </div>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+                    <div class="card bg-base-100 border border-base-300 shadow-sm p-6">
+                        <h3 class="font-bold text-base mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-comments text-secondary"></i> Key Advanced Expressions
+                        </h3>
+                        <p class="text-xs sm:text-sm text-base-content/70 mb-4">Sophisticated transition frameworks for steering complex dialogues and framing persuasive arguments.</p>
+                        <div class="bg-base-200 p-4 rounded-box text-xs space-y-2">
+                            <p><strong>"While I see merit in that perspective, one must also account for..."</strong></p>
+                            <p><strong>"To pivot slightly to the core structural implications..."</strong></p>
+                            <p><strong>"That raises a compelling counter-premise, specifically regarding..."</strong></p>
+                        </div>
+                    </div>
+                </div>
 
-    body { background-color: var(--bg); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card bg-base-100 border border-base-300 shadow-sm p-6">
+                        <h3 class="font-bold text-base mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-microphone-lines text-accent"></i> Speaking Practice
+                        </h3>
+                        <p class="text-xs sm:text-sm text-base-content/70 mb-4">Simulate adversarial scenarios and high-level panel discussions requiring rapid ideological pivots and diplomatic reframing.</p>
+                        <div class="bg-base-200 p-4 rounded-box text-xs space-y-2">
+                            <p class="font-semibold text-base-content">💡 Advanced Educator Tip:</p>
+                            <p class="text-base-content/80">Introduce sudden variable constraints mid-drill (e.g., changing budget caps or stakeholder objections) to force real-time pragmatic adaptation under pressure.</p>
+                        </div>
+                    </div>
 
-    /* --- SIDEBAR --- */
-    .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); color: white; padding: 20px; position: fixed; height: 100vh; z-index: 1000; transition: transform 0.3s ease; }
-    
-    @media (max-width: 1024px) {
-        .sidebar { transform: translateX(-100%); }
-        .sidebar.active { transform: translateX(0); }
-    }
+                    <div class="card bg-base-100 border border-base-300 shadow-sm p-6">
+                        <h3 class="font-bold text-base mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-headphones text-accent"></i> Listening Practice
+                        </h3>
+                        <p class="text-xs sm:text-sm text-base-content/70 mb-4">Deconstruct rapid native discourse, underlying subtext, unstated assumptions, and emotional tone shifts in corporate or academic debates.</p>
+                        <div class="bg-base-200 p-4 rounded-box text-xs space-y-2 mb-4">
+                            <p class="font-semibold text-base-content">💡 Advanced Educator Tip:</p>
+                            <p class="text-base-content/80">Have students identify instances of euphemism, irony, or hedging instead of literal surface-level semantics during text-to-audio reviews.</p>
+                        </div>
+                    </div>
+                </div>
 
-    .sidebar .logo { font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 40px; padding-left: 10px; }
-    .side-link { padding: 12px 15px; color: #cbd5e1; text-decoration: none; border-radius: 8px; margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-    .side-link:hover, .side-link.active { background: #334155; color: white; }
+                <div class="card bg-base-100 border border-base-300 shadow-sm p-4 sm:p-6">
+                    <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-primary"></i> Contents of the Books
+                    </h3>
 
-    /* --- MAIN CONTENT --- */
-    .main-content { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; width: 100%; }
-    @media (max-width: 1024px) { .main-content { margin-left: 0; } }
+                    <ol class="space-y-4">
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">01</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="customer-service.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=17ZGiOq-PRivPftXbquKzZhk3Ipuphq5z&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Customer service</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Show reactions and encourage discussion</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=17ZGiOq-PRivPftXbquKzZhk3Ipuphq5z&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Customer service</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Show reactions and encourage discussion</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .top-nav { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 900; }
-    .menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
-    @media (max-width: 1024px) { .menu-toggle { display: block; } }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">02</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="work-life-balance.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1XU_SR_pLG6J86NvAfI-xlMVviz6L-50Q&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Free time</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Work-Life Balance and Stress</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1XU_SR_pLG6J86NvAfI-xlMVviz6L-50Q&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Free time</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Work-Life Balance and Stress</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    /* --- PREDICTIVE SEARCH BAR STYLING --- */
-    .search-container {
-        position: relative;
-        flex: 1;
-        max-width: 400px;
-        margin: 0 20px;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">03</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="workplace-ethics.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1P6Mnzq5jvovr2V-EMQvDMqgx1EtG94an&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Professionalism</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about ethical principles</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1P6Mnzq5jvovr2V-EMQvDMqgx1EtG94an&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Professionalism</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about ethical principles</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-bar-wrapper {
-        display: flex;
-        align-items: center;
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 8px 12px;
-        gap: 10px;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">04</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="restaurant.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the restaurant</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about food and restaurants</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the restaurant</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about food and restaurants</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-bar-wrapper i {
-        color: var(--text-muted);
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">05</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="sports-lesson.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Sports</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about discipline, strategy, agility and coordination</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Sports</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about discipline, strategy, agility and coordination</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-bar-wrapper input {
-        border: none;
-        background: transparent;
-        outline: none;
-        color: var(--text-main);
-        font-size: 14px;
-        width: 100%;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">06</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="library.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the library</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about books and article</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the library</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about books and article</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-results-dropdown {
-        position: absolute;
-        top: calc(100% + 5px);
-        left: 0;
-        right: 0;
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        max-height: 300px;
-        overflow-y: auto;
-        z-index: 1000;
-        display: none;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">07</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="bus-stop.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the bus stop</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about bus stop</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the bus stop</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about bus stop</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-item {
-        padding: 10px 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        text-decoration: none;
-        color: var(--text-main);
-        border-bottom: 1px solid var(--border);
-        transition: background 0.2s;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">08</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="super-market.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the super market</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about super market</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the super market</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about super market</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-item:last-child {
-        border-bottom: none;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">09</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="kitchen-cooking.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">kitchen and cooking</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about kitchen</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">kitchen and cooking</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about kitchen</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-item:hover {
-        background: var(--bg);
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">10</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="park.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the park</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about park</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the park</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about park</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-item img {
-        width: 30px;
-        height: 30px;
-        border-radius: 4px;
-        object-fit: cover;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">11</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="museums.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the Museum</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Museum</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the Museum</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Museum</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-text {
-        display: flex;
-        flex-direction: column;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">12</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="school-life.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">School life and Education</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about School life and Education</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">School life and Education</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about School life and Education</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-title {
-        font-size: 13px;
-        font-weight: 600;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">13</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="hospital-healthcare.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Hospitals and Healthcare</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Hospitals and Healthcare</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Hospitals and Healthcare</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Hospitals and Healthcare</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .search-result-desc {
-        font-size: 11px;
-        color: var(--text-muted);
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">14</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="hotels-airports.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Hotels and Airports</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Hotels and Airports</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Hotels and Airports</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Hotels and Airports</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    /* --- BOOK GRID --- */
-    .content-header { padding: 30px 30px 10px 30px; }
-    .content-header h1 { font-size: 24px; font-weight: 700; }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">15</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="commuting-directions.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Commuting and Directions</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about commuting and directions</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Commuting and Directions</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about commuting and directions</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-    .sidebar-overlay.active { display: block; }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">16</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="cafe.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the café</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about café</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the café</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about café</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .listening-skills {
-        width: 100%;
-        margin: 20px 0;
-        display: flex;
-        justify-content: center;
-        overflow: hidden;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">17</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="driving.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Behind the Wheel</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Driving and Road Safety</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Behind the Wheel</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Driving and Road Safety</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    .listening-skills img {
-        width: 100%;
-        max-width: 600px;
-        height: auto;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        display: block;
-    }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">18</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="managing-busy-schedule.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Hectic schedule</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Managing busy schedule</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Hectic schedule</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Managing busy schedule</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    @media (max-width: 768px) {
-        .container {
-            padding: 15px; 
-        }
-        
-        .card {
-            padding: 15px;
-        }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">19</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="zoo.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the Zoo</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about zoo</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the Zoo</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about zoo</p>
+                                </div>
+                            </div> 
+                        </li>
 
-        .listening-skills img {
-            max-width: 100%;
-        }
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">20</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="drugstore.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Drugstore and Pharmacy</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Drugstore and Pharmacy</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Drugstore and Pharmacy</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Drugstore and Pharmacy</p>
+                                </div>
+                            </div> 
+                        </li>
 
-        .search-container {
-            margin: 0 10px;
-        }
-    }
-</style>
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">21</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="music.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1-6W7wPjJZYlaLbKyndajrsGpaAQZZGN6&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Music</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Music</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1-6W7wPjJZYlaLbKyndajrsGpaAQZZGN6&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Music</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Music</p>
+                                </div>
+                            </div> 
+                        </li>
 
-<body>
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">22</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="beach.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1CJhnVqWqsdLwo3-p5-gdBGX5GaVNqSnE&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the Beach</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Beach and Coastal Environment</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1CJhnVqWqsdLwo3-p5-gdBGX5GaVNqSnE&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the Beach</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Beach and Coastal Environment</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    <div class="sidebar-overlay" id="overlay"></div>
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">23</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="stationery.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1In0Gj0F8yW3Y69f4H72vB7aK4YgQ-FZB&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the stationery store</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about stationery store</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1In0Gj0F8yW3Y69f4H72vB7aK4YgQ-FZB&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the stationery store</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about stationery store</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">ESL PRO TOOL</div>
-        <div id="navbar-placeholder"></div>
-        <script src="../scripts/nav.js"></script>
-    </aside>
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">24</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="barber.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1UirtN-hThGJ4-3nU5E1Dezq0fNoviInD&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">At the Barbershop</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about Barbershop</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1UirtN-hThGJ4-3nU5E1Dezq0fNoviInD&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">At the Barbershop</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about Barbershop</p>
+                                </div>
+                            </div> 
+                        </li>
 
-    <main class="main-content">
-        <header class="top-nav">
-            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">25</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="security.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=1W2XFcmpSBg8b9Oe8ux6y6HpbI6i9Yok0&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Security</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about security</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=1W2XFcmpSBg8b9Oe8ux6y6HpbI6i9Yok0&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Security</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about security</p>
+                                </div>
+                            </div> 
+                        </li>
+
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">25</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="workplace-ethics.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=18yg6ojH9oIxUgATWV4JMVxBWD2HBAx09&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Workplace Ethics and Professional Responsibility</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about workplace ethics</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=18yg6ojH9oIxUgATWV4JMVxBWD2HBAx09&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Workplace Ethics and Professional Responsibility</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about workplace ethics</p>
+                                </div>
+                            </div> 
+                        </li>
+
+                        <li class="flex items-start sm:items-center gap-2 sm:gap-4 w-full min-w-0 relative z-10 hover:z-50 transition-all">  
+                            <span class="font-mono font-bold text-primary text-lg sm:text-xl w-5 sm:w-6 shrink-0 pt-2 sm:pt-0">26</span>
+                            <div class="menu-tooltip flex-1 min-w-0 relative">
+                                <a href="festival.html" class="button-class card-row flex items-center justify-between p-2.5 sm:p-3 bg-base-200 rounded-box hover:bg-base-300 transition-colors w-full gap-2 min-w-0">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <img src="https://drive.google.com/thumbnail?id=13Xpdjsu9vYb2zq8EP5lhFxS9HGOtcl77&sz=w80" alt="Book Cover" class="btn-thumb w-10 h-10 sm:w-12 sm:h-12 object-cover rounded shrink-0">
+                                        <div class="btn-text-content flex flex-col min-w-0 flex-1 pr-1">
+                                            <span class="btn-title font-semibold text-xs sm:text-sm truncate">Festival</span>
+                                            <span class="btn-target text-[11px] sm:text-xs text-base-content/70 truncate">Talking about festival</span>
+                                        </div>
+                                    </div>
+                                    <div class="btn btn-circle btn-xs sm:btn-sm btn-primary text-white shrink-0">
+                                        <i class="fa-solid fa-play text-[10px] sm:text-xs ml-0.5"></i>
+                                    </div>
+                                </a>
+                                <div class="tooltip-box z-50">
+                                    <img src="https://drive.google.com/thumbnail?id=13Xpdjsu9vYb2zq8EP5lhFxS9HGOtcl77&sz=w1000" alt="Full Preview">
+                                    <p class="font-bold text-base">Festival</p>
+                                    <p class="text-xs sm:text-sm text-base-content/70 mt-1">Talking about festival</p>
+                                </div>
+                            </div> 
+                        </li>
+                    </ol>
+
+                    <div id="back-to-top-container" class="fixed bottom-6 right-6 z-50 opacity-0 pointer-events-none transition-all duration-300 translate-y-4">
+                        <div class="tooltip tooltip-left" data-tip="Back to top">
+                            <button id="back-to-top-btn" 
+                                class="btn btn-primary btn-circle shadow-lg"
+                                aria-label="Back to top"
+                                onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+                                <i class="fa-solid fa-arrow-up text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
             
-            <!-- Predictive Search Bar Added Here -->
-            <div class="search-container">
-                <div class="search-bar-wrapper">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" id="lesson-search" placeholder="Search lessons or topics..." autocomplete="off">
-                </div>
-                <div class="search-results-dropdown" id="search-results"></div>
-            </div>
+        </div>
 
-            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Hello&nbsp;<span id="username-display">User</span></span>
-                <i class="fa-solid fa-circle-user fa-xl"></i>
-            </div>
-        </header>
-
-        <div class="container">
-            <div class="card" id="text-section">
-                <h1>Communication Strategy</h1>
-                <hr>
-                <p>Lesson target: Show reactions and encourage discussion</p>
-                <div class="listening-skills">
-                    <img src="https://drive.google.com/thumbnail?id=1Yuj0cmcBpycR87XruVFvYmD0wq893VcP&sz=w1000" alt="Book Cover">
-                </div>
-
-                <ol>
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="customer-service.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=17ZGiOq-PRivPftXbquKzZhk3Ipuphq5z&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Customer service</span>
-                                    <span class="btn-target">Show reactions and encourage discussion</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=17ZGiOq-PRivPftXbquKzZhk3Ipuphq5z&sz=w1000" alt="Full Preview">
-                                <p><strong>Customer service</strong></p>
-                                <p>Show reactions and encourage discussion</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="work-life-balance.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1XU_SR_pLG6J86NvAfI-xlMVviz6L-50Q&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Free time</span>
-                                    <span class="btn-target">Talking about Work-Life Balance and Stress</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1XU_SR_pLG6J86NvAfI-xlMVviz6L-50Q&sz=w1000" alt="Full Preview">
-                                <p><strong>Free time</strong></p>
-                                <p>Talking about Work-Life Balance and Stress</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="workplace-ethics.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1P6Mnzq5jvovr2V-EMQvDMqgx1EtG94an&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Professionalism</span>
-                                    <span class="btn-target">Talking about ethical principles</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1P6Mnzq5jvovr2V-EMQvDMqgx1EtG94an&sz=w1000" alt="Full Preview">
-                                <p><strong>Professionalism</strong></p>
-                                <p>Talking about ethical principles</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="restaurant.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the restaurant</span>
-                                    <span class="btn-target">Talking about food and restaurants</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w1000" alt="Full Preview">
-                                <p><strong>At the restaurant</strong></p>
-                                <p>Talking about food and restaurants</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="sports-lesson.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Sports</span>
-                                    <span class="btn-target">Talking about discipline, strategy, agility and coordination</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w1000" alt="Full Preview">
-                                <p><strong>Sports</strong></p>
-                                <p>Talking about discipline, strategy, agility and coordination</p>
-                            </div>
-                        </div> 
-                    </li>
-    
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="library.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the library</span>
-                                    <span class="btn-target">Talking about books and article</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w1000" alt="Full Preview">
-                                <p><strong>At the library</strong></p>
-                                <p>Talking about books and article</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="bus-stop.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the bus stop</span>
-                                    <span class="btn-target">Talking bus stop</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w1000" alt="Full Preview">
-                                <p><strong>At the bus stop</strong></p>
-                                <p>Talking about bus stop</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="super-market.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the super market</span>
-                                    <span class="btn-target">Talking about super market</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000" alt="Full Preview">
-                                <p><strong>At the super market</strong></p>
-                                <p>Talking about super market</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="kitchen-cooking.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">kitchen and cooking</span>
-                                    <span class="btn-target">Talking about kitchen</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w1000" alt="Full Preview">
-                                <p><strong>kitchen and cooking</strong></p>
-                                <p>Talking about kitchen</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="park.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the park</span>
-                                    <span class="btn-target">Talking about park</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w1000" alt="Full Preview">
-                                <p><strong>At the park</strong></p>
-                                <p>Talking about park</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="museums.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the Museum</span>
-                                    <span class="btn-target">Talking about Museum</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w1000" alt="Full Preview">
-                                <p><strong>At the Museum</strong></p>
-                                <p>Talking about Museum</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="school-life.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">School life and Education</span>
-                                    <span class="btn-target">Talking about School life and Education</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w1000" alt="Full Preview">
-                                <p><strong>School life and Education</strong></p>
-                                <p>Talking School life and Education</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="hospital-healthcare.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Hospitals and Healthcare</span>
-                                    <span class="btn-target">Talking about Hospitals and Healthcare</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w1000" alt="Full Preview">
-                                <p><strong>Hospitals and Healthcare</strong></p>
-                                <p>Talking about Hospitals and Healthcare</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="hotels-airports.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Hotels and Airports</span>
-                                    <span class="btn-target">Talking about Hotels and Airports</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w1000" alt="Full Preview">
-                                <p><strong>Hotels and Airports</strong></p>
-                                <p>Talking about Hotels and Airports</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="commuting-directions.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Commuting and Directions</span>
-                                    <span class="btn-target">Talking about commuting and directions</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w1000" alt="Full Preview">
-                                <p><strong>Commuting and Directions</strong></p>
-                                <p>Talking about commuting and directions</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="cafe.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the café</span>
-                                    <span class="btn-target">Talking about café</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w1000" alt="Full Preview">
-                                <p><strong>At the café</strong></p>
-                                <p>Talking about café</p>
-                            </div>
-                        </div> 
-                    </li>
-    
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="driving.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Behind the Wheel</span>
-                                    <span class="btn-target">Driving and Road Safety</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w1000" alt="Full Preview">
-                                <p><strong>Behind the Wheel</strong></p>
-                                <p>Driving and Road Safety</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="managing-busy-schedule.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Hectic schedule</span>
-                                    <span class="btn-target">Managing busy schedule</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w1000" alt="Full Preview">
-                                <p><strong>Hectic schedule</strong></p>
-                                <p>Managing busy schedule</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="zoo.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the Zoo</span>
-                                    <span class="btn-target">Talking about zoo</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w1000" alt="Full Preview">
-                                <p><strong>At the Zoo</strong></p>
-                                <p>Talking about zoo</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="drugstore.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Drugstore and Pharmacy</span>
-                                    <span class="btn-target">Talking about Drugstore and Pharmacy</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w1000" alt="Full Preview">
-                                <p><strong>Drugstore and Pharmacy</strong></p>
-                                <p>Talking about Drugstore and Pharmacy</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                      <li> 
-                        <div class="menu-tooltip">
-                            <a href="music.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1-6W7wPjJZYlaLbKyndajrsGpaAQZZGN6&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Music</span>
-                                    <span class="btn-target">Talking about Music</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1-6W7wPjJZYlaLbKyndajrsGpaAQZZGN6&sz=w1000" alt="Full Preview">
-                                <p><strong>Music</strong></p>
-                                <p>Talking about Music</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="beach.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1CJhnVqWqsdLwo3-p5-gdBGX5GaVNqSnE&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the Beach</span>
-                                    <span class="btn-target">Talking about Beach and Coastal Environment</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1CJhnVqWqsdLwo3-p5-gdBGX5GaVNqSnE&sz=w1000" alt="Full Preview">
-                                <p><strong>At the Beach</strong></p>
-                                <p>Talking about Beach and Coastal Environment</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="stationery.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1In0Gj0F8yW3Y69f4H72vB7aK4YgQ-FZB&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the stationery store</span>
-                                    <span class="btn-target">Talking about stationery store</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1In0Gj0F8yW3Y69f4H72vB7aK4YgQ-FZB&sz=w1000" alt="Full Preview">
-                                <p><strong>At the stationery store</strong></p>
-                                <p>Talking about stationery store</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="barber.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1UirtN-hThGJ4-3nU5E1Dezq0fNoviInD&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">At the Barbershop</span>
-                                    <span class="btn-target">Talking about Barbershop</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1UirtN-hThGJ4-3nU5E1Dezq0fNoviInD&sz=w1000" alt="Full Preview">
-                                <p><strong>At the Barbershop</strong></p>
-                                <p>Talking about Barbershop</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="security.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=1W2XFcmpSBg8b9Oe8ux6y6HpbI6i9Yok0&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Security</span>
-                                    <span class="btn-target">Talking about security</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=1W2XFcmpSBg8b9Oe8ux6y6HpbI6i9Yok0&sz=w1000" alt="Full Preview">
-                                <p><strong>Security</strong></p>
-                                <p>Talking about security</p>
-                            </div>
-                        </div> 
-                    </li>
-
-                    <li> 
-                        <div class="menu-tooltip">
-                            <a href="festival.html" class="button-class card-row">
-                                <img src="https://drive.google.com/thumbnail?id=13Xpdjsu9vYb2zq8EP5lhFxS9HGOtcl77&sz=w80" alt="Book Cover" class="btn-thumb">
-                                <div class="btn-text-content">
-                                    <span class="btn-title">Festival</span>
-                                    <span class="btn-target">Talking about festival</span>
-                                </div>
-                            </a>
-                            <div class="tooltip-box">
-                                <img src="https://drive.google.com/thumbnail?id=13Xpdjsu9vYb2zq8EP5lhFxS9HGOtcl77&sz=w1000" alt="Full Preview">
-                                <p><strong>Festival</strong></p>
-                                <p>Talking about festival</p>
-                            </div>
-                        </div> 
-                    </li>
-  
-                </ol>
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
             </div>
         </div>
-    </main>
+
+    </div>
 
     <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-
-        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
-        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
-
-        const settingsLink = document.getElementById('settings-link');
-        function updateThemeUI(isDark) {
-            const icon = settingsLink.querySelector('i');
-            if (isDark) {
-                document.body.classList.add('dark-mode');
-                icon.className = 'fa-solid fa-sun';
-                settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Light Mode';
+        window.addEventListener('scroll', function() {
+            const bttContainer = document.getElementById('back-to-top-container');
+            if (!bttContainer) return;
+            if (window.scrollY > 300) {
+                bttContainer.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
             } else {
-                document.body.classList.remove('dark-mode');
-                icon.className = 'fa-solid fa-moon';
-                settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Dark Mode';
-            }
-        }
-        
-        // Safety check if settingsLink exists before binding
-        if (settingsLink) {
-            settingsLink.onclick = (e) => {
-                e.preventDefault();
-                const isDark = !document.body.classList.contains('dark-mode');
-                localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
-                updateThemeUI(isDark);
-            };
-        }
-        const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
-        if (settingsLink) {
-            updateThemeUI(savedTheme === 'dark');
-        } else {
-            if (savedTheme === 'dark') document.body.classList.add('dark-mode');
-        }
-
-        /* --- PREDICTIVE SEARCH SCRIPT --- */
-        const searchInput = document.getElementById('lesson-search');
-        const searchResults = document.getElementById('search-results');
-        
-        // Extract all lessons dynamically from the DOM list items
-        const lessonItems = Array.from(document.querySelectorAll('.menu-tooltip')).map(item => {
-            const link = item.querySelector('a');
-            const img = item.querySelector('.btn-thumb');
-            const title = item.querySelector('.btn-title');
-            const target = item.querySelector('.btn-target');
-            return {
-                url: link ? link.getAttribute('href') : '#',
-                imgSrc: img ? img.getAttribute('src') : '',
-                title: title ? title.textContent.trim() : '',
-                desc: target ? target.textContent.trim() : ''
-            };
-        });
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            
-            if (query === '') {
-                searchResults.style.display = 'none';
-                searchResults.innerHTML = '';
-                return;
-            }
-
-            const filteredLessons = lessonItems.filter(lesson => 
-                lesson.title.toLowerCase().includes(query) || 
-                lesson.desc.toLowerCase().includes(query)
-            );
-
-            if (filteredLessons.length > 0) {
-                searchResults.innerHTML = filteredLessons.map(lesson => `
-                    <a href="${lesson.url}" class="search-result-item">
-                        <img src="${lesson.imgSrc}" alt="${lesson.title}">
-                        <div class="search-result-text">
-                            <span class="search-result-title">${lesson.title}</span>
-                            <span class="search-result-desc">${lesson.desc}</span>
-                        </div>
-                    </a>
-                `).join('');
-                searchResults.style.display = 'block';
-            } else {
-                searchResults.innerHTML = `<div style="padding: 12px 15px; font-size: 13px; color: var(--text-muted); text-align: center;">No matching lessons found</div>`;
-                searchResults.style.display = 'block';
-            }
-        });
-
-        // Hide dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                searchResults.style.display = 'none';
-            }
-        });
-
-        // Show results again if focused and has text
-        searchInput.addEventListener('focus', function() {
-            if (this.value.trim() !== '') {
-                searchResults.style.display = 'block';
+                bttContainer.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
             }
         });
     </script>
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/script.js"></script>
 </body>
 </html>

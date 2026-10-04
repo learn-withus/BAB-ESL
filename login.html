@@ -1,303 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <link rel="icon" type="image/png" href="images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bab ESL Pro - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>BAB - ESL Login</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #f1f5f9; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 20px; 
-            min-height: 100vh; 
-            margin: 0; 
-            overflow-x: hidden; 
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        /* Animated diagonal background wash layer */
-        body::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background-image: url('images/bab.png');
-            background-repeat: repeat;
-            background-size: 300px auto; 
-            opacity: 0.04; 
-            pointer-events: none;
-            animation: diagonalWash 25s linear infinite;
-        }
-
-        @keyframes diagonalWash {
+        @keyframes slideBackground {
             0% {
-                transform: translate(0, 0);
+                background-position: 0 0;
             }
             100% {
-                transform: translate(150px, 150px); 
+                background-position: 120px 120px;
             }
         }
 
-        .login-card { 
-            background: #ffffff; 
-            padding: 56px 44px; 
-            border-radius: 24px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); 
-            width: 100%; 
-            max-width: 480px; 
-            text-align: center; 
-            position: relative; 
-            z-index: 1; 
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-sizing: border-box;
-        }
-        
-        /* Logo styling */
-        .logo { margin-bottom: 32px; }
-        .logo img { 
-            max-width: 170px; 
-            height: auto; 
-            display: block; 
-            margin: 0 auto; 
-        }
-
-        .input-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #475569;
-            margin-bottom: 8px;
-        }
-
-        .password-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        input { 
-            width: 100%; 
-            padding: 15px 18px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 12px; 
-            box-sizing: border-box; 
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s ease;
-            outline: none;
-            background-color: #f8fafc;
-        }
-
-        /* Extra padding on the right for password input to prevent text overlap with the eye icon */
-        #password {
-            padding-right: 48px;
-        }
-
-        input:focus {
-            border-color: #2563eb;
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .toggle-password {
+        .animated-bg-watermark {
             position: absolute;
-            right: 14px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            width: 24px;
-            height: 24px;
-            margin: 0;
-            transform: none !important;
+            inset: 0;
+            background-image: url('images/bab.png');
+            background-repeat: repeat;
+            background-size: 320px 320px;
+            opacity: 0.05;
+            animation: slideBackground 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .toggle-password:hover {
-            color: #2563eb;
-            background: none;
-        }
-
-        button[type="submit"] { 
-            width: 100%; 
-            padding: 15px; 
-            background: #2563eb; 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            font-size: 15px;
-            cursor: pointer; 
-            margin-top: 12px; 
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-
-        button[type="submit"]:hover {
-            background: #1d4ed8;
-        }
-
-        button[type="submit"]:active {
-            transform: scale(0.98);
-        }
-
-        #error-msg { 
-            color: #dc2626; 
-            background-color: #fef2f2;
-            border: 1px solid #fecaca;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px; 
-            margin-top: 18px; 
-            display: none; 
-        }
-
-        .auth-footer { 
-            margin-top: 24px; 
-            font-size: 13px; 
-            color: #64748b; 
-        }
-        
-        .auth-footer a { 
-            color: #2563eb; 
-            text-decoration: none; 
-            font-weight: 600; 
-        }
-        
-        .auth-footer a:hover {
-            text-decoration: underline;
+        .login-card-container {
+            position: relative;
+            z-index: 10;
         }
     </style>
 </head>
-<body>
-    <div class="login-card">
-        <div class="logo">
-            <img src="images/bab.png" alt="BAB ESL Pro Logo">
+<body class="bg-base-200 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div class="animated-bg-watermark"></div>
+
+    <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-300 p-8 login-card-container">
+        <div class="flex justify-center mb-6">
+            <img src="images/bab.png" alt="BAB ESL Pro Logo" class="w-16 h-16 object-contain">
         </div>
         
-        <form id="login-form" onsubmit="handleLogin(event)">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter your username">
+        <form id="login-form" onsubmit="handleLogin(event)" class="flex flex-col gap-4">
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Username</span></label>
+                <input type="text" id="username" placeholder="Enter your username" class="input input-bordered w-full text-sm" autocomplete="off" />
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <div class="password-container">
-                    <input type="password" id="password" placeholder="Enter your password">
-                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
-                        <!-- Eye Icon (Hidden) -->
-                        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <!-- Eye Off Icon (Shown initially) -->
-                        <svg id="eye-off-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Password</span></label>
+                <div class="relative">
+                    <input type="password" id="password" placeholder="Enter your password" class="input input-bordered w-full text-sm pr-10" />
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+                        <i id="eye-icon" class="fa-solid fa-eye"></i>
+                        <i id="eye-off-icon" class="fa-solid fa-eye-slash hidden"></i>
                     </button>
                 </div>
             </div>
-            <button type="submit">Sign In</button>
+
+            <button type="submit" class="btn btn-primary w-full mt-2">Sign In</button>
         </form>
-        <p id="error-msg">Invalid username or password</p>
+        
+        <p id="error-msg" class="text-error text-xs text-center mt-3 hidden">Invalid username or password</p>
     </div>
 
+    <script src="./scripts/script.js"></script>
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
-
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eye-icon');
-            const eyeOffIcon = document.getElementById('eye-off-icon');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.style.display = 'block';
-                eyeOffIcon.style.display = 'none';
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.style.display = 'none';
-                eyeOffIcon.style.display = 'block';
-            }
-        }
-
-        // Auto-redirect if already logged in
-        if (localStorage.getItem('isLoggedIn') === 'true') {
-            redirectBasedOnRole(String(localStorage.getItem('userRole')));
-        }
-
-        function redirectBasedOnRole(role) {
-            const cleanRole = String(role).trim();
-            if (cleanRole === "3") {
-                window.location.replace("admin-dashboard.html");
-            } else if (cleanRole === "2") {
-                window.location.replace("index.html");
-            } else {
-                window.location.replace("user-dashboard.html");
-            }
-        }
-
-        function handleLogin(event) {
-            if (event) event.preventDefault();
-
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
-            const error = document.getElementById('error-msg');
-            const btn = document.querySelector('button[type="submit"]');
-
-            if (!user || !pass) {
-                error.innerText = "Please enter both fields";
-                error.style.display = 'block';
-                return;
-            }
-
-            error.style.display = 'none'; 
-            btn.innerText = "Signing in...";
-            btn.disabled = true;
-
-            const callbackName = 'google_callback_' + Math.round(Math.random() * 1000000);
-
-            window[callbackName] = function(result) {
-                if (result.status === "success") {
-                    const assignedRole = String(result.role || "1").trim();
-                    
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('teacherName', result.name);
-                    localStorage.setItem('userRole', assignedRole);
-                    localStorage.setItem('books', result.books || ""); 
-                    
-                    redirectBasedOnRole(assignedRole);
-                } else {
-                    error.innerText = "Invalid username or password";
-                    error.style.display = 'block';
-                    btn.innerText = "Sign In";
-                    btn.disabled = false;
-                }
-                document.body.removeChild(script);
-                delete window[callbackName];
-            };
-
-            const script = document.createElement('script');
-            script.src = `${API_URL}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&callback=${callbackName}`;
-            document.body.appendChild(script);
-
-            script.onerror = () => {
-                error.innerText = "Connection failed. Check Deployment URL.";
-                error.style.display = 'block';
-                btn.innerText = "Sign In";
-                btn.disabled = false;
-            };
-        }
+        const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
 </body>
 </html>

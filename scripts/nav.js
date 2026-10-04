@@ -1,16 +1,13 @@
-// Helper function to handle correct pathing for login redirection
 function redirectToLogin() {
     const isInPagesFolder = window.location.pathname.includes('/pages/');
     const pathToRoot = isInPagesFolder ? '../' : './';
     window.location.replace(pathToRoot + "login.html");
 }
 
-// 1. PROTECTION CHECK: Run immediately when script loads
 if (localStorage.getItem('isLoggedIn') !== 'true') {
     redirectToLogin();
 }
 
-// Handle browser cache (bfcache) when user hits back button after logout
 window.addEventListener('pageshow', function(event) {
     if (event.persisted || localStorage.getItem('isLoggedIn') !== 'true') {
         redirectToLogin();
@@ -20,96 +17,129 @@ window.addEventListener('pageshow', function(event) {
 function loadNavbar() {
     const isInPagesFolder = window.location.pathname.includes('/pages/');
     const pathToRoot = isInPagesFolder ? '../' : './';
+    const userRole = String(localStorage.getItem('userRole') || localStorage.getItem('role') || "1").trim();
 
-    // Get the user role (default to "1" for normal user)
-    const userRole = String(localStorage.getItem('userRole') || "1").trim();
+    let dashboardUrl = pathToRoot + "user-dashboard.html";
+    let dashboardPageName = "user-dashboard.html";
+    if (userRole === "2") {
+        dashboardUrl = pathToRoot + "index.html";
+        dashboardPageName = "index.html";
+    } else if (userRole === "3") {
+        dashboardUrl = pathToRoot + "admin-dashboard.html";
+        dashboardPageName = "admin-dashboard.html";
+    }
+
+    const currentPath = window.location.pathname;
+    const currentFileName = currentPath.split("/").pop() || "index.html";
+
+    if (userRole === "1") {
+        if (currentFileName === "index.html" || currentFileName === "admin-dashboard.html" || (currentPath.endsWith('/') && !currentPath.includes('/pages/'))) {
+            window.location.replace(pathToRoot + "user-dashboard.html");
+            return;
+        }
+    } else if (userRole === "2") {
+        if (currentFileName === "user-dashboard.html" || currentFileName === "admin-dashboard.html") {
+            window.location.replace(pathToRoot + "index.html");
+            return;
+        }
+    } else if (userRole === "3") {
+        if (currentFileName === "user-dashboard.html" || currentFileName === "index.html") {
+            window.location.replace(pathToRoot + "admin-dashboard.html");
+            return;
+        }
+    }
 
     let navHTML = '';
 
-    // STRICT ROLE 1 RESTRICTION: Students only get Dashboard, Theme, Logout
+    navHTML += `
+        <div class="tooltip tooltip-right w-full z-50" data-tip="BAB ESL">
+            <div class="flex items-center lg:justify-center gap-3 px-2 py-3 mb-2 w-full">
+                <a href="${dashboardUrl}" class="inline-block shrink-0">
+                    <img src="${pathToRoot}images/bab.png" alt="Logo" class="w-8 h-8 object-contain">
+                </a>
+                <span class="font-bold text-base inline lg:hidden">BAB ESL</span>
+            </div>
+        </div>
+        <div class="divider my-0"></div>
+    `;
+
     if (userRole === "1") {
-        navHTML = `
-            <a href="${pathToRoot}user-dashboard.html" class="side-link" data-page="user-dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a href="#" class="side-link" id="settings-link"><i class="fa-solid fa-moon"></i> Theme</a>
-            <a href="#" onclick="logout()" class="side-link" style="margin-top: 20px; color: #f87171;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        navHTML += `
+            <div class="tooltip tooltip-right w-full z-50" data-tip="Dashboard">
+                <a href="${pathToRoot}user-dashboard.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="user-dashboard.html">
+                    <i class="fa-solid fa-house w-5 text-center text-base"></i>
+                    <span class="inline lg:hidden">Dashboard</span>
+                </a>
+            </div>
         `;
-    } 
-    // TEACHERS (ROLE 2): Always gets Dashboard, Lessons, Progress, Theme, Logout
-    else if (userRole === "2") {
-        navHTML = `
-            <a href="${pathToRoot}index.html" class="side-link" data-page="index.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a href="${pathToRoot}pages/book-menu.html" class="side-link" data-page="book-menu.html"><i class="fa-solid fa-book"></i> Lessons</a>
-            <a href="#" class="side-link" id="settings-link"><i class="fa-solid fa-moon"></i> Theme</a>
-            <a href="#" onclick="logout()" class="side-link" style="margin-top: 20px; color: #f87171;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    } else if (userRole === "2") {
+        navHTML += `
+            <div class="tooltip tooltip-right w-full z-50" data-tip="Dashboard">
+                <a href="${pathToRoot}index.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="index.html">
+                    <i class="fa-solid fa-house w-5 text-center text-base"></i>
+                    <span class="inline lg:hidden">Dashboard</span>
+                </a>
+            </div>
+            <div class="tooltip tooltip-right w-full z-50" data-tip="Books">
+                <a href="${pathToRoot}pages/book-menu.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="book-menu.html">
+                    <i class="fa-solid fa-book w-5 text-center text-base"></i>
+                    <span class="inline lg:hidden">Books</span>
+                </a>
+            </div>
         `;
-    }
-   // ADMINS (ROLE 3): Dashboard, Account Table, Create, Theme, Logout
-    else if (userRole === "3") {
-        navHTML = `
-            <a href="${pathToRoot}admin-dashboard.html" class="side-link" data-page="admin-dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
-            <a href="#" class="side-link" id="settings-link"><i class="fa-solid fa-moon"></i> Theme</a>
-            <a href="#" onclick="logout()" class="side-link" style="margin-top: 20px; color: #f87171;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    } else if (userRole === "3") {
+        navHTML += `
+            <div class="tooltip tooltip-right w-full z-50" data-tip="Dashboard">
+                <a href="${pathToRoot}admin-dashboard.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="admin-dashboard.html">
+                    <i class="fa-solid fa-house w-5 text-center text-base"></i>
+                    <span class="inline lg:hidden">Dashboard</span>
+                </a>
+            </div>
         `;
     }
 
     const placeholder = document.getElementById('navbar-placeholder');
     if (placeholder) {
         placeholder.innerHTML = navHTML;
-        
-        // Robust Active Link Indicator
-        const currentPath = window.location.pathname;
-        const currentFileName = currentPath.split("/").pop() || "index.html";
+
         const links = placeholder.querySelectorAll('.side-link[data-page]');
         
         links.forEach(link => {
-            link.classList.remove('active');
+            link.classList.remove('bg-primary', 'text-primary-content');
             const targetPage = link.getAttribute('data-page');
-            
-            // Check if current file name matches target file name precisely
-            if (currentFileName === targetPage || (targetPage === 'index.html' && (currentPath.endsWith('/') || currentFileName === ''))) {
-                link.classList.add('active');
+            if (currentFileName === targetPage || (targetPage === dashboardPageName && (currentPath.endsWith('/') || currentFileName === ''))) {
+                link.classList.add('bg-primary', 'text-primary-content');
             }
         });
 
-        // Re-bind theme toggle click handler after injection
         initThemeToggle();
     }
 }
 
-// Theme initialization and toggle logic
 function initThemeToggle() {
-    const settingsLink = document.getElementById('settings-link');
-    if (!settingsLink) return;
+    const themeCheckbox = document.getElementById('theme-checkbox');
+    if (!themeCheckbox) return;
 
     function updateThemeUI(isDark) {
-        const icon = settingsLink.querySelector('i');
-        if (isDark) {
-            document.body.classList.add('dark-mode');
-            if (icon) icon.className = 'fa-solid fa-sun';
-            settingsLink.innerHTML = `<i class="fa-solid fa-sun"></i> Light Mode`;
-        } else {
-            document.body.classList.remove('dark-mode');
-            if (icon) icon.className = 'fa-solid fa-moon';
-            settingsLink.innerHTML = `<i class="fa-solid fa-moon"></i> Dark Mode`;
-        }
+        const themeName = isDark ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', themeName);
+        themeCheckbox.checked = isDark;
     }
 
-    // Apply saved theme on load
     const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
     updateThemeUI(savedTheme === 'dark');
 
-    settingsLink.onclick = (e) => {
-        e.preventDefault();
-        const isDark = !document.body.classList.contains('dark-mode');
-        localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
-        updateThemeUI(isDark);
+    themeCheckbox.onchange = (e) => {
+        const isDark = e.target.checked;
+        const newTheme = isDark ? 'dark' : 'light';
+        localStorage.setItem('dashboard-theme', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
     };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadNavbar();
-
-    const savedName = localStorage.getItem('teacherName');
+    const savedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
     const userDisplay = document.getElementById('username-display');
     if (userDisplay && savedName) {
         userDisplay.innerText = savedName;

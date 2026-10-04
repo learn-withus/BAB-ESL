@@ -1,124 +1,513 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light" class="scroll-smooth">
 <head>
-    <link rel="icon" type="image/png" href="../images/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bab ESL Pro - Lessons</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>BAB - ESL Communication Strategy At the super market</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
 </head>
+<body class="bg-base-200 min-h-screen font-sans overflow-x-hidden relative">
+    <canvas id="annotation-canvas" class="absolute top-0 left-0 pointer-events-none z-[990] touch-none"></canvas>
 
-<style>
+    <div id="top-section"></div>
 
-</style>
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
-<body>
+        <div class="drawer-content flex flex-col min-h-screen">
 
-    <div class="sidebar-overlay" id="overlay"></div>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">ESL PRO TOOL</div>
-        
-        <div id="navbar-placeholder"></div>
-        <script src="../scripts/nav.js"></script>
-
-    </aside>
-
-        <main class="main-content">
-        <header class="top-nav">
-            <button class="menu-toggle" id="menu-btn"><i class="fa-solid fa-bars"></i></button>
-            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
-                <span style="font-weight: 600; font-size: 14px;">Hello&nbsp;<span id="username-display">User</span></span>
-                <i class="fa-solid fa-circle-user fa-xl"></i>
-            </div>
-        </header>
-
-        <div class="container">
-            <!-- LESSON HEADER -->
-            <div class="card" id="text-section">
-                <h1>At the super market</h1>
-                <hr>
-                <p>Lesson target: Speaking, Reading and listening</p>
-                <div class="lesson-cover-page">
-                    <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000" alt="Lesson Image">
+            <nav class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30 shadow-sm">
+                <div class="flex-none lg:hidden">
+                    <label for="main-drawer" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </label>
                 </div>
-                <div id="text-container"></div>
-            </div>
 
-            <!-- DIALOGUE SECTION -->
-            <div class="card">
-                <h2 style="color: var(--primary); margin-bottom: 20px;">V. LISTENING ACTIVITY 🔊</h2>
-                <p style="color: var(--primary); margin-bottom: 20px;">Dialogue Practice 🎭</p>
-                <div class="video-container">
-                    <iframe 
-                        src="https://www.youtube.com/embed/i3qJpokq148"
-                        title="YouTube video player" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        allowfullscreen>
-                    </iframe>
+                <div class="px-2 flex-1 whitespace-nowrap font-bold">
+                    <div class="flex flex-row flex-nowrap items-center gap-4">
+                        <div class="hidden sm:block relative w-80">
+                            <label class="input input-bordered input-sm flex items-center gap-2 input-primary w-full bg-base-100 shadow-sm">
+                                <svg class="h-4 w-4 opacity-50 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <path d="m21 21-4.3-4.3"></path>
+                                    </g>
+                                </svg>
+                                <input type="text" id="book-search-input" placeholder="Search lessons" autocomplete="off" class="grow text-sm bg-transparent outline-none">
+                                <kbd class="kbd kbd-sm">⌘</kbd>
+                                <kbd class="kbd kbd-sm">K</kbd>
+                            </label>
+
+                            <div id="search-suggestions" class="absolute left-0 right-0 top-full mt-2 bg-base-100 shadow-2xl rounded-box border border-base-300 max-h-72 overflow-y-auto z-50 hidden p-1.5 space-y-1 divide-y divide-base-200"></div>
+                            <div id="search-results" class="absolute left-0 right-0 top-full mt-2 bg-base-100 shadow-2xl rounded-box border border-base-300 max-h-72 overflow-y-auto z-50 hidden p-1.5 space-y-1 divide-y divide-base-200" style="display: none;"></div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="flex flex-row gap-4 items-center">
+                    <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
+                        <input type="checkbox" id="theme-checkbox" />
+                        <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path>
+                        </svg>
+                        <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"></path>
+                        </svg>
+                    </label>
+
+                    <div id="account-settings" class="flex flex-row items-center gap-2">
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="avatar avatar-online cursor-pointer">
+                                <div class="ring-primary ring-offset-base-100 ring-2 ring-offset-2 w-8 rounded-full">
+                                    <img alt="Teacher Profile" src="#" id="header-avatar-img">
+                                </div>
+                            </div>
+                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow border border-base-300">
+                                <li><a href="#" class="py-2">Profile</a></li>
+                                <li><button onclick="logout()" class="text-error py-2 w-full text-left">Logout</button></li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col text-left mr-2">
+                            <span id="username-display" class="font-bold text-sm sm:text-base">User</span>
+                            <span class="font-bold text-xs text-primary">Teacher</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <div id="app-scaler-wrapper" class="w-full relative flex-1 pb-16 overflow-x-hidden">
                 
-                <div id="voice-controls-container" style="margin: 20px 0;">
-                    <p style="color: var(--text-muted);">Loading speakers...</p>
+                <div id="app-canvas" style="width: 1000px; transform-origin: top left;" class="p-6 lg:p-10 mx-auto space-y-10">
+
+                    <section id="warmup-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
+                        <div class="card bg-base-100 overflow-hidden shadow-none border-0">
+                            <div class="relative h-80 bg-base-200 rounded-2xl overflow-hidden cursor-pointer group"
+                                 onclick="document.getElementById('image-modal').showModal()">
+                                <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000"
+                                     alt="Picture"
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-transparent"></div>
+                                <span class="absolute top-4 left-4 badge font-semibold shadow-md text-sm custom-primary-bg">
+                                    Core Lesson
+                                </span>
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-sm gap-2">
+                                    <i class="fa-solid fa-expand"></i> Click to view full screen
+                                </div>
+                            </div>
+
+                            <div class="card-body px-2 py-8">
+                                <h1 class="text-4xl font-extrabold tracking-tight mb-2">At the super market</h1>
+                                <p class="text-lg text-base-content/75 leading-relaxed mb-4">
+                                    Lesson target: Speaking, Reading and listening
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="border-b border-base-200 pb-4">
+                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
+                                <i class="fa-solid fa-fire text-2xl"></i> I. WARM-UP
+                            </h2>
+                        </div>
+                        <div id="warmup-container" class="space-y-4 text-xl leading-relaxed"></div>
+                    </section>
+
+                    <dialog id="image-modal" class="modal">
+                        <div class="modal-box w-11/12 max-w-6xl bg-base-100 p-6 relative flex flex-col items-center rounded-2xl shadow-2xl">
+                            <form method="dialog" class="absolute right-4 top-4 z-10">
+                                <button class="btn btn-sm btn-circle btn-ghost bg-base-200 hover:bg-base-300 text-base-content">
+                                    <i class="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                            </form>
+                            <div class="w-full flex items-center justify-center overflow-hidden rounded-xl mt-6">
+                                <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000"
+                                     alt="Picture"
+                                     class="w-full max-h-[82vh] object-contain rounded-xl shadow-md">
+                            </div>
+                        </div>
+                        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+                    </dialog>
+
+                    <section id="vocab-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
+                        <div class="border-b border-base-200 pb-4">
+                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
+                                <i class="fa-solid fa-book text-2xl"></i> II. VOCABULARY
+                            </h2>
+                        </div>
+                        <div id="vocab-container" class="space-y-4 text-xl leading-relaxed"></div>
+                    </section>
+
+                    <section id="reading-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
+                        <div class="border-b border-base-200 pb-4">
+                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
+                                <i class="fa-solid fa-book-open text-2xl"></i> III. READING ACTIVITY
+                            </h2>
+                        </div>
+                        <div id="reading-container" class="space-y-4 text-xl leading-relaxed"></div>
+                    </section>
+
+                    <section id="speaking-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
+                        <div class="border-b border-base-200 pb-4">
+                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
+                                <i class="fa-solid fa-comments text-2xl"></i> IV. SPEAKING PRACTICE
+                            </h2>
+                        </div>
+                        <div id="speaking-container" class="space-y-4 text-xl leading-relaxed"></div>
+                    </section>
+
+                    <div class="card bg-base-100 p-10 space-y-8 shadow-none border-0 scroll-mt-24" id="listening-section">
+                        <div class="border-b border-base-200 pb-4">
+                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
+                                <i class="fa-solid fa-headphones text-2xl"></i> V. LISTENING ACTIVITY
+                            </h2>
+                            <p class="text-lg font-medium text-base-content/75 mt-2">Dialogue Practice 🎭</p>
+                        </div>
+
+                        <div class="video-container relative w-full aspect-video rounded-2xl overflow-hidden shadow-sm bg-base-300 border border-base-200">
+                            <iframe class="absolute inset-0 w-full h-full"
+                                    src="https://www.youtube.com/embed/i3qJpokq148"
+                                    title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-base-200/60 to-base-200/30 p-8 rounded-2xl border border-base-200 shadow-sm space-y-6">
+                            <div class="flex items-center gap-2 text-base-content/80 font-semibold text-sm tracking-wider uppercase">
+                                <i class="fa-solid fa-sliders text-primary"></i> Voice Settings &amp; Controls
+                            </div>
+                            <div id="voice-controls-container" class="flex flex-row flex-wrap items-center justify-between gap-6">
+                                <p class="text-lg text-base-content/70 italic col-span-full">Loading speakers...</p>
+                            </div>
+                            <div class="flex items-center justify-between gap-4 pt-4 border-t border-base-300/60">
+                                <div class="flex items-center gap-3">
+                                    <button class="btn custom-primary-bg btn-md gap-2 px-6 shadow-md" onclick="playDialogue()">
+                                        <i class="fa-solid fa-play"></i> Play All
+                                    </button>
+                                    <button class="btn btn-outline btn-error btn-md gap-2 px-6" onclick="stopDialogue()">
+                                        <i class="fa-solid fa-stop"></i> Stop
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="fullDialogue" class="bg-base-200/30 p-6 rounded-2xl text-xl leading-relaxed border border-base-200 space-y-6"></div>
+                    </div>
+
+                    <div class="card bg-base-100 p-10 space-y-8 shadow-none border-0 scroll-mt-24" id="quiz-container">
+                        <div class="border-b border-base-200 pb-4">
+                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
+                                <i class="fa-solid fa-pen-to-square text-2xl"></i> Quiz Practice
+                            </h2>
+                        </div>
+                        
+                        <div class="w-full overflow-x-auto pb-2">
+                            <div id="quiz-list" class="space-y-8 text-xl leading-relaxed min-w-[500px] md:min-w-0"></div>
+                        </div>
+
+                        <div class="flex justify-center gap-4 pt-6 border-t border-base-200">
+                            <button class="btn custom-primary-bg btn-lg px-10 shadow-sm" id="submit-btn" onclick="submitQuiz()" style="display:none;">
+                                Submit All Answers
+                            </button>
+                            <button class="btn btn-outline btn-lg px-8" id="reset-btn" onclick="resetQuiz()" style="display:none;">
+                                Reset Quiz
+                            </button>
+                        </div>
+                        <div id="quiz-result" class="mt-4 font-bold text-center text-xl"></div>
+                    </div>
+
                 </div>
 
-                <div class="action-buttons">
-                    <button class="btn-primary" onclick="playDialogue()"><i class="fa-solid fa-play"></i> Play All</button>
-                    <button class="btn-secondary" onclick="stopDialogue()"><i class="fa-solid fa-stop"></i> Stop</button>
-                </div>
-                
-                <div id="fullDialogue" style="margin-top:20px;"></div>
-            </div>
-
-            <!-- QUIZ SECTION -->
-            <div class="card" id="quiz-container">
-                <h2>📝 Quiz Practice</h2>
-                <div id="quiz-list"></div>
-                <div class="action-buttons" style="justify-content: center; margin-top: 20px;">
-                    <button class="btn-primary" id="submit-btn" onclick="submitQuiz()" style="display:none;">Submit All Answers</button>
-                    <button class="btn-secondary" id="reset-btn" onclick="resetQuiz()" style="display:none;">Reset Quiz</button>
-                </div>
-                <div id="quiz-result" style="margin-top: 20px; font-weight: bold; text-align: center;"></div>
             </div>
         </div>
-    </main>
+
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed right-3 bottom-3 z-[1050] flex flex-col items-center gap-2 pointer-events-auto">
+
+        <div id="teacher-toolbar" class="flex flex-col items-center gap-2 transition-all duration-300">
+            <button onclick="toggleToolbarMenu()" id="toolbar-master-btn" class="btn btn-sm btn-square btn-primary shadow-md tooltip tooltip-left text-xs transition-transform hover:scale-105 relative group flex items-center justify-center p-0" data-tip="Tools">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-white m-auto">
+                  <path d="M5 8l1.5 12h11L19 8H5z" fill="#3b82f6" fill-opacity="0.3"></path>
+                  <path d="M4 6h16v2H4z" fill="#1e293b"></path>
+                  <line x1="9" y1="6" x2="7" y2="1"></line>
+                  <line x1="12" y1="6" x2="12" y2="1"></line>
+                  <line x1="15" y1="6" x2="17" y2="1"></line>
+                </svg>
+                <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
+                </span>
+            </button>
+
+            <div id="toolbar-options" class="flex flex-col gap-2 items-center w-full transition-all duration-300">
+                <button onclick="setTool('pointer')" id="tool-pointer" class="btn btn-sm btn-square btn-primary shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Pointer">
+                    <i class="fa-solid fa-hand-pointer text-xs"></i>
+                </button>
+
+                <button onclick="setTool('pencil')" id="tool-pencil" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Pencil">
+                    <i class="fa-solid fa-pencil text-slate-400 text-xs"></i>
+                </button>
+
+                <button onclick="setTool('pen')" id="tool-pen" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Pen">
+                    <i class="fa-solid fa-pen-nib text-red-500 text-xs"></i>
+                </button>
+
+                <button onclick="setTool('highlighter')" id="tool-highlighter" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Highlighter">
+                    <i class="fa-solid fa-highlighter text-yellow-500 text-xs"></i>
+                </button>
+
+                <button onclick="setTool('eraser')" id="tool-eraser" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Eraser">
+                    <i class="fa-solid fa-eraser text-xs"></i>
+                </button>
+
+                <button onclick="clearCanvas()" class="btn btn-sm btn-square btn-ghost bg-base-100 text-error shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Delete All">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="dropdown dropdown-top dropdown-end relative">
+            <div class="tooltip tooltip-left text-xs" data-tip="Shortcuts">
+                <div tabindex="0" role="button" class="btn btn-sm btn-square custom-primary-bg shadow-md opacity-90 hover:opacity-100 hover:scale-105 transition-all text-white">
+                    <i class="fa-solid fa-compass text-sm"></i>
+                </div>
+            </div>
+
+            <label class="dropdown-backdrop fixed inset-0 z-[1000] hidden cursor-default" for="close-dropdown-toggle"></label>
+            <input type="checkbox" id="close-dropdown-toggle" class="peer hidden" />
+
+            <ul tabindex="0" class="dropdown-content menu bg-base-100/95 backdrop-blur-md rounded-2xl z-[1005] w-56 p-2 shadow-2xl border border-white/20 mb-2 space-y-1 text-xs font-medium">
+                <li class="menu-title px-3 py-1 text-[10px] tracking-wider uppercase text-base-content/50 font-bold flex flex-row items-center justify-between">
+                    <span>Navigation</span>
+                    <button onclick="document.activeElement.blur();" class="btn btn-xs btn-circle btn-ghost hover:bg-error/10 hover:text-error transition-all text-base-content/70">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('top-section')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-arrow-up custom-primary-text w-4 text-center"></i> Back to Top</a></li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('warmup-section')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-fire custom-primary-text w-4 text-center"></i> I. WARM-UP</a></li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('vocab-section')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-book custom-primary-text w-4 text-center"></i> II. VOCABULARY</a></li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('reading-section')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-book-open custom-primary-text w-4 text-center"></i> III. READING</a></li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('speaking-section')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-comments custom-primary-text w-4 text-center"></i> IV. SPEAKING</a></li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('listening-section')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-headphones custom-primary-text w-4 text-center"></i> V. LISTENING</a></li>
+                <li><a href="javascript:void(0);" onclick="scrollToSection('quiz-container')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-pen-to-square custom-primary-text w-4 text-center"></i> Quiz Practice</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/script.js"></script>
 
     <script>
-        // Sidebar Toggle
-        const menuBtn = document.getElementById('menu-btn');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+        const canvas = document.getElementById('annotation-canvas');
+        const ctx = canvas.getContext('2d');
+        let currentTool = 'pointer';
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let isToolbarExpanded = false;
 
-        menuBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
-        overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+        function resizeCanvas() {
+            canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
+            canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            setTimeout(resizeCanvas, 500);
+            setToolbarExpanded(false);
+        });
 
-        // Theme Toggle
-        const settingsLink = document.getElementById('settings-link');
-        function updateThemeUI(isDark) {
-            const icon = settingsLink.querySelector('i');
-            if (isDark) {
-                document.body.classList.add('dark-mode');
-                icon.className = 'fa-solid fa-sun';
-                settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Light Mode';
+        function toggleToolbarMenu() {
+            isToolbarExpanded = !isToolbarExpanded;
+            setToolbarExpanded(isToolbarExpanded);
+        }
+
+        function setToolbarExpanded(expanded) {
+            isToolbarExpanded = expanded;
+            const optionsContainer = document.getElementById('toolbar-options');
+            if (expanded) {
+                optionsContainer.style.maxHeight = "300px";
+                optionsContainer.style.opacity = "1";
+                optionsContainer.style.pointerEvents = "auto";
+                optionsContainer.style.marginBottom = "8px";
             } else {
-                document.body.classList.remove('dark-mode');
-                icon.className = 'fa-solid fa-moon';
-                settingsLink.childNodes[settingsLink.childNodes.length - 1].textContent = ' Dark Mode';
+                optionsContainer.style.maxHeight = "0px";
+                optionsContainer.style.opacity = "0";
+                optionsContainer.style.pointerEvents = "none";
+                optionsContainer.style.marginBottom = "0px";
             }
         }
-        settingsLink.onclick = (e) => {
+
+        function setTool(tool) {
+            currentTool = tool;
+            
+            document.querySelectorAll('#teacher-toolbar button').forEach(btn => {
+                if(btn.id !== 'toolbar-master-btn') {
+                    btn.classList.remove('btn-primary', 'text-white', 'scale-105');
+                    btn.classList.add('btn-ghost', 'bg-base-100');
+                }
+            });
+
+            const activeBtn = document.getElementById(`tool-${tool}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('btn-ghost', 'bg-base-100');
+                activeBtn.classList.add('btn-primary', 'text-white', 'scale-105');
+            }
+
+            canvas.className = "absolute top-0 left-0 z-[990] touch-none";
+            if (tool === 'pointer') {
+                canvas.style.pointerEvents = 'none';
+                canvas.classList.add('cursor-pointer-mode');
+            } else {
+                canvas.style.pointerEvents = 'auto';
+                if (tool === 'pencil') {
+                    canvas.classList.add('cursor-pencil-mode');
+                } else if (tool === 'pen') {
+                    canvas.classList.add('cursor-pen-mode');
+                } else if (tool === 'highlighter') {
+                    canvas.classList.add('cursor-highlighter-mode');
+                } else if (tool === 'eraser') {
+                    canvas.classList.add('cursor-eraser-mode');
+                }
+            }
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (currentTool === 'pointer') return;
+            isDrawing = true;
+            [lastX, lastY] = [e.pageX, e.pageY];
+            if (canvas.setPointerCapture) {
+                canvas.setPointerCapture(e.pointerId);
+            }
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!isDrawing || currentTool === 'pointer') return;
             e.preventDefault();
-            const isDark = !document.body.classList.contains('dark-mode');
-            localStorage.setItem('dashboard-theme', isDark ? 'dark' : 'light');
-            updateThemeUI(isDark);
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.pageX, e.pageY);
+            
+            if (currentTool === 'pencil') {
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (currentTool === 'highlighter') {
+                ctx.strokeStyle = 'rgba(234, 179, 8, 0.35)';
+                ctx.lineWidth = 24;
+                ctx.lineCap = 'butt';
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (currentTool === 'pen') {
+                ctx.strokeStyle = '#dc2626'; // Vivid red ink
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.globalCompositeOperation = 'source-over';
+            } else if (currentTool === 'eraser') {
+                ctx.strokeStyle = 'rgba(0,0,0,1)';
+                ctx.lineWidth = 30;
+                ctx.lineCap = 'round';
+                ctx.globalCompositeOperation = 'destination-out';
+            }
+
+            ctx.stroke();
+            [lastX, lastY] = [e.pageX, e.pageY];
+        });
+
+        const stopDrawing = (e) => {
+            if (!isDrawing) return;
+            isDrawing = false;
+            if (e && canvas.releasePointerCapture && e.pointerId !== undefined) {
+                try {
+                    canvas.releasePointerCapture(e.pointerId);
+                } catch (err) {}
+            }
         };
-        const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
-        updateThemeUI(savedTheme === 'dark');
+
+        canvas.addEventListener('pointerup', stopDrawing);
+        canvas.addEventListener('pointercancel', stopDrawing);
+        canvas.addEventListener('pointerleave', stopDrawing);
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     </script>
-    <script src="../scripts/script.js"></script>
+
+    <script>
+        function scrollToSection(sectionId) {
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+                
+                if (window.location.hash) {
+                    history.replaceState(null, null, window.location.pathname);
+                }
+            }
+        }
+    </script>
+
+    <script>
+        function scaleAppCanvas() {
+            const wrapper = document.getElementById('app-scaler-wrapper');
+            const canvasElement = document.getElementById('app-canvas');
+
+            if (!wrapper || !canvasElement) return;
+
+            const baseWidth = 1000;
+            const availableWidth = wrapper.clientWidth;
+
+            if (availableWidth < baseWidth) {
+                const scale = availableWidth / baseWidth;
+
+                canvasElement.style.transform = `scale(${scale})`;
+                canvasElement.style.transformOrigin = 'top left';
+                canvasElement.style.position = 'relative';
+                canvasElement.style.top = '0';
+                canvasElement.style.left = '0';
+
+                const unscaledHeight = canvasElement.scrollHeight;
+                const scaledHeight = unscaledHeight * scale;
+                canvasElement.style.marginBottom = `-${unscaledHeight - scaledHeight}px`;
+            } else {
+                canvasElement.style.transform = 'scale(1)';
+                canvasElement.style.position = 'relative';
+                canvasElement.style.top = '';
+                canvasElement.style.left = '';
+                canvasElement.style.marginBottom = '0px';
+            }
+
+            resizeCanvas();
+            if (typeof window.refreshMatchingLines === 'function') {
+                window.refreshMatchingLines();
+            }
+        }
+
+        window.addEventListener('resize', scaleAppCanvas);
+        window.addEventListener('load', scaleAppCanvas);
+        setTimeout(scaleAppCanvas, 500);
+        setTimeout(scaleAppCanvas, 1500);
+    </script>
 </body>
 </html>

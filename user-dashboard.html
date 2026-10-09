@@ -515,7 +515,7 @@
                         </div>
                     </div>
 
-                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="festival.html">
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="agriculture.html">
                         <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
                             <img src="https://drive.google.com/thumbnail?id=1GCNBjYO4h4due-lfl3y3xAS2G57aCZkm&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
                         </figure>
@@ -573,7 +573,7 @@
             const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const userRole = localStorage.getItem('role') || "1";
             const rawBooks = localStorage.getItem('books') || "";
-            const isAdmin = userRole === "2" || String(userRole).toLowerCase() === "admin";
+            const isAdmin = userRole === "2" || String(userRole).toLowerCase() === "admin" || String(userRole).toLowerCase() === "3";
 
             const allowedBooks = rawBooks
                 .toLowerCase()
@@ -589,7 +589,8 @@
                 const title = card.querySelector('.card-title')?.textContent.toLowerCase() || "";
                 const description = card.querySelector('p')?.textContent.toLowerCase() || "";
                 
-                const isAllowed = isAdmin || allowedBooks.some(b => bookFileName.includes(b) || b.includes(bookFileName));
+                // Strict check: non-admins must match the exact filename in allowed books list
+                const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
                 const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
 
                 if (isAllowed && matchesSearch) {

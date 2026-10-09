@@ -59,6 +59,8 @@ function getTargetUrl() {
         gid = "2143141595"; 
     }else if (pageName === "festival.html") { 
         gid = "1336216649"; 
+    }else if (pageName === "agriculture.html") { 
+        gid = "321712139"; 
     }
 
     return `${BASE_CSV_URL}&gid=${gid}`;

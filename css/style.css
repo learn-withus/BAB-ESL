@@ -22,6 +22,11 @@
             flex-wrap: nowrap !important;
         }
 
+.sticky{
+    position: sticky;
+    z-index: 100000000;
+}
+
 .drawer-side, 
 .drawer-side .menu, 
 #navbar-placeholder {

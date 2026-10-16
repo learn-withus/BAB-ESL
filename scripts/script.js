@@ -1,4 +1,3 @@
-// ================= 0. DYNAMIC CONFIGURATION =================
 const BASE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5Le80We_5fuOKOBssT2UoU6__He44rpgooYVsspXAgAaoFrJEyluqFt0n14XAswBUqUu6AGYZGROP/pub?output=csv";
 
 function getTargetUrl() {
@@ -61,7 +60,15 @@ function getTargetUrl() {
         gid = "1336216649"; 
     }else if (pageName === "agriculture.html") { 
         gid = "321712139"; 
+    }else if (pageName === "ophthalmologist.html") { 
+        gid = "1007134737"; 
+    }else if (pageName === "basic-conversation.html") { 
+        gid = "1740118721"; 
+    }else if (pageName === "self-introduction.html") { 
+        gid = "1665859797"; 
     }
+
+
 
     return `${BASE_CSV_URL}&gid=${gid}`;
 }
@@ -161,8 +168,8 @@ function parseCSV(text) {
                     const contentItem = { label: "", text: colC, isSubheader: false };
                     if (currentSection === "warmup") warmupData.push(contentItem);
                     else if (currentSection === "vocab") vocabData.push(contentItem);
-                    else if (currentSection === "reading") readingData.push(contentItem);
-                    else if (currentSection === "speaking") readingData.push(contentItem);
+                    else if (currentSection === "reading") vocabData.push(contentItem);
+                    else if (currentSection === "speaking") vocabData.push(contentItem);
                 }
                 return;
             }
@@ -441,7 +448,7 @@ function renderQuestionElement(q, realIndex, displayNum, shuffledDefs) {
             <input type="text" id="blank-${realIndex}" 
                    ondragover="event.preventDefault()" 
                    ondrop="event.preventDefault(); this.value=event.dataTransfer.getData('text')"
-                   class="input input-bordered input-sm mx-1.5 bg-base-200 text-base-content font-bold inline-block w-auto text-center border-b-2 border-primary"> ${parts[1] || ""}</p>
+                   class="input input-bordered input-sm mx-1.5 bg-base-200 text-base-content font-bold inline-block w-auto text-center border-b-2 border-primary" placeholder="drag or type your answer."> ${parts[1] || ""}</p>
             <div id="fb-${realIndex}" class="font-bold mt-1.5 text-sm"></div>`;
     } 
     else if (q.type === "SPELLING") {
@@ -878,70 +885,157 @@ window.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
 });
 
+
 function initBookSearch() {
-    const searchInput = document.getElementById('book-search-input');
-    const suggestionsBox = document.getElementById('search-suggestions');
+    const searchInput = document.getElementById('book-search-input') || document.getElementById('lesson-search');
+    const suggestionsBox = document.getElementById('search-suggestions') || document.getElementById('search-results');
     const bookCards = document.querySelectorAll('.book-card');
+    const lessonItems = document.querySelectorAll('.menu-tooltip');
     const noResultsMsg = document.getElementById('no-results-msg');
 
-    if (!searchInput || !bookCards.length) return;
+    if (!searchInput) return;
 
-    const books = Array.from(bookCards).map(card => ({
-        title: card.getAttribute('data-title') || '',
-        description: card.getAttribute('data-desc') || '',
-        element: card
-    }));
+    // Handle Lesson Page Search (.menu-tooltip elements)
+    if (lessonItems.length > 0) {
+        const lessons = Array.from(lessonItems).map(item => {
+            const link = item.querySelector('a');
+            const img = item.querySelector('.btn-thumb');
+            const title = item.querySelector('.btn-title');
+            const target = item.querySelector('.btn-target');
+            return {
+                url: link ? link.getAttribute('href') : '#',
+                imgSrc: img ? img.getAttribute('src') : '',
+                title: title ? title.textContent.trim() : '',
+                desc: target ? target.textContent.trim() : '',
+                element: item
+            };
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!suggestionsBox) return;
+            suggestionsBox.innerHTML = '';
+
+            if (!query) {
+                suggestionsBox.style.display = 'none';
+                lessons.forEach(l => l.element.style.display = '');
+                return;
+            }
+
+            let matchCount = 0;
+            lessons.forEach(lesson => {
+                const isMatch = lesson.title.toLowerCase().includes(query) || lesson.desc.toLowerCase().includes(query);
+                lesson.element.style.display = isMatch ? '' : 'none';
+
+                if (isMatch) {
+                    matchCount++;
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item flex items-center gap-3 px-4 py-2 hover:bg-base-200 cursor-pointer text-sm border-b border-base-300 last:border-none';
+                    item.innerHTML = `
+                        ${lesson.imgSrc ? `<img src="${lesson.imgSrc}" class="w-8 h-8 object-cover rounded shrink-0">` : '<i class="fa-solid fa-book-open custom-primary-text"></i>'}
+                        <div class="flex flex-col min-w-0 flex-1">
+                            <span class="font-semibold text-xs text-base-content truncate">${lesson.title}</span>
+                            <span class="text-[11px] text-base-content/70 truncate">${lesson.desc}</span>
+                        </div>`;
+                    
+                    item.addEventListener('click', () => {
+                        searchInput.value = lesson.title;
+                        suggestionsBox.style.display = 'none';
+                        lessons.forEach(l => {
+                            l.element.style.display = (l.title.toLowerCase() === lesson.title.toLowerCase()) ? '' : 'none';
+                        });
+                    });
+                    suggestionsBox.appendChild(item);
+                }
+            });
+
+            if (matchCount === 0) {
+                suggestionsBox.innerHTML = `<div class="px-4 py-3 text-xs text-base-content/60 text-center">No matching lessons found</div>`;
+            }
+            suggestionsBox.style.display = 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+        return;
+    }
+
+  
+    if (!bookCards.length) return;
+
+    const books = Array.from(bookCards).map(card => {
+        const titleEl = card.querySelector('h1, h2, h3, .book-title, .btn-title');
+        const descEl = card.querySelector('p, .book-desc, .btn-target');
+        return {
+            title: card.getAttribute('data-title') || (titleEl ? titleEl.textContent.trim() : ''),
+            description: card.getAttribute('data-desc') || (descEl ? descEl.textContent.trim() : ''),
+            element: card
+        };
+    }).filter(b => b.title !== '');
 
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
         let matchCount = 0;
+
+        if (!suggestionsBox) return;
         suggestionsBox.innerHTML = '';
 
         if (!query) {
             suggestionsBox.classList.remove('active', 'block');
             suggestionsBox.classList.add('hidden');
+            suggestionsBox.style.display = 'none';
             books.forEach(b => b.element.classList.remove('hidden'));
             if (noResultsMsg) noResultsMsg.style.display = 'none';
             return;
         }
 
-        const matchedTitles = [];
+        const seenTitles = new Set();
         books.forEach(book => {
             const isMatch = book.title.toLowerCase().includes(query) || book.description.toLowerCase().includes(query);
             book.element.classList.toggle('hidden', !isMatch);
+            
             if (isMatch) {
                 matchCount++;
-                matchedTitles.push(book.title);
+                if (!seenTitles.has(book.title)) {
+                    seenTitles.add(book.title);
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item flex items-center gap-2 px-4 py-2 hover:bg-base-200 cursor-pointer text-sm';
+                    item.innerHTML = `<i class="fa-solid fa-book-open custom-primary-text"></i><span>${book.title}</span>`;
+                    
+                    item.addEventListener('click', () => {
+                        searchInput.value = book.title;
+                        suggestionsBox.classList.remove('active', 'block');
+                        suggestionsBox.classList.add('hidden');
+                        suggestionsBox.style.display = 'none';
+                        books.forEach(b => b.element.classList.toggle('hidden', b.title.toLowerCase() !== book.title.toLowerCase()));
+                    });
+                    suggestionsBox.appendChild(item);
+                }
             }
         });
 
         if (matchCount === 0) {
             if (noResultsMsg) noResultsMsg.style.display = 'block';
-            suggestionsBox.classList.remove('active', 'block');
-            suggestionsBox.classList.add('hidden');
-        } else {
-            if (noResultsMsg) noResultsMsg.style.display = 'none';
-            matchedTitles.forEach(title => {
-                const item = document.createElement('div');
-                item.className = 'suggestion-item flex items-center gap-2 px-4 py-2 hover:bg-base-200 cursor-pointer text-sm';
-                item.innerHTML = `<i class="fa-solid fa-book-open custom-primary-text"></i><span>${title}</span>`;
-                item.addEventListener('click', () => {
-                    searchInput.value = title;
-                    suggestionsBox.classList.remove('active', 'block');
-                    suggestionsBox.classList.add('hidden');
-                    books.forEach(b => b.element.classList.toggle('hidden', b.title.toLowerCase() !== title.toLowerCase()));
-                });
-                suggestionsBox.appendChild(item);
-            });
+            suggestionsBox.innerHTML = `<div class="px-4 py-2 text-xs text-base-content/60 text-center">No matching books found</div>`;
             suggestionsBox.classList.add('active', 'block');
             suggestionsBox.classList.remove('hidden');
+            suggestionsBox.style.display = 'block';
+        } else {
+            if (noResultsMsg) noResultsMsg.style.display = 'none';
+            suggestionsBox.classList.add('active', 'block');
+            suggestionsBox.classList.remove('hidden');
+            suggestionsBox.style.display = 'block';
         }
     });
 
     document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        if (suggestionsBox && !searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
             suggestionsBox.classList.remove('active', 'block');
             suggestionsBox.classList.add('hidden');
+            suggestionsBox.style.display = 'none';
         }
     });
 }
@@ -1287,73 +1381,12 @@ function handleLogin(event) {
     };
 }
 
-const searchInput = document.getElementById('lesson-search');
-const searchResults = document.getElementById('search-results');
-
-const lessonItems = Array.from(document.querySelectorAll('.menu-tooltip')).map(item => {
-    const link = item.querySelector('a');
-    const img = item.querySelector('.btn-thumb');
-    const title = item.querySelector('.btn-title');
-    const target = item.querySelector('.btn-target');
-    return {
-        url: link ? link.getAttribute('href') : '#',
-        imgSrc: img ? img.getAttribute('src') : '',
-        title: title ? title.textContent.trim() : '',
-        desc: target ? target.textContent.trim() : ''
-    };
-});
-
-if (searchInput && searchResults) {
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        
-        if (query === '') {
-            searchResults.style.display = 'none';
-            searchResults.innerHTML = '';
-            return;
-        }
-
-        const filteredLessons = lessonItems.filter(lesson => 
-            lesson.title.toLowerCase().includes(query) || 
-            lesson.desc.toLowerCase().includes(query)
-        );
-
-        if (filteredLessons.length > 0) {
-            searchResults.innerHTML = filteredLessons.map(lesson => `
-                <a href="${lesson.url}" class="search-result-item">
-                    <img src="${lesson.imgSrc}" alt="${lesson.title}">
-                    <div class="search-result-text">
-                        <span class="search-result-title">${lesson.title}</span>
-                        <span class="search-result-desc">${lesson.desc}</span>
-                    </div>
-                </a>
-            `).join('');
-            searchResults.style.display = 'block';
-        } else {
-            searchResults.innerHTML = `<div style="padding: 12px 15px; font-size: 13px; color: var(--text-muted); text-align: center;">No matching lessons found</div>`;
-            searchResults.style.display = 'block';
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
-
-    searchInput.addEventListener('focus', function() {
-        if (this.value.trim() !== '') {
-            searchResults.style.display = 'block';
-        }
-    });
-}
-
 function openLinkModal(url, student = 'N/A', title = 'N/A', date = 'N/A', time = 'N/A') {
     const modal = document.getElementById('link-modal');
     const input = document.getElementById('modal-link-input');
     const joinBtn = document.getElementById('modal-join-btn');
     
-    // Populate session details into modal elements
+   
     const studentEl = document.getElementById('modal-detail-student');
     const titleEl = document.getElementById('modal-detail-title');
     const dateEl = document.getElementById('modal-detail-date');
@@ -1426,7 +1459,7 @@ function fetchScheduledSessions() {
                 const friendlyDate = formatFriendlyDate(s.sessionDate);
                 const friendlyTime = formatFriendlyTime(s.sessionTime);
 
-                // Escape strings safely for inline function execution parameters
+          
                 const safeStudent = (s.student || '').replace(/'/g, "\\'");
                 const safeTitle = (formattedTitle || '').replace(/'/g, "\\'");
                 const safeDate = (friendlyDate || '').replace(/'/g, "\\'");

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAB - ESL Communication Strategy At the park</title>
+    <title>BAB - ESL Advanced Speaking: At the park</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -12,6 +12,7 @@
 </head>
 <body class="bg-base-200 min-h-screen font-sans overflow-x-hidden relative">
     <canvas id="annotation-canvas" class="absolute top-0 left-0 pointer-events-none z-[990] touch-none"></canvas>
+    <div id="text-layer" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[991]"></div>
 
     <div id="top-section"></div>
 
@@ -93,8 +94,8 @@
                                      alt="Picture"
                                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-transparent"></div>
-                                <span class="absolute top-4 left-4 badge font-semibold shadow-md text-sm custom-primary-bg">
-                                    Core Lesson
+                                <span class="absolute top-4 left-4 badge font-semibold shadow-md text-sm badge-accent">
+                                    Advanced Speaking
                                 </span>
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-sm gap-2">
                                     <i class="fa-solid fa-expand"></i> Click to view full screen
@@ -255,6 +256,10 @@
                     <i class="fa-solid fa-hand-pointer text-xs"></i>
                 </button>
 
+                <button onclick="setTool('text')" id="tool-text" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Add Text Note">
+                    <i class="fa-solid fa-font text-blue-500 text-xs"></i>
+                </button>
+
                 <button onclick="setTool('pencil')" id="tool-pencil" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Pencil">
                     <i class="fa-solid fa-pencil text-slate-400 text-xs"></i>
                 </button>
@@ -307,207 +312,7 @@
 
     <script src="../scripts/nav.js"></script>
     <script src="../scripts/script.js"></script>
+    <script src="../scripts/tools.js"></script>
 
-    <script>
-        const canvas = document.getElementById('annotation-canvas');
-        const ctx = canvas.getContext('2d');
-        let currentTool = 'pointer';
-        let isDrawing = false;
-        let lastX = 0;
-        let lastY = 0;
-        let isToolbarExpanded = false;
-
-        function resizeCanvas() {
-            canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
-            canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-        }
-        
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('load', () => {
-            resizeCanvas();
-            setTimeout(resizeCanvas, 500);
-            setToolbarExpanded(false);
-        });
-
-        function toggleToolbarMenu() {
-            isToolbarExpanded = !isToolbarExpanded;
-            setToolbarExpanded(isToolbarExpanded);
-        }
-
-        function setToolbarExpanded(expanded) {
-            isToolbarExpanded = expanded;
-            const optionsContainer = document.getElementById('toolbar-options');
-            if (expanded) {
-                optionsContainer.style.maxHeight = "300px";
-                optionsContainer.style.opacity = "1";
-                optionsContainer.style.pointerEvents = "auto";
-                optionsContainer.style.marginBottom = "8px";
-            } else {
-                optionsContainer.style.maxHeight = "0px";
-                optionsContainer.style.opacity = "0";
-                optionsContainer.style.pointerEvents = "none";
-                optionsContainer.style.marginBottom = "0px";
-            }
-        }
-
-        function setTool(tool) {
-            currentTool = tool;
-            
-            document.querySelectorAll('#teacher-toolbar button').forEach(btn => {
-                if(btn.id !== 'toolbar-master-btn') {
-                    btn.classList.remove('btn-primary', 'text-white', 'scale-105');
-                    btn.classList.add('btn-ghost', 'bg-base-100');
-                }
-            });
-
-            const activeBtn = document.getElementById(`tool-${tool}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('btn-ghost', 'bg-base-100');
-                activeBtn.classList.add('btn-primary', 'text-white', 'scale-105');
-            }
-
-            canvas.className = "absolute top-0 left-0 z-[990] touch-none";
-            if (tool === 'pointer') {
-                canvas.style.pointerEvents = 'none';
-                canvas.classList.add('cursor-pointer-mode');
-            } else {
-                canvas.style.pointerEvents = 'auto';
-                if (tool === 'pencil') {
-                    canvas.classList.add('cursor-pencil-mode');
-                } else if (tool === 'pen') {
-                    canvas.classList.add('cursor-pen-mode');
-                } else if (tool === 'highlighter') {
-                    canvas.classList.add('cursor-highlighter-mode');
-                } else if (tool === 'eraser') {
-                    canvas.classList.add('cursor-eraser-mode');
-                }
-            }
-        }
-
-        canvas.addEventListener('pointerdown', (e) => {
-            if (currentTool === 'pointer') return;
-            isDrawing = true;
-            [lastX, lastY] = [e.pageX, e.pageY];
-            if (canvas.setPointerCapture) {
-                canvas.setPointerCapture(e.pointerId);
-            }
-        });
-
-        canvas.addEventListener('pointermove', (e) => {
-            if (!isDrawing || currentTool === 'pointer') return;
-            e.preventDefault();
-
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(e.pageX, e.pageY);
-            
-            if (currentTool === 'pencil') {
-                ctx.strokeStyle = '#64748b';
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.globalCompositeOperation = 'source-over';
-            } else if (currentTool === 'highlighter') {
-                ctx.strokeStyle = 'rgba(234, 179, 8, 0.35)';
-                ctx.lineWidth = 24;
-                ctx.lineCap = 'butt';
-                ctx.globalCompositeOperation = 'source-over';
-            } else if (currentTool === 'pen') {
-                ctx.strokeStyle = '#dc2626'; // Vivid red ink
-                ctx.lineWidth = 3;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.globalCompositeOperation = 'source-over';
-            } else if (currentTool === 'eraser') {
-                ctx.strokeStyle = 'rgba(0,0,0,1)';
-                ctx.lineWidth = 30;
-                ctx.lineCap = 'round';
-                ctx.globalCompositeOperation = 'destination-out';
-            }
-
-            ctx.stroke();
-            [lastX, lastY] = [e.pageX, e.pageY];
-        });
-
-        const stopDrawing = (e) => {
-            if (!isDrawing) return;
-            isDrawing = false;
-            if (e && canvas.releasePointerCapture && e.pointerId !== undefined) {
-                try {
-                    canvas.releasePointerCapture(e.pointerId);
-                } catch (err) {}
-            }
-        };
-
-        canvas.addEventListener('pointerup', stopDrawing);
-        canvas.addEventListener('pointercancel', stopDrawing);
-        canvas.addEventListener('pointerleave', stopDrawing);
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
-
-    <script>
-        function scrollToSection(sectionId) {
-            if (document.activeElement) {
-                document.activeElement.blur();
-            }
-
-            const element = document.getElementById(sectionId);
-            if (element) {
-                element.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
-                
-                if (window.location.hash) {
-                    history.replaceState(null, null, window.location.pathname);
-                }
-            }
-        }
-    </script>
-
-    <script>
-        function scaleAppCanvas() {
-            const wrapper = document.getElementById('app-scaler-wrapper');
-            const canvasElement = document.getElementById('app-canvas');
-
-            if (!wrapper || !canvasElement) return;
-
-            const baseWidth = 1000;
-            const availableWidth = wrapper.clientWidth;
-
-            if (availableWidth < baseWidth) {
-                const scale = availableWidth / baseWidth;
-
-                canvasElement.style.transform = `scale(${scale})`;
-                canvasElement.style.transformOrigin = 'top left';
-                canvasElement.style.position = 'relative';
-                canvasElement.style.top = '0';
-                canvasElement.style.left = '0';
-
-                const unscaledHeight = canvasElement.scrollHeight;
-                const scaledHeight = unscaledHeight * scale;
-                canvasElement.style.marginBottom = `-${unscaledHeight - scaledHeight}px`;
-            } else {
-                canvasElement.style.transform = 'scale(1)';
-                canvasElement.style.position = 'relative';
-                canvasElement.style.top = '';
-                canvasElement.style.left = '';
-                canvasElement.style.marginBottom = '0px';
-            }
-
-            resizeCanvas();
-            if (typeof window.refreshMatchingLines === 'function') {
-                window.refreshMatchingLines();
-            }
-        }
-
-        window.addEventListener('resize', scaleAppCanvas);
-        window.addEventListener('load', scaleAppCanvas);
-        setTimeout(scaleAppCanvas, 500);
-        setTimeout(scaleAppCanvas, 1500);
-    </script>
 </body>
 </html>

@@ -9,7 +9,7 @@ if (localStorage.getItem('isLoggedIn') !== 'true') {
 }
 
 window.addEventListener('pageshow', function(event) {
-    if (event.persisted || localStorage.getItem('isLoggedIn') !== 'true') {
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
         redirectToLogin();
     }
 });
@@ -32,20 +32,22 @@ function loadNavbar() {
     const currentPath = window.location.pathname;
     const currentFileName = currentPath.split("/").pop() || "index.html";
 
-    if (userRole === "1") {
-        if (currentFileName === "index.html" || currentFileName === "admin-dashboard.html" || (currentPath.endsWith('/') && !currentPath.includes('/pages/'))) {
-            window.location.replace(pathToRoot + "user-dashboard.html");
-            return;
-        }
-    } else if (userRole === "2") {
-        if (currentFileName === "user-dashboard.html" || currentFileName === "admin-dashboard.html") {
-            window.location.replace(pathToRoot + "index.html");
-            return;
-        }
-    } else if (userRole === "3") {
-        if (currentFileName === "user-dashboard.html" || currentFileName === "index.html") {
-            window.location.replace(pathToRoot + "admin-dashboard.html");
-            return;
+    if (!currentPath.includes('/pages/')) {
+        if (userRole === "1") {
+            if (currentFileName === "index.html" || currentFileName === "admin-dashboard.html" || currentPath.endsWith('/')) {
+                window.location.replace(pathToRoot + "user-dashboard.html");
+                return;
+            }
+        } else if (userRole === "2") {
+            if (currentFileName === "user-dashboard.html" || currentFileName === "admin-dashboard.html") {
+                window.location.replace(pathToRoot + "index.html");
+                return;
+            }
+        } else if (userRole === "3") {
+            if (currentFileName === "user-dashboard.html" || currentFileName === "index.html") {
+                window.location.replace(pathToRoot + "admin-dashboard.html");
+                return;
+            }
         }
     }
 

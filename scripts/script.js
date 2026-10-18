@@ -883,81 +883,18 @@ window.addEventListener('DOMContentLoaded', () => {
 function initBookSearch() {
     const searchInput = document.getElementById('book-search-input') || document.getElementById('lesson-search');
     const suggestionsBox = document.getElementById('search-suggestions') || document.getElementById('search-results');
-    const bookCards = document.querySelectorAll('.book-card');
-    const lessonItems = document.querySelectorAll('.menu-tooltip');
     const noResultsMsg = document.getElementById('no-results-msg');
 
-    if (!searchInput) return;
-
-    if (lessonItems.length > 0) {
-        const lessons = Array.from(lessonItems).map(item => {
-            const link = item.querySelector('a');
-            const img = item.querySelector('.btn-thumb');
-            const title = item.querySelector('.btn-title');
-            const target = item.querySelector('.btn-target');
-            return {
-                url: link ? link.getAttribute('href') : '#',
-                imgSrc: img ? img.getAttribute('src') : '',
-                title: title ? title.textContent.trim() : '',
-                desc: target ? target.textContent.trim() : '',
-                element: item,
-                linkElement: link
-            };
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            if (!suggestionsBox) return;
-            suggestionsBox.innerHTML = '';
-
-            if (!query) {
-                suggestionsBox.style.display = 'none';
-                lessons.forEach(l => l.element.style.display = '');
-                return;
-            }
-
-            let matchCount = 0;
-            lessons.forEach(lesson => {
-                const isMatch = lesson.title.toLowerCase().includes(query) || lesson.desc.toLowerCase().includes(query);
-                lesson.element.style.display = isMatch ? '' : 'none';
-
-                if (isMatch) {
-                    matchCount++;
-                    const item = document.createElement('div');
-                    item.className = 'suggestion-item flex items-center gap-3 px-4 py-2 hover:bg-base-200 cursor-pointer text-sm border-b border-base-300 last:border-none';
-                    item.innerHTML = `
-                        ${lesson.imgSrc ? `<img src="${lesson.imgSrc}" class="w-8 h-8 object-cover rounded shrink-0">` : '<i class="fa-solid fa-book-open custom-primary-text"></i>'}
-                        <div class="flex flex-col min-w-0 flex-1">
-                            <span class="font-semibold text-xs text-base-content truncate">${lesson.title}</span>
-                            <span class="text-[11px] text-base-content/70 truncate">${lesson.desc}</span>
-                        </div>`;
-                    
-                    item.addEventListener('click', () => {
-                        searchInput.value = lesson.title;
-                        suggestionsBox.style.display = 'none';
-                        if (lesson.url && lesson.url !== '#') {
-                            window.location.href = lesson.url;
-                        } else if (lesson.linkElement) {
-                            lesson.linkElement.click();
-                        }
-                    });
-                    suggestionsBox.appendChild(item);
-                }
-            });
-
-            if (matchCount === 0) {
-                suggestionsBox.innerHTML = `<div class="px-4 py-3 text-xs text-base-content/60 text-center">No matching lessons found</div>`;
-            }
-            suggestionsBox.style.display = 'block';
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.style.display = 'none';
-            }
-        });
+    const currentFile = window.location.pathname.split("/").pop();
+    if (currentFile === "index.html" || currentFile === "user-dashboard.html" || currentFile === "admin-dashboard.html") {
+        if (searchInput) {
+            const searchContainer = searchInput.closest('.flex') || searchInput.parentElement.parentElement || searchInput.parentElement;
+            if (searchContainer) searchContainer.style.display = 'none';
+        }
         return;
     }
+
+    if (!searchInput) return;
 
     const books = [];
     const generalCards = document.querySelectorAll('div, article, section');
@@ -967,7 +904,6 @@ function initBookSearch() {
         const linkEl = card.querySelector('a');
         if (titleEl && (linkEl || card.tagName === 'A')) {
             const title = titleEl.textContent.trim();
-            // Exclude page header titles like "Lesson Library"
             if (title.toLowerCase() === "lesson library") return;
 
             const url = linkEl ? linkEl.getAttribute('href') : (card.tagName === 'A' ? card.getAttribute('href') : '');
@@ -982,23 +918,6 @@ function initBookSearch() {
         }
     });
 
-    if (books.length === 0 && bookCards.length > 0) {
-        bookCards.forEach(card => {
-            const titleEl = card.querySelector('h1, h2, h3, .book-title, .btn-title');
-            const descEl = card.querySelector('p, .book-desc, .btn-target');
-            const linkEl = card.querySelector('a');
-            const title = card.getAttribute('data-title') || (titleEl ? titleEl.textContent.trim() : '');
-            if (title.toLowerCase() === "lesson library") return;
-
-            books.push({
-                title: title,
-                description: card.getAttribute('data-desc') || (descEl ? descEl.textContent.trim() : ''),
-                element: card,
-                url: linkEl ? linkEl.getAttribute('href') : ''
-            });
-        });
-    }
-
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
         let matchCount = 0;
@@ -1007,10 +926,14 @@ function initBookSearch() {
         suggestionsBox.innerHTML = '';
 
         if (!query) {
-            suggestionsBox.classList.remove('active', 'block');
-            suggestionsBox.classList.add('hidden');
             suggestionsBox.style.display = 'none';
-            books.forEach(b => { if (b.element) b.element.classList.remove('hidden'); });
+            books.forEach(book => {
+                if (book.element) {
+                    book.element.style.display = '';
+                    book.element.style.opacity = '1';
+                    book.element.style.transform = 'scale(1)';
+                }
+            });
             if (noResultsMsg) noResultsMsg.style.display = 'none';
             return;
         }
@@ -1018,8 +941,25 @@ function initBookSearch() {
         const seenTitles = new Set();
         books.forEach(book => {
             const isMatch = book.title.toLowerCase().includes(query) || book.description.toLowerCase().includes(query);
-            if (book.element) book.element.classList.toggle('hidden', !isMatch);
             
+            if (book.element) {
+                if (isMatch) {
+                    book.element.style.display = '';
+                    book.element.style.opacity = '1';
+                    book.element.style.transform = 'scale(1)';
+                    book.element.style.transition = 'all 0.3s ease-in-out';
+                } else {
+                    book.element.style.opacity = '0';
+                    book.element.style.transform = 'scale(0.95)';
+                    book.element.style.transition = 'all 0.3s ease-in-out';
+                    setTimeout(() => {
+                        if (searchInput.value.trim() !== '') {
+                            book.element.style.display = 'none';
+                        }
+                    }, 300);
+                }
+            }
+
             if (isMatch) {
                 matchCount++;
                 if (!seenTitles.has(book.title)) {
@@ -1030,15 +970,9 @@ function initBookSearch() {
                     
                     item.addEventListener('click', () => {
                         searchInput.value = book.title;
-                        suggestionsBox.classList.remove('active', 'block');
-                        suggestionsBox.classList.add('hidden');
                         suggestionsBox.style.display = 'none';
                         if (book.url) {
                             window.location.href = book.url;
-                        } else {
-                            books.forEach(b => {
-                                if (b.element) b.element.classList.toggle('hidden', b.title.toLowerCase() !== book.title.toLowerCase());
-                            });
                         }
                     });
                     suggestionsBox.appendChild(item);
@@ -1047,25 +981,17 @@ function initBookSearch() {
         });
 
         if (matchCount === 0) {
-            if (noResultsMsg) {
-                noResultsMsg.style.display = 'block';
-            }
+            if (noResultsMsg) noResultsMsg.style.display = 'block';
             suggestionsBox.innerHTML = `<div class="px-4 py-3 text-xs text-base-content/60 text-center">No matching books found</div>`;
-            suggestionsBox.classList.add('active', 'block');
-            suggestionsBox.classList.remove('hidden');
             suggestionsBox.style.display = 'block';
         } else {
             if (noResultsMsg) noResultsMsg.style.display = 'none';
-            suggestionsBox.classList.add('active', 'block');
-            suggestionsBox.classList.remove('hidden');
             suggestionsBox.style.display = 'block';
         }
     });
 
     document.addEventListener('click', (e) => {
         if (suggestionsBox && !searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-            suggestionsBox.classList.remove('active', 'block');
-            suggestionsBox.classList.add('hidden');
             suggestionsBox.style.display = 'none';
         }
     });

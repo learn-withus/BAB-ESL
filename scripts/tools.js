@@ -803,3 +803,16 @@ window.addEventListener('resize', scaleAppCanvas);
 window.addEventListener('load', scaleAppCanvas);
 setTimeout(scaleAppCanvas, 500);
 setTimeout(scaleAppCanvas, 1500);
+
+
+function downloadLessonPDF() {
+    const pageName = window.location.pathname.split("/").pop().replace('.html', '') || 'lesson-content';
+    
+    if (typeof showToast === 'function') {
+        showToast("Opening print dialog to save as PDF...", "success");
+    }
+
+    setTimeout(() => {
+        window.print();
+    }, 300);
+}

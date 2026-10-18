@@ -21,7 +21,7 @@
             gap: 0.75rem !important;
             flex-wrap: nowrap !important;
         }
-
+        
 @media print {
     nav, 
     .drawer-side, 
@@ -73,7 +73,7 @@
         page-break-inside: auto;
         break-inside: auto;
     }
-
+}
 .sticky{
     position: sticky;
     z-index: 100000000;

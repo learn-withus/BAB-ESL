@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - Our Teachers</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-base-200 min-h-screen font-['Inter']">
+
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+            
+            <div class="p-6 flex-1 flex flex-col gap-6 max-w-7xl mx-auto w-full">
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
+                            <span class="flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-xl text-lg">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                            </span>
+                            Our Instructors
+                        </h1>
+                        <p class="text-sm text-base-content/70 mt-1">Meet our professional ESL instructors and view their profiles & expertise.</p>
+                    </div>
+                    <div class="w-full md:w-72">
+                        <label class="input input-bordered input-sm flex items-center gap-2 w-full bg-base-100 shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass opacity-50 text-xs"></i>
+                            <input type="text" id="teacher-search-input" placeholder="Search teacher..." class="grow text-xs bg-transparent outline-none">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="teachers-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div class="col-span-full text-center py-16 text-base-content/60">
+                        <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-primary"></i>
+                        <p class="text-sm font-medium">Loading teachers directory...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+    <dialog id="teacher-detail-modal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box p-6 sm:p-8 overflow-hidden w-11/12 max-w-4xl bg-base-100 border border-base-300 shadow-2xl rounded-2xl">
+            <button onclick="closeTeacherModal()" class="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 text-base-content/70 hover:text-base-content">✕</button>
+            
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="w-full md:w-64 shrink-0 flex flex-col items-center">
+                    <div class="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden shadow-md border-2 border-base-300 bg-base-200 cursor-pointer group relative" id="modal-main-pic-wrapper">
+                        <img id="modal-teacher-img" src="" alt="Teacher Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass-plus text-base"></i> Click to Zoom
+                        </div>
+                    </div>
+                    <span id="modal-teacher-badge" class="badge badge-primary font-semibold text-xs mt-4 px-4 py-2.5 shadow-sm"></span>
+                </div>
+
+                <div class="flex-1 min-w-0 flex flex-col justify-between w-full h-full">
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 id="modal-teacher-name" class="font-bold text-2xl sm:text-3xl text-base-content tracking-tight"></h3>
+                                <p class="text-xs text-base-content/60 mt-0.5">BAB ESL Certified Instructor</p>
+                            </div>
+                        </div>
+                        
+                        <div class="divider my-3"></div>
+
+                        <div class="space-y-4">
+            
+                            <div>
+                                <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-address-card"></i> Biography & Background
+                                </h4>
+                                <p id="modal-teacher-bio" class="text-xs sm:text-sm text-base-content/80 leading-relaxed max-h-32 overflow-y-auto custom-scroll pr-2 whitespace-pre-line"></p>
+                            </div>
+
+                            <div>
+                                <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-images"></i> Instructor Gallery & Activities
+                                </h4>
+                                <div id="modal-gallery-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                </div>
+                                <p class="text-[11px] text-base-content/50 mt-1.5 italic"><i class="fa-solid fa-circle-info mr-1"></i> Click any photo to view full size.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-base-200 flex flex-col sm:flex-row gap-3">
+                        <a href="../user-dashboard.html" class="btn btn-primary btn-sm sm:btn-md flex-1 gap-2 font-semibold">
+                            <i class="fa-solid fa-calendar-days"></i> View Schedule & Book Session
+                        </a>
+                        <button onclick="closeTeacherModal()" class="btn btn-ghost btn-sm sm:btn-md">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button onclick="closeTeacherModal()">close</button>
+        </form>
+    </dialog>
+
+    <dialog id="image-lightbox-modal" class="modal z-[1000]">
+        <div class="modal-box bg-neutral/95 backdrop-blur-md p-3 max-w-5xl max-h-[90vh] flex items-center justify-center relative shadow-2xl rounded-2xl border border-white/10">
+            <button onclick="closeLightbox()" class="btn btn-sm btn-circle btn-ghost absolute top-3 right-3 text-white hover:bg-white/20 z-10">✕</button>
+            <img id="lightbox-img" src="" alt="Enlarged View" class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl">
+        </div>
+        <form method="dialog" class="modal-backdrop bg-black/70">
+            <button onclick="closeLightbox()">close</button>
+        </form>
+    </dialog>
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/topnav.js"></script>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        let allTeachers = [];
+
+        function parseDriveLink(url) {
+            if (!url) return '';
+            const cleanUrl = String(url).trim();
+            if (cleanUrl.includes('drive.google.com')) {
+                const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+                }
+            }
+            return cleanUrl;
+        }
+
+        function fetchJsonp(action) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_cb_' + Math.floor(Math.random() * 1000000);
+                const script = document.createElement('script');
+                script.id = 'jsonp-loader-' + action;
+
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.getElementById('jsonp-loader-' + action)?.remove();
+                    resolve(data);
+                };
+
+                script.onerror = function(err) {
+                    delete window[callbackName];
+                    document.getElementById('jsonp-loader-' + action)?.remove();
+                    reject(err);
+                };
+
+                script.src = `${API_URL}?action=${action}&callback=${callbackName}&_cb=${Date.now()}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        function openTeacherModal(index) {
+            const t = allTeachers[index];
+            if (!t) return;
+
+            let name = t.name || t.username || "Teacher";
+            if (name.toLowerCase().startsWith('teacher ')) {
+                name = name.substring(8).trim();
+            }
+
+            const mainPic = parseDriveLink(t.profilePic) || "https://via.placeholder.com/400";
+            const bio = t.bio || t.description || "Professional ESL Instructor dedicated to helping students achieve conversational fluency and confidence through interactive and effective lessons.";
+            const roleTitle = (String(t.role) === "3" || String(t.role).toLowerCase() === "admin") ? "Administrator" : "ESL Instructor";
+
+            const mainImgEl = document.getElementById('modal-teacher-img');
+            mainImgEl.src = mainPic;
+            
+            const picWrapper = document.getElementById('modal-main-pic-wrapper');
+            picWrapper.onclick = () => openLightbox(mainPic);
+
+            document.getElementById('modal-teacher-name').textContent = name;
+            document.getElementById('modal-teacher-badge').textContent = roleTitle;
+            document.getElementById('modal-teacher-bio').textContent = bio;
+
+            const rawGallery = t.gallery || t.pictures || t.photos || t.extraPics || "";
+            let galleryUrls = [];
+
+            if (typeof rawGallery === 'string' && rawGallery.trim() !== "") {
+                galleryUrls = rawGallery.split(',').map(url => parseDriveLink(url.trim())).filter(u => u.length > 0);
+            } else if (Array.isArray(rawGallery)) {
+                galleryUrls = rawGallery.map(url => parseDriveLink(url)).filter(u => u.length > 0);
+            }
+
+            ['pic1', 'pic2', 'pic3', 'pic4', 'picture1', 'picture2', 'photo1', 'photo2'].forEach(key => {
+                if (t[key] && parseDriveLink(t[key])) {
+                    galleryUrls.push(parseDriveLink(t[key]));
+                }
+            });
+
+  
+            while (galleryUrls.length < 4) {
+                galleryUrls.push(mainPic);
+            }
+            galleryUrls = galleryUrls.slice(0, 4);
+
+            const galleryGrid = document.getElementById('modal-gallery-grid');
+            galleryGrid.innerHTML = "";
+
+            galleryUrls.forEach((imgUrl, i) => {
+                const thumb = document.createElement('div');
+                thumb.className = "aspect-square rounded-xl overflow-hidden border border-base-300 bg-base-200 cursor-pointer group relative shadow-sm hover:border-primary transition-all";
+                thumb.innerHTML = `
+                    <img src="${imgUrl}" alt="Gallery Photo ${i+1}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-primary-content">
+                        <i class="fa-solid fa-expand text-sm"></i>
+                    </div>
+                `;
+                thumb.onclick = () => openLightbox(imgUrl);
+                galleryGrid.appendChild(thumb);
+            });
+
+            const modal = document.getElementById('teacher-detail-modal');
+            if (modal) modal.showModal();
+        }
+
+        function closeTeacherModal() {
+            const modal = document.getElementById('teacher-detail-modal');
+            if (modal) modal.close();
+        }
+
+        function openLightbox(imgUrl) {
+            const lightbox = document.getElementById('image-lightbox-modal');
+            const lightboxImg = document.getElementById('lightbox-img');
+            if (lightbox && lightboxImg) {
+                lightboxImg.src = imgUrl;
+                lightbox.showModal();
+            }
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('image-lightbox-modal');
+            if (lightbox) lightbox.close();
+        }
+
+        function renderTeachers(teachersList) {
+            const grid = document.getElementById('teachers-grid');
+            if (!grid) return;
+
+            if (!teachersList || teachersList.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 text-base-content/60">
+                        <i class="fa-solid fa-user-slash text-3xl mb-2 opacity-40"></i>
+                        <p class="text-sm font-medium">No instructors found matching your search.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = "";
+            teachersList.forEach((t) => {
+                let name = t.name || t.username || "Teacher";
+                if (name.toLowerCase().startsWith('teacher ')) {
+                    name = name.substring(8).trim();
+                }
+                const pic = parseDriveLink(t.profilePic) || "https://via.placeholder.com/300";
+                const bio = t.bio || t.description || "Professional ESL Instructor dedicated to helping students achieve conversational fluency and confidence.";
+                const roleTitle = (String(t.role) === "3" || String(t.role).toLowerCase() === "admin") ? "Administrator" : "ESL Instructor";
+                const badgeClass = (roleTitle === "Administrator") ? "badge-secondary" : "badge-primary";
+
+                const originalIndex = allTeachers.indexOf(t);
+
+                const card = document.createElement('div');
+                card.className = "card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden group";
+                card.innerHTML = `
+                    <figure class="aspect-[4/3] bg-base-200 overflow-hidden relative cursor-pointer" onclick="openTeacherModal(${originalIndex})">
+                        <img src="${pic}" alt="${name}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 right-3 badge ${badgeClass} font-semibold text-xs shadow-sm">${roleTitle}</span>
+                    </figure>
+                    <div class="card-body p-5 flex flex-col justify-between flex-1">
+                        <div>
+                            <h3 class="card-title text-base font-bold cursor-pointer hover:text-primary transition-colors" onclick="openTeacherModal(${originalIndex})">${name}</h3>
+                            <p class="text-xs text-base-content/70 mt-2 leading-relaxed line-clamp-2">${bio}</p>
+                        </div>
+                        <div class="card-actions justify-end mt-4 pt-3 border-t border-base-200">
+                            <button onclick="openTeacherModal(${originalIndex})" class="btn btn-outline btn-primary btn-sm w-full gap-2 font-semibold">
+                                <i class="fa-solid fa-address-card"></i> View Profile & Details
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function loadTeachers() {
+            const grid = document.getElementById('teachers-grid');
+            if (!grid) return;
+
+            try {
+                const data = await fetchJsonp('initDashboard');
+                if (data && Array.isArray(data.accounts)) {
+                    allTeachers = data.accounts.filter(acc => {
+                        const r = String(acc.role || "").toLowerCase();
+                        return r === "2" || r === "3" || r === "teacher" || r === "admin" || r === "content manager";
+                    });
+                    renderTeachers(allTeachers);
+                }
+            } catch (err) {
+                console.error("Failed to load teachers:", err);
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 text-error">
+                        <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+                        <p class="text-sm font-medium">Failed to load teachers list from database.</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTeachers();
+
+            const searchInput = document.getElementById('teacher-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase().trim();
+                    const filtered = allTeachers.filter(t => {
+                        const name = (t.name || t.username || "").toLowerCase();
+                        const bio = (t.bio || t.description || "").toLowerCase();
+                        return name.includes(query) || bio.includes(query);
+                    });
+                    renderTeachers(filtered);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

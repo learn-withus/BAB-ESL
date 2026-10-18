@@ -159,8 +159,8 @@ function parseCSV(text) {
                 const subItem = { label: colB, text: "", isSubheader: true };
                 if (currentSection === "warmup") warmupData.push(subItem);
                 else if (currentSection === "vocab") vocabData.push(subItem);
-                else if (currentSection === "reading") readingData.push(subItem);
-                else if (currentSection === "speaking") speakingData.push(subItem);
+                else if (currentSection === "reading") vocabData.push(subItem);
+                else if (currentSection === "speaking") vocabData.push(subItem);
 
                 if (colC) {
                     const contentItem = { label: "", text: colC, isSubheader: false };
@@ -897,24 +897,53 @@ function initBookSearch() {
     if (!searchInput) return;
 
     const books = [];
-    const generalCards = document.querySelectorAll('div, article, section');
-    generalCards.forEach(card => {
-        const titleEl = card.querySelector('h1, h2, h3, h4, .book-title, .btn-title');
+
+    // 1. If on book-menu.html, look for book cards with h3 titles
+    const bookCards = document.querySelectorAll('.book-card');
+    bookCards.forEach(card => {
+        const titleEl = card.querySelector('h3, h2, h1, .book-title, .btn-title');
         const descEl = card.querySelector('p, .book-desc, .btn-target');
         const linkEl = card.querySelector('a');
-        if (titleEl && (linkEl || card.tagName === 'A')) {
-            const title = titleEl.textContent.trim();
-            if (title.toLowerCase() === "lesson library") return;
+        const title = card.getAttribute('data-title') || (titleEl ? titleEl.textContent.trim() : '');
+        if (!title || title.toLowerCase() === "lesson library") return;
 
-            const url = linkEl ? linkEl.getAttribute('href') : (card.tagName === 'A' ? card.getAttribute('href') : '');
-            if (title && url && !books.some(b => b.title === title)) {
-                books.push({
-                    title: title,
-                    description: descEl ? descEl.textContent.trim() : '',
-                    element: card,
-                    url: url
-                });
-            }
+        books.push({
+            title: title,
+            description: card.getAttribute('data-desc') || (descEl ? descEl.textContent.trim() : ''),
+            element: card,
+            url: linkEl ? linkEl.getAttribute('href') : ''
+        });
+    });
+
+    // 2. If on individual lesson pages (like advanced-speaking.html), look for the main h1 title
+    const mainTitleEl = document.querySelector('main h1');
+    const mainDescEl = document.querySelector('main p');
+    if (mainTitleEl) {
+        const title = mainTitleEl.textContent.trim();
+        if (title && title.toLowerCase() !== "lesson library") {
+            books.push({
+                title: title,
+                description: mainDescEl ? mainDescEl.textContent.trim() : '',
+                element: mainTitleEl.closest('main > div, main > section, article') || mainTitleEl.parentElement,
+                url: window.location.href
+            });
+        }
+    }
+
+    // Fallback search items if menu-tooltip cards are used
+    const lessonItems = document.querySelectorAll('.menu-tooltip');
+    lessonItems.forEach(item => {
+        const titleEl = item.querySelector('.btn-title, h3, h2');
+        const descEl = item.querySelector('.btn-target, p');
+        const link = item.querySelector('a');
+        const title = titleEl ? titleEl.textContent.trim() : '';
+        if (title && title.toLowerCase() !== "lesson library") {
+            books.push({
+                title: title,
+                description: descEl ? descEl.textContent.trim() : '',
+                element: item,
+                url: link ? link.getAttribute('href') : '#'
+            });
         }
     });
 
@@ -928,10 +957,9 @@ function initBookSearch() {
         if (!query) {
             suggestionsBox.style.display = 'none';
             books.forEach(book => {
-                if (book.element) {
+                if (book.element && book.element !== document.body) {
                     book.element.style.display = '';
                     book.element.style.opacity = '1';
-                    book.element.style.transform = 'scale(1)';
                 }
             });
             if (noResultsMsg) noResultsMsg.style.display = 'none';
@@ -942,21 +970,12 @@ function initBookSearch() {
         books.forEach(book => {
             const isMatch = book.title.toLowerCase().includes(query) || book.description.toLowerCase().includes(query);
             
-            if (book.element) {
+            if (book.element && book.element !== document.body) {
                 if (isMatch) {
                     book.element.style.display = '';
                     book.element.style.opacity = '1';
-                    book.element.style.transform = 'scale(1)';
-                    book.element.style.transition = 'all 0.3s ease-in-out';
                 } else {
-                    book.element.style.opacity = '0';
-                    book.element.style.transform = 'scale(0.95)';
-                    book.element.style.transition = 'all 0.3s ease-in-out';
-                    setTimeout(() => {
-                        if (searchInput.value.trim() !== '') {
-                            book.element.style.display = 'none';
-                        }
-                    }, 300);
+                    book.element.style.display = 'none';
                 }
             }
 
@@ -971,7 +990,7 @@ function initBookSearch() {
                     item.addEventListener('click', () => {
                         searchInput.value = book.title;
                         suggestionsBox.style.display = 'none';
-                        if (book.url) {
+                        if (book.url && book.url !== window.location.href) {
                             window.location.href = book.url;
                         }
                     });

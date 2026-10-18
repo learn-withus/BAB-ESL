@@ -308,6 +308,10 @@
                 <li><a href="javascript:void(0);" onclick="scrollToSection('quiz-container')" class="py-2 px-3 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-3"><i class="fa-solid fa-pen-to-square custom-primary-text w-4 text-center"></i> Quiz Practice</a></li>
             </ul>
         </div>
+        <button onclick="downloadLessonPDF()" id="tool-pdf" class="btn btn-sm btn-square btn-ghost bg-base-100 shadow-sm tooltip tooltip-left text-xs transition-transform hover:scale-105" data-tip="Download Lesson PDF">
+            <i class="fa-solid fa-file-pdf text-red-500 text-xs"></i>
+        </button>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     </div>
 
     <script src="../scripts/nav.js"></script>

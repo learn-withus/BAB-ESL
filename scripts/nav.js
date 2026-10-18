@@ -73,6 +73,12 @@ function loadNavbar() {
                     <span class="inline lg:hidden">Dashboard</span>
                 </a>
             </div>
+            <div class="tooltip tooltip-right w-full z-50" data-tip="Teachers">
+                <a href="${pathToRoot}pages/teachers.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="teachers.html">
+                    <i class="fa-solid fa-chalkboard-user w-5 text-center text-base"></i>
+                    <span class="inline lg:hidden">Teachers</span>
+                </a>
+            </div>
         `;
     } else if (userRole === "2") {
         navHTML += `

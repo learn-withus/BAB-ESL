@@ -22,6 +22,58 @@
             flex-wrap: nowrap !important;
         }
 
+@media print {
+    nav, 
+    .drawer-side, 
+    .fixed, 
+    #teacher-toolbar, 
+    .drawer-toggle {
+        display: none !important;
+    }
+
+    #listening-section .video-container,
+    #listening-section .bg-gradient-to-br {
+        display: none !important;
+    }
+
+    body, .drawer-content {
+        background-color: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    #app-canvas {
+        width: 100% !important;
+        max-width: 100% !important;
+        transform: none !important;
+        margin: 0 !important;
+        padding: 10px !important;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    img {
+        display: block !important;
+        visibility: visible !important;
+        max-width: 100% !important;
+        page-break-inside: avoid;
+    }
+
+    .group-hover\:scale-105 {
+        transform: none !important;
+    }
+
+    section, .card {
+        page-break-inside: auto;
+        break-inside: auto;
+    }
+
 .sticky{
     position: sticky;
     z-index: 100000000;

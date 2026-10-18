@@ -896,7 +896,6 @@ function initBookSearch() {
 
     if (!searchInput) return;
 
-    // Professional cinematic dropdown scaling transition
     if (suggestionsBox) {
         suggestionsBox.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
         suggestionsBox.style.transformOrigin = 'top center';
@@ -905,7 +904,6 @@ function initBookSearch() {
         suggestionsBox.style.pointerEvents = 'none';
     }
 
-    // Select all cards across all possible layouts in book-menu.html
     const cardElements = document.querySelectorAll('.book-card, .menu-tooltip, article, .grid > div, .lesson-card');
     const cards = [];
 
@@ -975,7 +973,6 @@ function initBookSearch() {
             if (cardObj.element) {
                 if (isMatch) {
                     cardObj.element.style.display = '';
-                    // Staggered reveal animation for matching items
                     const delay = visibleIndex * 40;
                     visibleIndex++;
                     setTimeout(() => {
@@ -1041,7 +1038,6 @@ function initBookSearch() {
             }
         });
 
-        // Open suggestion dropdown with smooth professional transition
         suggestionsBox.style.display = 'block';
         suggestionsBox.style.pointerEvents = 'auto';
         setTimeout(() => {

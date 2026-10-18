@@ -68,8 +68,6 @@ function getTargetUrl() {
         gid = "1665859797"; 
     }
 
-
-
     return `${BASE_CSV_URL}&gid=${gid}`;
 }
 const CSV_URL = getTargetUrl();
@@ -302,7 +300,6 @@ function speakLine() {
         }
     });
 
-  
     let speechCompleted = false;
     
     ut.onend = () => { 
@@ -659,7 +656,6 @@ function resetSection(sIdx) {
     if (scoreDiv) scoreDiv.style.display = "none";
 }
 
-
 function loadVoices() { voices = speechSynthesis.getVoices().filter(v => v.lang.includes('en')); }
 speechSynthesis.onvoiceschanged = loadVoices;
 window.onload = loadData;
@@ -796,7 +792,6 @@ function connectQuizThreads(index) {
         refreshThreadLines();
     }
 
-    // Attach Listeners
     space.addEventListener('mousedown', handleStart);
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
@@ -885,7 +880,6 @@ window.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
 });
 
-
 function initBookSearch() {
     const searchInput = document.getElementById('book-search-input') || document.getElementById('lesson-search');
     const suggestionsBox = document.getElementById('search-suggestions') || document.getElementById('search-results');
@@ -895,7 +889,6 @@ function initBookSearch() {
 
     if (!searchInput) return;
 
-    // Handle Lesson Page Search (.menu-tooltip elements)
     if (lessonItems.length > 0) {
         const lessons = Array.from(lessonItems).map(item => {
             const link = item.querySelector('a');
@@ -907,7 +900,8 @@ function initBookSearch() {
                 imgSrc: img ? img.getAttribute('src') : '',
                 title: title ? title.textContent.trim() : '',
                 desc: target ? target.textContent.trim() : '',
-                element: item
+                element: item,
+                linkElement: link
             };
         });
 
@@ -941,9 +935,11 @@ function initBookSearch() {
                     item.addEventListener('click', () => {
                         searchInput.value = lesson.title;
                         suggestionsBox.style.display = 'none';
-                        lessons.forEach(l => {
-                            l.element.style.display = (l.title.toLowerCase() === lesson.title.toLowerCase()) ? '' : 'none';
-                        });
+                        if (lesson.url && lesson.url !== '#') {
+                            window.location.href = lesson.url;
+                        } else if (lesson.linkElement) {
+                            lesson.linkElement.click();
+                        }
                     });
                     suggestionsBox.appendChild(item);
                 }
@@ -963,18 +959,45 @@ function initBookSearch() {
         return;
     }
 
-  
-    if (!bookCards.length) return;
-
-    const books = Array.from(bookCards).map(card => {
-        const titleEl = card.querySelector('h1, h2, h3, .book-title, .btn-title');
+    const books = [];
+    const generalCards = document.querySelectorAll('div, article, section');
+    generalCards.forEach(card => {
+        const titleEl = card.querySelector('h1, h2, h3, h4, .book-title, .btn-title');
         const descEl = card.querySelector('p, .book-desc, .btn-target');
-        return {
-            title: card.getAttribute('data-title') || (titleEl ? titleEl.textContent.trim() : ''),
-            description: card.getAttribute('data-desc') || (descEl ? descEl.textContent.trim() : ''),
-            element: card
-        };
-    }).filter(b => b.title !== '');
+        const linkEl = card.querySelector('a');
+        if (titleEl && (linkEl || card.tagName === 'A')) {
+            const title = titleEl.textContent.trim();
+            // Exclude page header titles like "Lesson Library"
+            if (title.toLowerCase() === "lesson library") return;
+
+            const url = linkEl ? linkEl.getAttribute('href') : (card.tagName === 'A' ? card.getAttribute('href') : '');
+            if (title && url && !books.some(b => b.title === title)) {
+                books.push({
+                    title: title,
+                    description: descEl ? descEl.textContent.trim() : '',
+                    element: card,
+                    url: url
+                });
+            }
+        }
+    });
+
+    if (books.length === 0 && bookCards.length > 0) {
+        bookCards.forEach(card => {
+            const titleEl = card.querySelector('h1, h2, h3, .book-title, .btn-title');
+            const descEl = card.querySelector('p, .book-desc, .btn-target');
+            const linkEl = card.querySelector('a');
+            const title = card.getAttribute('data-title') || (titleEl ? titleEl.textContent.trim() : '');
+            if (title.toLowerCase() === "lesson library") return;
+
+            books.push({
+                title: title,
+                description: card.getAttribute('data-desc') || (descEl ? descEl.textContent.trim() : ''),
+                element: card,
+                url: linkEl ? linkEl.getAttribute('href') : ''
+            });
+        });
+    }
 
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
@@ -987,7 +1010,7 @@ function initBookSearch() {
             suggestionsBox.classList.remove('active', 'block');
             suggestionsBox.classList.add('hidden');
             suggestionsBox.style.display = 'none';
-            books.forEach(b => b.element.classList.remove('hidden'));
+            books.forEach(b => { if (b.element) b.element.classList.remove('hidden'); });
             if (noResultsMsg) noResultsMsg.style.display = 'none';
             return;
         }
@@ -995,7 +1018,7 @@ function initBookSearch() {
         const seenTitles = new Set();
         books.forEach(book => {
             const isMatch = book.title.toLowerCase().includes(query) || book.description.toLowerCase().includes(query);
-            book.element.classList.toggle('hidden', !isMatch);
+            if (book.element) book.element.classList.toggle('hidden', !isMatch);
             
             if (isMatch) {
                 matchCount++;
@@ -1010,7 +1033,13 @@ function initBookSearch() {
                         suggestionsBox.classList.remove('active', 'block');
                         suggestionsBox.classList.add('hidden');
                         suggestionsBox.style.display = 'none';
-                        books.forEach(b => b.element.classList.toggle('hidden', b.title.toLowerCase() !== book.title.toLowerCase()));
+                        if (book.url) {
+                            window.location.href = book.url;
+                        } else {
+                            books.forEach(b => {
+                                if (b.element) b.element.classList.toggle('hidden', b.title.toLowerCase() !== book.title.toLowerCase());
+                            });
+                        }
                     });
                     suggestionsBox.appendChild(item);
                 }
@@ -1018,8 +1047,10 @@ function initBookSearch() {
         });
 
         if (matchCount === 0) {
-            if (noResultsMsg) noResultsMsg.style.display = 'block';
-            suggestionsBox.innerHTML = `<div class="px-4 py-2 text-xs text-base-content/60 text-center">No matching books found</div>`;
+            if (noResultsMsg) {
+                noResultsMsg.style.display = 'block';
+            }
+            suggestionsBox.innerHTML = `<div class="px-4 py-3 text-xs text-base-content/60 text-center">No matching books found</div>`;
             suggestionsBox.classList.add('active', 'block');
             suggestionsBox.classList.remove('hidden');
             suggestionsBox.style.display = 'block';
@@ -1060,7 +1091,6 @@ function initThemeToggle() {
         document.documentElement.setAttribute('data-theme', newTheme);
     };
 }
-
 
 function formatLessonTitle(lessonStr) {
     if (!lessonStr) return '';
@@ -1386,7 +1416,6 @@ function openLinkModal(url, student = 'N/A', title = 'N/A', date = 'N/A', time =
     const input = document.getElementById('modal-link-input');
     const joinBtn = document.getElementById('modal-join-btn');
     
-   
     const studentEl = document.getElementById('modal-detail-student');
     const titleEl = document.getElementById('modal-detail-title');
     const dateEl = document.getElementById('modal-detail-date');
@@ -1459,7 +1488,6 @@ function fetchScheduledSessions() {
                 const friendlyDate = formatFriendlyDate(s.sessionDate);
                 const friendlyTime = formatFriendlyTime(s.sessionTime);
 
-          
                 const safeStudent = (s.student || '').replace(/'/g, "\\'");
                 const safeTitle = (formattedTitle || '').replace(/'/g, "\\'");
                 const safeDate = (friendlyDate || '').replace(/'/g, "\\'");
@@ -1478,7 +1506,7 @@ function fetchScheduledSessions() {
                             <div class="flex gap-2 items-center justify-center">
                                 <a href="${s.link}" target="_blank" class="btn custom-primary-bg text-white btn-xs">
                                     <i class="fa-solid fa-video"></i> Join
-                                </a>
+                                    </a>
                                 <button onclick="openLinkModal('${safeLink}', '${safeStudent}', '${safeTitle}', '${safeDate}', '${safeTime}')" class="btn btn-ghost btn-xs border border-base-300">
                                     <i class="fa-solid fa-eye"></i> View Link
                                 </button>

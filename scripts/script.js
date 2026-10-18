@@ -159,8 +159,8 @@ function parseCSV(text) {
                 const subItem = { label: colB, text: "", isSubheader: true };
                 if (currentSection === "warmup") warmupData.push(subItem);
                 else if (currentSection === "vocab") vocabData.push(subItem);
-                else if (currentSection === "reading") vocabData.push(subItem);
-                else if (currentSection === "speaking") vocabData.push(subItem);
+                else if (currentSection === "reading") readingData.push(subItem);
+                else if (currentSection === "speaking") speakingData.push(subItem);
 
                 if (colC) {
                     const contentItem = { label: "", text: colC, isSubheader: false };
@@ -886,19 +886,9 @@ function initBookSearch() {
     const noResultsMsg = document.getElementById('no-results-msg');
 
     const currentFile = window.location.pathname.split("/").pop();
-    
-    // Remove search bar entirely for index.html
     if (currentFile === "index.html" || currentFile === "") {
         if (searchInput) {
-            const searchContainer = searchInput.closest('.flex') || searchInput.parentElement.parentElement || searchInput.parentElement;
-            if (searchContainer) searchContainer.style.display = 'none';
-        }
-        return;
-    }
-
-    if (currentFile === "user-dashboard.html" || currentFile === "admin-dashboard.html") {
-        if (searchInput) {
-            const searchContainer = searchInput.closest('.flex') || searchInput.parentElement.parentElement || searchInput.parentElement;
+            const searchContainer = searchInput.closest('.flex') || searchInput.parentElement;
             if (searchContainer) searchContainer.style.display = 'none';
         }
         return;
@@ -906,54 +896,44 @@ function initBookSearch() {
 
     if (!searchInput) return;
 
-    // Ensure suggestions box has a gorgeous dropdown styling with soft shadow and transitions
+    // Professional cinematic dropdown scaling transition
     if (suggestionsBox) {
-        suggestionsBox.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        suggestionsBox.style.transformOrigin = 'top';
+        suggestionsBox.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+        suggestionsBox.style.transformOrigin = 'top center';
+        suggestionsBox.style.opacity = '0';
+        suggestionsBox.style.transform = 'translateY(-8px) scale(0.98)';
+        suggestionsBox.style.pointerEvents = 'none';
     }
 
-    const isBookMenu = currentFile === "book-menu.html";
-    const items = [];
+    // Select all cards across all possible layouts in book-menu.html
+    const cardElements = document.querySelectorAll('.book-card, .menu-tooltip, article, .grid > div, .lesson-card');
+    const cards = [];
 
-    if (isBookMenu) {
-        const bookCards = document.querySelectorAll('.book-card');
-        bookCards.forEach(card => {
-            const titleEl = card.querySelector('h3, h2, h1, .book-title, .btn-title');
-            const descEl = card.querySelector('p, .book-desc, .btn-target');
-            const linkEl = card.querySelector('a');
-            const title = card.getAttribute('data-title') || (titleEl ? titleEl.textContent.trim() : '');
-            
-            if (!title || title.toLowerCase() === "lesson library") return;
+    cardElements.forEach(card => {
+        const titleEl = card.querySelector('h1, h2, h3, h4, .book-title, .btn-title, span.font-bold, strong');
+        const descEl = card.querySelector('p, .book-desc, .btn-target, span:not(.font-bold)');
+        const linkEl = card.querySelector('a');
+        const imgEl = card.querySelector('img');
+        const badgeEl = card.querySelector('.badge, span[class*="badge"]');
 
-            card.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        const title = titleEl ? titleEl.textContent.trim() : '';
+        if (!title || title.toLowerCase() === "lesson library" || title.toLowerCase() === "search lessons") return;
 
-            items.push({
-                title: title,
-                description: card.getAttribute('data-desc') || (descEl ? descEl.textContent.trim() : ''),
-                element: card,
-                url: linkEl ? linkEl.getAttribute('href') : ''
-            });
+        if (cards.some(c => c.title.toLowerCase() === title.toLowerCase())) return;
+
+        // Apply buttery-smooth layout transition for fading/scaling cards
+        card.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+        card.style.willChange = 'opacity, transform';
+
+        cards.push({
+            title: title,
+            badge: badgeEl ? badgeEl.textContent.trim() : '',
+            description: descEl ? descEl.textContent.trim() : '',
+            element: card,
+            imgSrc: imgEl ? imgEl.getAttribute('src') : '',
+            url: linkEl ? linkEl.getAttribute('href') : ''
         });
-    } else {
-        // Individual lesson page - search lesson titles or sections
-        const lessonHeadings = document.querySelectorAll('main h1, main h2, main h3, .lesson-title');
-        lessonHeadings.forEach(heading => {
-            const title = heading.textContent.trim();
-            if (!title || title.toLowerCase() === "lesson library") return;
-
-            const container = heading.closest('div, section, article') || heading.parentElement;
-            if (container) {
-                container.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                const descEl = container.querySelector('p');
-                items.push({
-                    title: title,
-                    description: descEl ? descEl.textContent.trim() : '',
-                    element: container,
-                    url: ''
-                });
-            }
-        });
-    }
+    });
 
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
@@ -964,15 +944,20 @@ function initBookSearch() {
 
         if (!query) {
             suggestionsBox.style.opacity = '0';
-            suggestionsBox.style.transform = 'scaleY(0)';
-            setTimeout(() => { suggestionsBox.style.display = 'none'; }, 300);
-            
-            items.forEach(item => {
-                if (item.element) {
-                    item.element.style.display = '';
-                    item.element.style.opacity = '1';
-                    item.element.style.transform = 'scale(1)';
-                    item.element.style.pointerEvents = 'auto';
+            suggestionsBox.style.transform = 'translateY(-8px) scale(0.98)';
+            suggestionsBox.style.pointerEvents = 'none';
+            setTimeout(() => { 
+                if (searchInput.value.trim() === '') suggestionsBox.style.display = 'none'; 
+            }, 300);
+
+            // Staggered reset fade-in for grid cards
+            cards.forEach((cardObj, idx) => {
+                if (cardObj.element) {
+                    cardObj.element.style.display = '';
+                    setTimeout(() => {
+                        cardObj.element.style.opacity = '1';
+                        cardObj.element.style.transform = 'translateY(0) scale(1)';
+                    }, idx * 25);
                 }
             });
             if (noResultsMsg) noResultsMsg.style.display = 'none';
@@ -980,74 +965,93 @@ function initBookSearch() {
         }
 
         const seenTitles = new Set();
-        items.forEach(item => {
-            const isMatch = item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query);
+        let visibleIndex = 0;
+
+        cards.forEach(cardObj => {
+            const isMatch = cardObj.title.toLowerCase().includes(query) || 
+                            cardObj.badge.toLowerCase().includes(query) || 
+                            cardObj.description.toLowerCase().includes(query);
             
-            if (item.element) {
+            if (cardObj.element) {
                 if (isMatch) {
-                    item.element.style.display = '';
-                    setTimeout(() => {
-                        item.element.style.opacity = '1';
-                        item.element.style.transform = 'scale(1)';
-                        item.element.style.pointerEvents = 'auto';
-                    }, 20);
-                } else {
-                    item.element.style.opacity = '0';
-                    item.element.style.transform = 'scale(0.92)';
-                    item.element.style.pointerEvents = 'none';
+                    cardObj.element.style.display = '';
+                    // Staggered reveal animation for matching items
+                    const delay = visibleIndex * 40;
+                    visibleIndex++;
                     setTimeout(() => {
                         if (searchInput.value.trim() !== '') {
-                            item.element.style.display = 'none';
+                            cardObj.element.style.opacity = '1';
+                            cardObj.element.style.transform = 'translateY(0) scale(1)';
                         }
-                    }, 350);
+                    }, delay);
+                } else {
+                    cardObj.element.style.opacity = '0';
+                    cardObj.element.style.transform = 'translateY(10px) scale(0.96)';
+                    setTimeout(() => {
+                        if (searchInput.value.trim() !== '') {
+                            cardObj.element.style.display = 'none';
+                        }
+                    }, 300);
                 }
             }
 
             if (isMatch) {
                 matchCount++;
-                if (!seenTitles.has(item.title)) {
-                    seenTitles.add(item.title);
-                    const suggestionItem = document.createElement('div');
-                    suggestionItem.className = 'suggestion-item flex items-center gap-3 px-4 py-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-300 last:border-none transition-all duration-200';
+                if (!seenTitles.has(cardObj.title)) {
+                    seenTitles.add(cardObj.title);
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item flex items-center gap-3 px-4 py-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-300 last:border-none transition-all duration-200';
                     
-                    // Highlight the matching query text dynamically inside the suggestion title
-                    const regex = new RegExp(`(${query})`, 'gi');
-                    const highlightedTitle = item.title.replace(regex, `<span class="text-primary font-bold bg-primary/10 px-1 rounded">$1</span>`);
+                    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                    const highlightedTitle = cardObj.title.replace(regex, `<span class="text-primary font-bold bg-primary/15 px-1 rounded">$1</span>`);
 
-                    suggestionItem.innerHTML = `
-                        <i class="fa-solid fa-book-open text-primary text-base"></i>
-                        <div class="flex flex-col flex-1 min-w-0">
-                            <span class="font-semibold text-base-content">${highlightedTitle}</span>
-                            ${item.description ? `<span class="text-xs text-base-content/60 truncate">${item.description}</span>` : ''}
+                    item.innerHTML = `
+                        ${cardObj.imgSrc ? `<img src="${cardObj.imgSrc}" class="w-8 h-8 object-cover rounded shrink-0 shadow-sm">` : '<i class="fa-solid fa-book-open text-primary text-base"></i>'}
+                        <div class="flex flex-col min-w-0 flex-1">
+                            <span class="font-semibold text-xs text-base-content">${highlightedTitle}</span>
+                            ${cardObj.description ? `<span class="text-[11px] text-base-content/70 truncate">${cardObj.description}</span>` : ''}
                         </div>
                     `;
                     
-                    suggestionItem.addEventListener('click', () => {
-                        searchInput.value = item.title;
+                    item.addEventListener('click', () => {
+                        searchInput.value = cardObj.title;
                         suggestionsBox.style.opacity = '0';
-                        suggestionsBox.style.transform = 'scaleY(0)';
+                        suggestionsBox.style.transform = 'translateY(-8px) scale(0.98)';
+                        suggestionsBox.style.pointerEvents = 'none';
                         setTimeout(() => { suggestionsBox.style.display = 'none'; }, 300);
 
-                        if (item.url) {
-                            window.location.href = item.url;
-                        } else if (item.element) {
-                            item.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (cardObj.url && cardObj.url !== '#') {
+                            window.location.href = cardObj.url;
+                        } else {
+                            cards.forEach(c => {
+                                if (c.element) {
+                                    const match = c.title.toLowerCase() === cardObj.title.toLowerCase();
+                                    c.element.style.display = match ? '' : 'none';
+                                    if (match) {
+                                        c.element.style.opacity = '1';
+                                        c.element.style.transform = 'translateY(0) scale(1)';
+                                    }
+                                }
+                            });
                         }
                     });
-                    suggestionsBox.appendChild(suggestionItem);
+                    suggestionsBox.appendChild(item);
                 }
             }
         });
 
+        // Open suggestion dropdown with smooth professional transition
         suggestionsBox.style.display = 'block';
+        suggestionsBox.style.pointerEvents = 'auto';
         setTimeout(() => {
             suggestionsBox.style.opacity = '1';
-            suggestionsBox.style.transform = 'scaleY(1)';
+            suggestionsBox.style.transform = 'translateY(0) scale(1)';
         }, 10);
 
         if (matchCount === 0) {
             if (noResultsMsg) noResultsMsg.style.display = 'block';
-            suggestionsBox.innerHTML = `<div class="px-4 py-4 text-xs text-base-content/60 text-center italic">${isBookMenu ? 'No matching books found' : 'No matching lessons found'}</div>`;
+            suggestionsBox.innerHTML = `<div class="px-4 py-4 text-xs text-base-content/60 text-center italic">No matching books found</div>`;
         } else {
             if (noResultsMsg) noResultsMsg.style.display = 'none';
         }
@@ -1056,7 +1060,8 @@ function initBookSearch() {
     document.addEventListener('click', (e) => {
         if (suggestionsBox && !searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
             suggestionsBox.style.opacity = '0';
-            suggestionsBox.style.transform = 'scaleY(0)';
+            suggestionsBox.style.transform = 'translateY(-8px) scale(0.98)';
+            suggestionsBox.style.pointerEvents = 'none';
             setTimeout(() => { suggestionsBox.style.display = 'none'; }, 300);
         }
     });
@@ -1473,7 +1478,7 @@ function fetchScheduledSessions() {
         }) : [];
 
         if (teacherSessions.length > 0) {
-            teacherSessions.reverse().reverse().forEach(s => {
+            teacherSessions.reverse().forEach(s => {
                 const formattedTitle = formatLessonTitle(s.lesson);
                 const sessionId = s.id;
                 const friendlyDate = formatFriendlyDate(s.sessionDate);

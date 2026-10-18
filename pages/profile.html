@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-base-200 min-h-screen font-sans">
+
+    <div id="toast-container" class="toast toast-top toast-end z-50"></div>
+
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+            
+            <nav class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30">
+                <div class="flex-none lg:hidden">
+                    <label for="main-drawer" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </label>
+                </div> 
+
+                <div class="px-2 flex-1 whitespace-nowrap font-bold">
+                    <span class="text-base sm:text-lg font-bold">User Profile</span>
+                </div>
+
+                <div class="flex flex-row gap-4 items-center">
+                    <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
+                        <input type="checkbox" id="theme-checkbox" />
+                        <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path></svg>
+                        <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"></path></svg>
+                    </label>
+                    <div id="account-settings" class="flex flex-row items-center gap-2">
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="avatar avatar-online cursor-pointer">
+                                <div class="ring-primary ring-offset-base-100 ring-2 ring-offset-2 w-8 rounded-full">
+                                    <img alt="User Profile" src="https://via.placeholder.com/150" id="header-avatar-img">
+                                </div>
+                            </div>
+                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow border border-base-300">
+                                <li><a href="profile.html" class="py-2">Profile</a></li>
+                                <li><button onclick="logout()" class="text-error py-2 w-full text-left">Logout</button></li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col text-left mr-2">
+                            <span id="username-display" class="font-bold text-xs sm:text-sm">User</span>
+                            <span class="font-bold text-[10px] text-primary" id="header-role-display">Student</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+    
+            <div class="p-6 flex-1 max-w-4xl w-full mx-auto">
+                
+                <div class="card bg-base-100 shadow-xl overflow-hidden mb-8">
+                    <div class="h-32 bg-secondary/20"></div>
+                    <div class="px-8 pb-8 pt-0 relative">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16 mb-6">
+                        
+                            <div class="avatar">
+                                <div class="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 shadow-lg bg-base-100">
+                                    <img src="https://via.placeholder.com/150" alt="Profile Picture" id="profile-avatar" />
+                                </div>
+                            </div>
+                         
+                            <div class="text-center sm:text-left flex-1">
+                                <h1 class="text-2xl font-bold text-base-content" id="profile-name">Loading...</h1>
+                                <p class="text-sm text-base-content/60" id="profile-role">Student</p>
+                            </div>
+                       
+                            <button onclick="openEditModal()" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
+                            </button>
+                        </div>
+
+                    
+                        <div class="border-t border-base-200 pt-4">
+                            <h3 class="font-bold text-base-content mb-2">About Me</h3>
+                            <p class="text-sm text-base-content/80 leading-relaxed italic" id="profile-bio">
+                                No bio added yet. Click 'Edit Profile' to introduce yourself!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+             
+                <div class="card bg-base-100 shadow-xl p-6">
+                    <h3 class="font-bold text-base-content mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-images text-primary"></i> Photo Gallery
+                    </h3>
+                    
+                
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="gallery-grid">
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex items-center justify-center text-base-content/40 text-xs">Photo 1</div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex items-center justify-center text-base-content/40 text-xs">Photo 2</div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex items-center justify-center text-base-content/40 text-xs">Photo 3</div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex items-center justify-center text-base-content/40 text-xs">Photo 4</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-box max-w-lg">
+            <h3 class="font-bold text-lg mb-4">Edit Profile & Photos</h3>
+            <form id="edit-profile-form" onsubmit="saveProfile(event)">
+                
+                <div class="form-control mb-3">
+                    <label class="label"><span class="label-text">Bio / Introduction</span></label>
+                    <textarea id="bio-textarea" class="textarea textarea-bordered h-24" placeholder="Write something about yourself..."></textarea>
+                </div>
+
+                <div class="form-control mb-3">
+                    <label class="label"><span class="label-text">Profile Picture Link (Google Drive / Direct URL)</span></label>
+                    <input type="text" id="profile-pic-input" class="input input-bordered input-sm" placeholder="Paste image link here...">
+                </div>
+
+                <div class="form-control mb-3">
+                    <label class="label"><span class="label-text">4 Gallery Pictures (Comma separated links)</span></label>
+                    <textarea id="gallery-pics-textarea" class="textarea textarea-bordered h-20 text-xs" placeholder="Paste 4 image links separated by commas..."></textarea>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" onclick="closeEditModal()" class="btn">Cancel</button>
+                    <button type="submit" id="save-profile-btn" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        
+        let currentUsername = (
+            localStorage.getItem('username') || 
+            localStorage.getItem('userName') || 
+            localStorage.getItem('currentUser') || 
+            localStorage.getItem('teacherName') || 
+            localStorage.getItem('name') || ''
+        ).trim();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!currentUsername) {
+                showToast("Please log in first.", "error");
+                setTimeout(() => window.location.href = "login.html", 1500);
+                return;
+            }
+
+            const usernameDisplay = document.getElementById('username-display');
+            if (usernameDisplay) usernameDisplay.textContent = currentUsername;
+
+            updateRoleUI(localStorage.getItem('role') || localStorage.getItem('userRole') || '1');
+
+            loadUserProfile();
+            initThemeToggle();
+        });
+
+        function updateRoleUI(roleVal) {
+            const roleStr = String(roleVal).trim().toLowerCase();
+            let roleTitle = "Student";
+            if (roleStr === "3" || roleStr === "admin") {
+                roleTitle = "Administrator";
+            } else if (roleStr === "2" || roleStr === "teacher" || roleStr === "content manager") {
+                roleTitle = "Teacher";
+            } else {
+                roleTitle = "Student";
+            }
+
+            const roleEl = document.getElementById('profile-role');
+            const headerRoleEl = document.getElementById('header-role-display');
+            if (roleEl) roleEl.textContent = roleTitle;
+            if (headerRoleEl) headerRoleEl.textContent = roleTitle;
+        }
+
+        function parseDriveLink(url) {
+            if (!url) return '';
+            const cleanUrl = url.trim();
+            if (cleanUrl.includes('drive.google.com')) {
+                const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+                }
+            }
+            return cleanUrl;
+        }
+
+        let cachedProfilePic = "";
+        let cachedGalleryLinks = [];
+
+        function loadUserProfile() {
+            const nameEl = document.getElementById('profile-name');
+            const bioEl = document.getElementById('profile-bio');
+            const avatarEl = document.getElementById('profile-avatar');
+            const headerAvatar = document.getElementById('header-avatar-img');
+            const galleryGrid = document.getElementById('gallery-grid');
+
+            nameEl.textContent = currentUsername;
+
+            const cbName = 'profile_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(res) {
+                if (res && res.status === "success" && Array.isArray(res.accounts)) {
+                    const user = res.accounts.find(acc => acc.username.toLowerCase() === currentUsername.toLowerCase());
+                    if (user) {
+              
+                        if (user.bio) {
+                            bioEl.textContent = user.bio;
+                            bioEl.classList.remove('italic', 'text-base-content/60');
+                        } else {
+                            bioEl.textContent = "No bio added yet. Click 'Edit Profile' to introduce yourself!";
+                            bioEl.classList.add('italic', 'text-base-content/60');
+                        }
+                        
+    
+                        if (user.role !== undefined) {
+                            localStorage.setItem('role', user.role);
+                            updateRoleUI(user.role);
+                        }
+
+                        if (user.profilePic) {
+                            cachedProfilePic = user.profilePic;
+                            const directPicUrl = parseDriveLink(user.profilePic);
+                            avatarEl.src = directPicUrl;
+                            if (headerAvatar) headerAvatar.src = directPicUrl;
+                        }
+
+                        if (user.galleryPics) {
+                            cachedGalleryLinks = user.galleryPics.split(',').map(l => l.trim()).filter(l => l.length > 0);
+                            galleryGrid.innerHTML = '';
+                            
+                            for (let i = 0; i < 4; i++) {
+                                const link = cachedGalleryLinks[i] || "";
+                                const div = document.createElement('div');
+                                div.className = "aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300";
+                                
+                                if (link) {
+                                    const directUrl = parseDriveLink(link);
+                                    div.innerHTML = `<img src="${directUrl}" alt="Gallery Photo ${i+1}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">`;
+                                } else {
+                                    div.className += " flex items-center justify-center text-base-content/40 text-xs";
+                                    div.textContent = `Photo ${i+1}`;
+                                }
+                                galleryGrid.appendChild(div);
+                            }
+                        }
+                    }
+                }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=initDashboard&username=${encodeURIComponent(currentUsername)}&callback=${cbName}`;
+            document.body.appendChild(script);
+        }
+
+        function openEditModal() {
+            const bioEl = document.getElementById('profile-bio');
+            document.getElementById('bio-textarea').value = bioEl.textContent.includes("No bio added yet") ? "" : bioEl.textContent;
+            document.getElementById('profile-pic-input').value = cachedProfilePic;
+            document.getElementById('gallery-pics-textarea').value = cachedGalleryLinks.join(', ');
+            document.getElementById('edit-profile-modal').classList.add('modal-open');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-profile-modal').classList.remove('modal-open');
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            const newBio = document.getElementById('bio-textarea').value.trim();
+            const newProfilePic = document.getElementById('profile-pic-input').value.trim();
+            const newGalleryPics = document.getElementById('gallery-pics-textarea').value.trim();
+            const saveBtn = document.getElementById('save-profile-btn');
+            
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            const cbName = 'save_profile_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+
+                if (res && res.status === "success") {
+                    showToast("Profile updated successfully!", "success");
+                    closeEditModal();
+                    loadUserProfile();
+                } else {
+                    showToast("Failed to update profile.", "error");
+                }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=updateProfileImages&username=${encodeURIComponent(currentUsername)}&bio=${encodeURIComponent(newBio)}&profilePic=${encodeURIComponent(newProfilePic)}&galleryPics=${encodeURIComponent(newGalleryPics)}&callback=${cbName}`;
+            document.body.appendChild(script);
+        }
+
+        function initThemeToggle() {
+            const themeCheckbox = document.getElementById('theme-checkbox');
+            if (!themeCheckbox) return;
+
+            function updateThemeUI(isDark) {
+                const themeName = isDark ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', themeName);
+                themeCheckbox.checked = isDark;
+            }
+
+            const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
+            updateThemeUI(savedTheme === 'dark');
+
+            themeCheckbox.onchange = (e) => {
+                const isDark = e.target.checked;
+                const newTheme = isDark ? 'dark' : 'light';
+                localStorage.setItem('dashboard-theme', newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
+            };
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+            
+            toast.className = `alert ${alertClass} text-white shadow-lg text-xs py-3`;
+            toast.innerHTML = `<span><i class="fa-solid ${iconClass} mr-2"></i>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+    <script src="../scripts/nav.js"></script>
+</body>
+</html>

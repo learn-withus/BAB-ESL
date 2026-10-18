@@ -886,7 +886,17 @@ function initBookSearch() {
     const noResultsMsg = document.getElementById('no-results-msg');
 
     const currentFile = window.location.pathname.split("/").pop();
-    if (currentFile === "index.html" || currentFile === "user-dashboard.html" || currentFile === "admin-dashboard.html") {
+    
+    // Remove search bar entirely for index.html
+    if (currentFile === "index.html" || currentFile === "") {
+        if (searchInput) {
+            const searchContainer = searchInput.closest('.flex') || searchInput.parentElement.parentElement || searchInput.parentElement;
+            if (searchContainer) searchContainer.style.display = 'none';
+        }
+        return;
+    }
+
+    if (currentFile === "user-dashboard.html" || currentFile === "admin-dashboard.html") {
         if (searchInput) {
             const searchContainer = searchInput.closest('.flex') || searchInput.parentElement.parentElement || searchInput.parentElement;
             if (searchContainer) searchContainer.style.display = 'none';
@@ -896,13 +906,16 @@ function initBookSearch() {
 
     if (!searchInput) return;
 
-    // Check if we are on the book-menu page or an individual lesson page
-    const isBookMenu = currentFile === "book-menu.html";
+    // Ensure suggestions box has a gorgeous dropdown styling with soft shadow and transitions
+    if (suggestionsBox) {
+        suggestionsBox.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        suggestionsBox.style.transformOrigin = 'top';
+    }
 
+    const isBookMenu = currentFile === "book-menu.html";
     const items = [];
 
     if (isBookMenu) {
-        // Collect book cards targeting <h3> titles
         const bookCards = document.querySelectorAll('.book-card');
         bookCards.forEach(card => {
             const titleEl = card.querySelector('h3, h2, h1, .book-title, .btn-title');
@@ -912,7 +925,7 @@ function initBookSearch() {
             
             if (!title || title.toLowerCase() === "lesson library") return;
 
-            card.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
             items.push({
                 title: title,
@@ -922,7 +935,7 @@ function initBookSearch() {
             });
         });
     } else {
-        // On an individual book/lesson page, allow searching for lesson headings (<h1>, <h2>, <h3>)
+        // Individual lesson page - search lesson titles or sections
         const lessonHeadings = document.querySelectorAll('main h1, main h2, main h3, .lesson-title');
         lessonHeadings.forEach(heading => {
             const title = heading.textContent.trim();
@@ -930,7 +943,7 @@ function initBookSearch() {
 
             const container = heading.closest('div, section, article') || heading.parentElement;
             if (container) {
-                container.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+                container.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
                 const descEl = container.querySelector('p');
                 items.push({
                     title: title,
@@ -950,7 +963,10 @@ function initBookSearch() {
         suggestionsBox.innerHTML = '';
 
         if (!query) {
-            suggestionsBox.style.display = 'none';
+            suggestionsBox.style.opacity = '0';
+            suggestionsBox.style.transform = 'scaleY(0)';
+            setTimeout(() => { suggestionsBox.style.display = 'none'; }, 300);
+            
             items.forEach(item => {
                 if (item.element) {
                     item.element.style.display = '';
@@ -974,10 +990,10 @@ function initBookSearch() {
                         item.element.style.opacity = '1';
                         item.element.style.transform = 'scale(1)';
                         item.element.style.pointerEvents = 'auto';
-                    }, 10);
+                    }, 20);
                 } else {
                     item.element.style.opacity = '0';
-                    item.element.style.transform = 'scale(0.95)';
+                    item.element.style.transform = 'scale(0.92)';
                     item.element.style.pointerEvents = 'none';
                     setTimeout(() => {
                         if (searchInput.value.trim() !== '') {
@@ -992,12 +1008,26 @@ function initBookSearch() {
                 if (!seenTitles.has(item.title)) {
                     seenTitles.add(item.title);
                     const suggestionItem = document.createElement('div');
-                    suggestionItem.className = 'suggestion-item flex items-center gap-2 px-4 py-2 hover:bg-base-200 cursor-pointer text-sm border-b border-base-300 last:border-none';
-                    suggestionItem.innerHTML = `<i class="fa-solid fa-book-open custom-primary-text"></i><span class="font-medium">${item.title}</span>`;
+                    suggestionItem.className = 'suggestion-item flex items-center gap-3 px-4 py-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-300 last:border-none transition-all duration-200';
+                    
+                    // Highlight the matching query text dynamically inside the suggestion title
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    const highlightedTitle = item.title.replace(regex, `<span class="text-primary font-bold bg-primary/10 px-1 rounded">$1</span>`);
+
+                    suggestionItem.innerHTML = `
+                        <i class="fa-solid fa-book-open text-primary text-base"></i>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <span class="font-semibold text-base-content">${highlightedTitle}</span>
+                            ${item.description ? `<span class="text-xs text-base-content/60 truncate">${item.description}</span>` : ''}
+                        </div>
+                    `;
                     
                     suggestionItem.addEventListener('click', () => {
                         searchInput.value = item.title;
-                        suggestionsBox.style.display = 'none';
+                        suggestionsBox.style.opacity = '0';
+                        suggestionsBox.style.transform = 'scaleY(0)';
+                        setTimeout(() => { suggestionsBox.style.display = 'none'; }, 300);
+
                         if (item.url) {
                             window.location.href = item.url;
                         } else if (item.element) {
@@ -1009,19 +1039,25 @@ function initBookSearch() {
             }
         });
 
+        suggestionsBox.style.display = 'block';
+        setTimeout(() => {
+            suggestionsBox.style.opacity = '1';
+            suggestionsBox.style.transform = 'scaleY(1)';
+        }, 10);
+
         if (matchCount === 0) {
             if (noResultsMsg) noResultsMsg.style.display = 'block';
-            suggestionsBox.innerHTML = `<div class="px-4 py-3 text-xs text-base-content/60 text-center">${isBookMenu ? 'No matching books found' : 'No matching lessons found'}</div>`;
-            suggestionsBox.style.display = 'block';
+            suggestionsBox.innerHTML = `<div class="px-4 py-4 text-xs text-base-content/60 text-center italic">${isBookMenu ? 'No matching books found' : 'No matching lessons found'}</div>`;
         } else {
             if (noResultsMsg) noResultsMsg.style.display = 'none';
-            suggestionsBox.style.display = 'block';
         }
     });
 
     document.addEventListener('click', (e) => {
         if (suggestionsBox && !searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-            suggestionsBox.style.display = 'none';
+            suggestionsBox.style.opacity = '0';
+            suggestionsBox.style.transform = 'scaleY(0)';
+            setTimeout(() => { suggestionsBox.style.display = 'none'; }, 300);
         }
     });
 }
@@ -1437,7 +1473,7 @@ function fetchScheduledSessions() {
         }) : [];
 
         if (teacherSessions.length > 0) {
-            teacherSessions.reverse().forEach(s => {
+            teacherSessions.reverse().reverse().forEach(s => {
                 const formattedTitle = formatLessonTitle(s.lesson);
                 const sessionId = s.id;
                 const friendlyDate = formatFriendlyDate(s.sessionDate);

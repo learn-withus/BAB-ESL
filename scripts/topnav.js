@@ -43,7 +43,7 @@
 
         const isInPagesFolder = window.location.pathname.includes('/pages/');
         const profileLink = isInPagesFolder ? "profile.html" : "pages/profile.html";
-        const logoutRedirect = isInPagesFolder ? "login.html" : "login.html";
+        const logoutRedirect = isInPagesFolder ? "../login.html" : "./login.html";
 
         const navHTML = `
             <nav id="global-shared-navbar" class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30">

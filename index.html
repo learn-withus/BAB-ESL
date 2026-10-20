@@ -16,13 +16,10 @@
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col min-h-screen">
 
-            <!-- FLUID CONTAINER -->
             <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 w-full max-w-full mx-auto">
 
-                <!-- MAIN DASHBOARD CONTENT GRID -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start w-full">
                     
-                    <!-- Manual Generator Form (Spans 2 columns) -->
                     <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 lg:col-span-2 flex flex-col justify-between h-full">
                         <div class="flex flex-col h-full justify-between">
                             <div>
@@ -67,7 +64,6 @@
                         </div>
                     </div>
 
-                    <!-- Right-Hand Column Card (Clock & Lesson Progress) -->
                     <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 flex flex-col justify-between h-full">
                         <div class="flex flex-col gap-5">
                             
@@ -83,7 +79,6 @@
 
                             <div class="divider my-0 opacity-40"></div>
 
-                            <!-- Live Clock Module -->
                             <div class="flex items-center gap-4 bg-base-200/60 px-4 py-3.5 rounded-2xl border border-base-300 shadow-xs">
                                 <div class="relative w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center analog-clock-mini bg-base-100 shadow-xs shrink-0" id="mini-clock">
                                     <div class="w-1.5 h-1.5 bg-primary rounded-full absolute clock-center-dot"></div>
@@ -119,7 +114,6 @@
 
                 </div>
 
-                <!-- Scheduled Sessions Table -->
                 <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 w-full">
                     <div class="flex justify-between items-center pb-4 border-b border-base-200 mb-4">
                         <h3 class="font-bold text-lg flex items-center gap-3">
@@ -163,7 +157,6 @@
 
     <div id="toast-container" class="toast toast-end toast-bottom z-50"></div>
     
-    <!-- Confirmation Modal for Completing Class -->
     <div class="modal" id="confirm-modal">
         <div class="modal-box text-center shadow-xl border border-base-300">
             <h3 class="text-lg font-bold">Mark Class as Complete?</h3>
@@ -175,7 +168,6 @@
         </div>
     </div>
 
-    <!-- Enhanced Edit/Generate Link Modal -->
     <div class="modal" id="edit-session-modal">
         <div class="modal-box max-w-lg bg-base-100 border border-base-300 p-6 sm:p-8 shadow-2xl">
             <h3 class="font-bold text-lg mb-1 flex items-center gap-2 text-primary">

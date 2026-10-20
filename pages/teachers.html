@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAB - Our Teachers</title>
+    <title>BAB - ESL Our Teachers</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -13,11 +13,13 @@
 </head>
 <body class="bg-base-200 min-h-screen font-['Inter']">
 
+    <div id="toast-container" class="toast toast-top toast-end z-50"></div>
+
     <div class="drawer lg:drawer-open">
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col min-h-screen">
             
-            <div class="p-6 flex-1 flex flex-col gap-6 max-w-7xl mx-auto w-full">
+            <div class="p-6 lg:p-8 flex-1 flex flex-col gap-8 max-w-full px-6 lg:px-10 w-full">
                 <div class="card bg-base-100 shadow-sm border border-base-300 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-bold tracking-tight flex items-center gap-2">
@@ -52,74 +54,201 @@
         </div>
     </div>
 
-    <dialog id="teacher-detail-modal" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box p-6 sm:p-8 overflow-hidden w-11/12 max-w-4xl bg-base-100 border border-base-300 shadow-2xl rounded-2xl">
-            <button onclick="closeTeacherModal()" class="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 text-base-content/70 hover:text-base-content">✕</button>
+    <dialog id="teacher-detail-modal" class="modal modal-bottom sm:modal-middle backdrop-blur-xs">
+        <div class="modal-box p-6 sm:p-8 w-11/12 max-w-5xl bg-base-100 border border-base-300 shadow-2xl rounded-3xl relative">
             
-            <div class="flex flex-col md:flex-row gap-8 items-start">
-                <div class="w-full md:w-64 shrink-0 flex flex-col items-center">
-                    <div class="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden shadow-md border-2 border-base-300 bg-base-200 cursor-pointer group relative" id="modal-main-pic-wrapper">
-                        <img id="modal-teacher-img" src="" alt="Teacher Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5">
-                            <i class="fa-solid fa-magnifying-glass-plus text-base"></i> Click to Zoom
-                        </div>
-                    </div>
-                    <span id="modal-teacher-badge" class="badge badge-primary font-semibold text-xs mt-4 px-4 py-2.5 shadow-sm"></span>
-                </div>
-
-                <div class="flex-1 min-w-0 flex flex-col justify-between w-full h-full">
-                    <div>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 id="modal-teacher-name" class="font-bold text-2xl sm:text-3xl text-base-content tracking-tight"></h3>
-                                <p class="text-xs text-base-content/60 mt-0.5">BAB ESL Certified Instructor</p>
-                            </div>
-                        </div>
-                        
-                        <div class="divider my-3"></div>
-
-                        <div class="space-y-4">
+            <button onclick="closeTeacherModal()" class="btn btn-sm btn-circle bg-error hover:bg-error/80 text-white border-none shadow-md absolute top-4 right-4 z-30 transition-transform hover:scale-105" title="Close Modal">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
             
-                            <div>
-                                <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-address-card"></i> Biography & Background
-                                </h4>
-                                <p id="modal-teacher-bio" class="text-xs sm:text-sm text-base-content/80 leading-relaxed max-h-32 overflow-y-auto custom-scroll pr-2 whitespace-pre-line"></p>
-                            </div>
-
-                            <div>
-                                <h4 class="text-xs font-bold text-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-images"></i> Instructor Gallery & Activities
-                                </h4>
-                                <div id="modal-gallery-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div id="modal-profile-view">
+                <div class="flex flex-col md:flex-row gap-8 items-start">
+                    
+                    <div class="w-full md:w-72 shrink-0 flex flex-col items-center bg-base-200/50 p-5 rounded-2xl border border-base-300/60">
+                        <div class="w-full flex flex-col items-center">
+                            <div class="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl overflow-hidden shadow-lg border-2 border-base-100 bg-base-100 relative group cursor-pointer" onclick="openImageLightbox(document.getElementById('modal-teacher-img').src, document.getElementById('modal-teacher-name').textContent)">
+                                <img id="modal-teacher-img" src="" alt="Teacher Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-xs gap-1.5">
+                                    <i class="fa-solid fa-expand"></i> Click to Zoom
                                 </div>
-                                <p class="text-[11px] text-base-content/50 mt-1.5 italic"><i class="fa-solid fa-circle-info mr-1"></i> Click any photo to view full size.</p>
                             </div>
+                            <span id="modal-teacher-badge" class="badge badge-primary font-bold text-xs mt-4 px-4 py-3 shadow-sm rounded-lg uppercase tracking-wider"></span>
+                        </div>
+                        <div class="text-center mt-3 text-[11px] text-base-content/50 font-medium">
+                            <i class="fa-solid fa-award text-primary mr-1"></i> Verified BAB ESL Staff
                         </div>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-base-200 flex flex-col sm:flex-row gap-3">
-                        <a href="../user-dashboard.html" class="btn btn-primary btn-sm sm:btn-md flex-1 gap-2 font-semibold">
-                            <i class="fa-solid fa-calendar-days"></i> View Schedule & Book Session
-                        </a>
-                        <button onclick="closeTeacherModal()" class="btn btn-ghost btn-sm sm:btn-md">Close</button>
+                    <div class="flex-1 min-w-0 flex flex-col justify-between w-full self-stretch py-1">
+                        <div class="space-y-4">
+                            <div class="pr-10">
+                                <h3 id="modal-teacher-name" class="font-extrabold text-2xl sm:text-3xl text-base-content tracking-tight capitalize"></h3>
+                                <p class="text-xs font-semibold text-primary/80 mt-1 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-graduation-cap"></i> BAB ESL Certified Instructor
+                                </p>
+                            </div>
+                            
+                            <div class="h-px bg-base-200 w-full"></div>
+
+                            <div class="space-y-2">
+                                <h4 class="text-xs font-bold text-base-content/80 uppercase tracking-wider flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                                    Biography & Background
+                                </h4>
+                                <div class="bg-base-200/30 p-4 rounded-xl border border-base-200">
+                                    <p id="modal-teacher-bio" class="text-xs sm:text-sm text-base-content/80 leading-relaxed max-h-48 overflow-y-auto custom-scroll pr-1 whitespace-pre-line"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="modal-action-buttons" class="mt-6 pt-4 border-t border-base-200 flex flex-col gap-2.5"></div>
                     </div>
                 </div>
             </div>
+
+            <div id="modal-gallery-view" class="hidden space-y-6 max-h-[75vh] overflow-y-auto custom-scroll pr-1">
+                <div class="flex items-center gap-3 pr-10">
+                    <button onclick="showProfileView()" class="btn btn-sm btn-circle btn-ghost bg-base-200 border border-base-300">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <div>
+                        <h3 id="gallery-modal-title" class="font-bold text-xl text-base-content">Teacher Profile & Gallery</h3>
+                        <p class="text-xs text-base-content/60">Detailed biography and full picture gallery. Click any photo to preview full screen.</p>
+                    </div>
+                </div>
+
+                <div class="h-px bg-base-200"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    <div class="space-y-4 bg-base-200/40 p-4 rounded-2xl border border-base-300">
+                        <div class="w-full aspect-square rounded-2xl overflow-hidden shadow-md border border-base-100 bg-base-100 cursor-pointer group relative" onclick="openImageLightbox(document.getElementById('gallery-main-img').src, document.getElementById('gallery-teacher-name').textContent)">
+                            <img id="gallery-main-img" src="" alt="Profile Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-xs gap-1.5">
+                                <i class="fa-solid fa-expand"></i> Full Screen Preview
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h4 id="gallery-teacher-name" class="font-bold text-base text-base-content capitalize"></h4>
+                            <span id="gallery-teacher-role" class="badge badge-primary badge-sm mt-1 font-semibold"></span>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-6">
+                        <div>
+                            <h4 class="text-xs font-bold text-base-content/80 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-user text-primary text-xs"></i> Biography
+                            </h4>
+                            <div class="bg-base-200/30 p-4 rounded-xl border border-base-200">
+                                <p id="gallery-teacher-bio" class="text-xs sm:text-sm text-base-content/80 leading-relaxed whitespace-pre-line"></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-bold text-base-content/80 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-images text-primary text-xs"></i> Instructor Photo Gallery (Click to View)
+                            </h4>
+                            <div id="gallery-pics-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-action pt-4 border-t border-base-200">
+                    <button onclick="showProfileView()" class="btn btn-primary btn-sm px-6 font-bold rounded-xl">Back to Overview</button>
+                </div>
+            </div>
+
+            <div id="modal-timetable-view" class="hidden space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pr-10">
+                    <div class="flex items-center gap-3">
+                        <button onclick="hideTimetableGridView()" class="btn btn-sm btn-circle btn-ghost bg-base-200 border border-base-300">
+                            <i class="fa-solid fa-arrow-left text-sm"></i>
+                        </button>
+                        <div>
+                            <h3 id="timetable-modal-title" class="font-bold text-xl text-base-content">Teacher Timetable</h3>
+                            <p id="timetable-availability-subtitle" class="text-xs text-base-content/60">Loading available slots...</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="join shadow-xs">
+                            <button onclick="changeModalCalendarView('day')" id="modal-view-btn-day" class="btn btn-sm join-item btn-ghost border border-base-300">Day</button>
+                            <button onclick="changeModalCalendarView('week')" id="modal-view-btn-week" class="btn btn-sm join-item btn-primary">Week</button>
+                            <button onclick="changeModalCalendarView('month')" id="modal-view-btn-month" class="btn btn-sm join-item btn-ghost border border-base-300">Month</button>
+                        </div>
+                        
+                        <div class="flex items-center gap-1 bg-base-200 p-1 rounded-lg border border-base-300">
+                            <button onclick="navigateModalCalendar(-1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="navigateModalCalendar(0)" class="btn btn-sm btn-ghost font-semibold text-xs">Today</button>
+                            <button onclick="navigateModalCalendar(1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-px bg-base-200"></div>
+
+                <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl max-h-[460px]">
+                    <div id="modal-calendar-grid-container" class="min-w-[900px]"></div>
+                </div>
+
+                <div class="pt-2 border-t border-base-200 flex justify-end">
+                    <button onclick="hideTimetableGridView()" class="btn btn-primary btn-sm px-6 font-bold rounded-xl">Back to Profile</button>
+                </div>
+            </div>
+
+            <div id="modal-booking-view" class="hidden">
+                <div class="flex items-center gap-3 mb-4 pr-10">
+                    <button onclick="backToTimetableOrProfile()" class="btn btn-sm btn-circle btn-ghost bg-base-200 border border-base-300">
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
+                    </button>
+                    <div>
+                        <h3 class="font-bold text-xl text-base-content">Schedule a Class</h3>
+                        <p class="text-xs text-base-content/60">Confirm your selected date and time slot below (Philippine Standard Time).</p>
+                    </div>
+                </div>
+
+                <div class="h-px bg-base-200 my-4"></div>
+
+                <form id="booking-form" onsubmit="submitBooking(event)" class="space-y-6 mt-4 max-w-xl mx-auto w-full">
+                    <input type="hidden" id="booking-teacher-name">
+                    
+                    <div class="bg-base-200/40 p-5 rounded-2xl border border-base-200 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label text-xs font-bold text-base-content/70"><span class="label-text">Select Session Date</span></label>
+                                <input type="date" id="booking-date" class="input input-bordered input-md w-full bg-base-100 rounded-xl font-medium text-xs sm:text-sm" required>
+                            </div>
+                            <div class="form-control">
+                                <label class="label text-xs font-bold text-base-content/70"><span class="label-text">Select Time Slot</span></label>
+                                <input type="time" id="booking-time" class="input input-bordered input-md w-full bg-base-100 rounded-xl font-medium text-xs sm:text-sm" required>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-base-content/60 italic text-center">
+                            <i class="fa-solid fa-globe mr-1 text-primary"></i> All times are based on <strong>Philippine Standard Time (PST)</strong>.
+                        </p>
+                    </div>
+
+                    <div class="modal-action pt-2 flex items-center justify-between gap-3">
+                        <button type="button" onclick="backToTimetableOrProfile()" class="btn btn-ghost btn-md rounded-xl font-semibold px-6">Back</button>
+                        <button type="submit" id="confirm-booking-btn" class="btn btn-primary btn-md flex-1 gap-2 rounded-xl font-bold text-white shadow-md">
+                            <i class="fa-solid fa-calendar-check"></i> Confirm & Book Session
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <form method="dialog" class="modal-backdrop">
-            <button onclick="closeTeacherModal()">close</button>
-        </form>
     </dialog>
 
-    <dialog id="image-lightbox-modal" class="modal z-[1000]">
-        <div class="modal-box bg-neutral/95 backdrop-blur-md p-3 max-w-5xl max-h-[90vh] flex items-center justify-center relative shadow-2xl rounded-2xl border border-white/10">
-            <button onclick="closeLightbox()" class="btn btn-sm btn-circle btn-ghost absolute top-3 right-3 text-white hover:bg-white/20 z-10">✕</button>
-            <img id="lightbox-img" src="" alt="Enlarged View" class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl">
+    <dialog id="image-lightbox-modal" class="modal backdrop-blur-md z-[1000]" onclick="if(event.target === this) closeImageLightbox()">
+        <div class="modal-box p-2 max-w-5xl bg-transparent shadow-none border-none relative flex flex-col items-center justify-center">
+            <button onclick="closeImageLightbox()" class="btn btn-sm btn-circle bg-error hover:bg-error/80 text-white border-none shadow-xl fixed top-6 right-6 z-50 transition-transform hover:scale-105" title="Close Preview">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+            <div class="max-h-[85vh] max-w-full overflow-hidden rounded-2xl shadow-2xl border-2 border-white/20 bg-black/40 backdrop-blur-sm">
+                <img id="lightbox-img" src="" alt="Full Screen Preview" class="max-h-[82vh] w-auto max-w-full object-contain mx-auto rounded-xl">
+            </div>
+            <p id="lightbox-caption" class="text-white text-xs font-semibold mt-3 bg-black/60 px-4 py-1.5 rounded-full border border-white/10 shadow-md"></p>
         </div>
-        <form method="dialog" class="modal-backdrop bg-black/70">
-            <button onclick="closeLightbox()">close</button>
-        </form>
     </dialog>
 
     <script src="../scripts/nav.js"></script>
@@ -127,6 +256,11 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
         let allTeachers = [];
+        let cachedSessions = [];
+        let activeTeacherIndex = 0;
+        let activeTeacherForModal = "";
+        let currentModalView = 'week';
+        let modalCurrentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
 
         function parseDriveLink(url) {
             if (!url) return '';
@@ -140,7 +274,19 @@
             return cleanUrl;
         }
 
-        function fetchJsonp(action) {
+        function formatTimeTo12Hour(timeStr) {
+            if (!timeStr) return '';
+            if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr;
+            const parts = timeStr.split(':');
+            if (parts.length < 2) return timeStr;
+            let hours = parseInt(parts[0], 10);
+            const minutes = parts[1];
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return `${hours < 10 ? '0' + hours : hours}:${minutes} ${ampm}`;
+        }
+
+        function fetchJsonp(action, extraParams = "") {
             return new Promise((resolve, reject) => {
                 const callbackName = 'jsonp_cb_' + Math.floor(Math.random() * 1000000);
                 const script = document.createElement('script');
@@ -158,12 +304,346 @@
                     reject(err);
                 };
 
-                script.src = `${API_URL}?action=${action}&callback=${callbackName}&_cb=${Date.now()}`;
+                script.src = `${API_URL}?action=${action}&callback=${callbackName}${extraParams}&_cb=${Date.now()}`;
                 document.body.appendChild(script);
             });
         }
 
+        function parseLocalDateKey(dateInput) {
+            if (!dateInput) return "";
+            let str = String(dateInput).trim();
+            if (str.includes('T')) str = str.split('T')[0];
+            const parts = str.split(/[-/]/);
+            if (parts.length === 3) {
+                if (parts[0].length === 4) {
+                    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                } else {
+                    return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+                }
+            }
+            const d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+            }
+            return str;
+        }
+
+        function isSlotBooked(sessionsList, dateKey, hourStr) {
+            const cleanHourSlot = hourStr.toLowerCase().replace(':00', '').replace(' ', '').trim();
+
+            return sessionsList.some(s => {
+                const rawDate = String(s.Date || s.date || s.sessionDate || "").trim();
+                const sDate = parseLocalDateKey(rawDate);
+                let sTimeRaw = String(s.Time || s.time || s.sessionTime || "").toLowerCase().trim();
+
+                if (sDate !== dateKey) return false;
+
+                if (/^\d{2}:\d{2}$/.test(sTimeRaw)) {
+                    let [h, m] = sTimeRaw.split(':');
+                    let hourNum = parseInt(h, 10);
+                    let ampm = hourNum >= 12 ? 'pm' : 'am';
+                    hourNum = hourNum % 12 || 12;
+                    sTimeRaw = `${hourNum}:${m} ${ampm}`;
+                }
+
+                const cleanSessionTime = sTimeRaw.replace(':00', '').replace(' ', '').trim();
+
+                if (sTimeRaw === hourStr.toLowerCase() || cleanSessionTime === cleanHourSlot) {
+                    return true;
+                }
+
+                try {
+                    const slotHourMatch = hourStr.match(/^(\d+):/);
+                    const sessionHourMatch = sTimeRaw.match(/^(\d+):/);
+                    const slotAmPm = hourStr.toLowerCase().includes('pm') ? 'pm' : 'am';
+                    const sessionAmPm = sTimeRaw.includes('pm') ? 'pm' : 'am';
+
+                    if (slotHourMatch && sessionHourMatch) {
+                        return parseInt(slotHourMatch[1], 10) === parseInt(sessionHourMatch[1], 10) && slotAmPm === sessionAmPm;
+                    }
+                } catch (e) {
+        
+                }
+
+                return false;
+            });
+        }
+
+        function openImageLightbox(imgSrc, caption = "") {
+            if (!imgSrc) return;
+            const lightbox = document.getElementById('image-lightbox-modal');
+            const imgEl = document.getElementById('lightbox-img');
+            const captionEl = document.getElementById('lightbox-caption');
+            
+            imgEl.src = imgSrc;
+            captionEl.textContent = caption ? `${caption} — Full Screen Photo` : "Teacher Photo";
+            lightbox.showModal();
+        }
+
+        function closeImageLightbox() {
+            document.getElementById('image-lightbox-modal').close();
+        }
+
+        function changeModalCalendarView(viewType) {
+            currentModalView = viewType;
+            document.querySelectorAll('#modal-timetable-view .join .btn').forEach(b => b.classList.replace('btn-primary', 'btn-ghost'));
+            document.getElementById(`modal-view-btn-${viewType}`).classList.replace('btn-ghost', 'btn-primary');
+            renderModalCalendarMatrix();
+        }
+
+        function navigateModalCalendar(direction) {
+            if (direction === 0) {
+                modalCurrentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+            } else {
+                if (currentModalView === 'day') {
+                    modalCurrentDate.setDate(modalCurrentDate.getDate() + direction);
+                } else if (currentModalView === 'week') {
+                    modalCurrentDate.setDate(modalCurrentDate.getDate() + (direction * 7));
+                } else if (currentModalView === 'month') {
+                    modalCurrentDate.setMonth(modalCurrentDate.getMonth() + direction);
+                }
+            }
+            renderModalCalendarMatrix();
+        }
+
+        function renderModalCalendarMatrix() {
+            const container = document.getElementById('modal-calendar-grid-container');
+            const titleEl = document.getElementById('timetable-modal-title');
+            const subtitleEl = document.getElementById('timetable-availability-subtitle');
+            if (!container) return;
+
+            const teacherSessions = cachedSessions.filter(s => {
+                let tName = String(s.Teacher || s.teacher || "").toLowerCase().trim();
+                if (tName.startsWith('teacher ')) tName = tName.substring(8).trim();
+                return tName === activeTeacherForModal.toLowerCase() || tName.includes(activeTeacherForModal.toLowerCase()) || activeTeacherForModal.toLowerCase().includes(tName);
+            });
+
+            if (currentModalView === 'week') {
+                renderModalWeekView(container, titleEl, subtitleEl, teacherSessions);
+            } else if (currentModalView === 'day') {
+                renderModalDayView(container, titleEl, subtitleEl, teacherSessions);
+            } else if (currentModalView === 'month') {
+                renderModalMonthView(container, titleEl, subtitleEl, teacherSessions);
+            }
+        }
+
+        function renderModalWeekView(container, titleEl, subtitleEl, sessionsList) {
+            const startOfWeek = new Date(modalCurrentDate);
+            const dayOfWeek = startOfWeek.getDay();
+            const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+            startOfWeek.setDate(diff);
+
+            let weekDays = [];
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(startOfWeek);
+                d.setDate(startOfWeek.getDate() + i);
+                weekDays.push(d);
+            }
+
+            const startStr = weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const endStr = weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            titleEl.textContent = `${activeTeacherForModal}'s Timetable (${startStr} - ${endStr}) — Philippine Standard Time`;
+
+            const hours = [
+                '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
+                '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', 
+                '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', 
+                '10:00 PM', '11:00 PM', '12:00 AM'
+            ];
+
+            let totalSlots = hours.length * weekDays.length;
+            let bookedCount = 0;
+
+            weekDays.forEach(d => {
+                const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                hours.forEach(hour => {
+                    if (isSlotBooked(sessionsList, dateKey, hour)) bookedCount++;
+                });
+            });
+
+            let remainingSlots = totalSlots - bookedCount;
+            subtitleEl.innerHTML = `<span class="text-success font-semibold">${remainingSlots} slots remaining</span> out of ${totalSlots} total weekly slots (Philippine Standard Time).`;
+
+            let html = `
+                <table class="table table-pin-rows table-zebra text-center w-full border-collapse">
+                    <thead>
+                        <tr class="bg-base-200 text-base-content text-xs uppercase">
+                            <th class="w-28 border-r border-base-300">Time (PST)</th>
+                            ${weekDays.map(d => {
+                                const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                                const todayPSTStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                                const isToday = (todayPSTStr === dateKey);
+                                return `<th class="border-r border-base-300 ${isToday ? 'bg-primary/10 text-primary font-bold' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-70">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
+                            }).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            hours.forEach(hour => {
+                html += `<tr><th class="bg-base-200/60 text-xs border-r border-base-300 font-semibold">${hour}</th>`;
+                weekDays.forEach(d => {
+                    const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                    const booked = isSlotBooked(sessionsList, dateKey, hour);
+
+                    if (booked) {
+                        html += `
+                            <td class="border-r border-base-300 p-2 bg-error/10 cursor-not-allowed">
+                                <span class="badge badge-error badge-xs font-bold text-white px-2 py-2">Booked!</span>
+                                <div class="text-[9px] opacity-70 mt-1">Unavailable</div>
+                            </td>`;
+                    } else {
+                        html += `
+                            <td class="border-r border-base-300 p-2 hover:bg-primary/5 cursor-pointer transition-colors" onclick="selectSlotAndBook('${dateKey}', '${hour}')">
+                                <span class="text-[10px] text-base-content/60 hover:text-primary font-bold">+ Book Slot</span>
+                            </td>`;
+                    }
+                });
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function renderModalDayView(container, titleEl, subtitleEl, sessionsList) {
+            titleEl.textContent = `${activeTeacherForModal}'s Day View (${modalCurrentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' })}) — Philippine Standard Time`;
+            const dateKey = modalCurrentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
+            const hours = [
+                '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
+                '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', 
+                '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', 
+                '10:00 PM', '11:00 PM', '12:00 AM'
+            ];
+
+            let bookedTodayCount = 0;
+            hours.forEach(hour => {
+                if (isSlotBooked(sessionsList, dateKey, hour)) bookedTodayCount++;
+            });
+
+            let remainingToday = hours.length - bookedTodayCount;
+            subtitleEl.innerHTML = `<span class="text-success font-semibold">${remainingToday} remaining slots</span> available today (Philippine Standard Time).`;
+
+            let html = `
+                <div class="p-4 space-y-2">
+            `;
+
+            hours.forEach(hour => {
+                const booked = isSlotBooked(sessionsList, dateKey, hour);
+                if (booked) {
+                    html += `
+                        <div class="flex justify-between items-center bg-error/10 p-3 rounded-xl border border-error/20 opacity-80">
+                            <div>
+                                <span class="font-bold text-xs">${hour} PST</span> — <span class="font-semibold text-xs text-error">Booked!</span>
+                            </div>
+                            <span class="badge badge-error badge-xs font-bold text-white cursor-not-allowed">Unavailable</span>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="flex justify-between items-center bg-base-200/50 p-3 rounded-xl border border-base-300 hover:bg-primary/5 cursor-pointer transition-colors" onclick="selectSlotAndBook('${dateKey}', '${hour}')">
+                            <div>
+                                <span class="font-bold text-xs">${hour} PST</span> — <span class="font-semibold text-xs text-success">Available</span>
+                            </div>
+                            <button class="btn btn-primary btn-xs font-bold">+ Book Slot</button>
+                        </div>
+                    `;
+                }
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderModalMonthView(container, titleEl, subtitleEl, sessionsList) {
+            const year = modalCurrentDate.getFullYear();
+            const month = modalCurrentDate.getMonth();
+            titleEl.textContent = `${activeTeacherForModal}'s Monthly Overview (${modalCurrentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' })}) — Philippine Standard Time`;
+            subtitleEl.textContent = `Click any date to view and book daily slots (Philippine Standard Time).`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const hours = [
+                '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
+                '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', 
+                '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', 
+                '10:00 PM', '11:00 PM', '12:00 AM'
+            ];
+
+            let html = `
+                <table class="table text-center w-full border-collapse">
+                    <thead>
+                        <tr class="bg-base-200 text-xs uppercase">
+                            <th class="border border-base-300">Sun</th>
+                            <th class="border border-base-300">Mon</th>
+                            <th class="border border-base-300">Tue</th>
+                            <th class="border border-base-300">Wed</th>
+                            <th class="border border-base-300">Thu</th>
+                            <th class="border border-base-300">Fri</th>
+                            <th class="border border-base-300">Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+            `;
+
+            let dayCount = 1;
+            for (let i = 0; i < 42; i++) {
+                if (i >= firstDay && dayCount <= daysInMonth) {
+                    const formattedMonth = String(month + 1).padStart(2, '0');
+                    const formattedDay = String(dayCount).padStart(2, '0');
+                    const dateKey = `${year}-${formattedMonth}-${formattedDay}`;
+                    
+                    let bookedCount = 0;
+                    hours.forEach(hour => {
+                        if (isSlotBooked(sessionsList, dateKey, hour)) bookedCount++;
+                    });
+                    const rem = hours.length - bookedCount;
+
+                    html += `
+                        <td class="border border-base-300 h-20 align-top p-2 hover:bg-base-200/50 cursor-pointer" onclick="selectMonthDayInModal('${dateKey}')">
+                            <div class="font-bold text-xs">${dayCount}</div>
+                            <div class="mt-1 text-[10px] ${rem > 0 ? 'text-success font-medium' : 'text-error font-bold'}">${rem > 0 ? rem + ' slots left' : 'Fully Booked'}</div>
+                        </td>
+                    `;
+                    dayCount++;
+                } else {
+                    html += `<td class="border border-base-300 bg-base-200/20 h-20"></td>`;
+                }
+                if ((i + 1) % 7 === 0 && i < 41) html += `</tr><tr>`;
+            }
+
+            html += `</tr></tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function selectSlotAndBook(date, time) {
+            document.getElementById('booking-date').value = date;
+            document.getElementById('booking-time').value = convertTo24HourTime(time);
+            showBookingViewFromTimetable();
+        }
+
+        function selectMonthDayInModal(dateKey) {
+            modalCurrentDate = new Date(dateKey + 'T00:00:00');
+            changeModalCalendarView('day');
+        }
+
+        function convertTo24HourTime(timeStr) {
+            if (!timeStr) return "09:00";
+            let parts = timeStr.split(' ');
+            let hm = parts[0].split(':');
+            let h = parseInt(hm[0], 10);
+            let m = hm[1];
+            let ampm = parts[1] ? parts[1].toUpperCase() : 'AM';
+            if (ampm === 'PM' && h < 12) h += 12;
+            if (ampm === 'AM' && h === 12) h = 0;
+            return `${String(h).padStart(2, '0')}:${m}`;
+        }
+
         function openTeacherModal(index) {
+            activeTeacherIndex = index;
             const t = allTeachers[index];
             if (!t) return;
 
@@ -171,94 +651,181 @@
             if (name.toLowerCase().startsWith('teacher ')) {
                 name = name.substring(8).trim();
             }
+            activeTeacherForModal = name;
+            document.getElementById('booking-teacher-name').value = name;
+            
+            showProfileView();
 
             const mainPic = parseDriveLink(t.profilePic) || "https://via.placeholder.com/400";
-            const bio = t.bio || t.description || "Professional ESL Instructor dedicated to helping students achieve conversational fluency and confidence through interactive and effective lessons.";
+            const bio = t.bio || t.description || "Professional ESL Instructor.";
             const roleTitle = (String(t.role) === "3" || String(t.role).toLowerCase() === "admin") ? "Administrator" : "ESL Instructor";
 
-            const mainImgEl = document.getElementById('modal-teacher-img');
-            mainImgEl.src = mainPic;
-            
-            const picWrapper = document.getElementById('modal-main-pic-wrapper');
-            picWrapper.onclick = () => openLightbox(mainPic);
+            const bookingStatusVal = String(t.bookingStatus || "").toLowerCase();
+            const isBookingOpen = bookingStatusVal === "open" || bookingStatusVal === "accepted" || (!bookingStatusVal.includes("closed") && !bookingStatusVal.includes("disable"));
 
+            document.getElementById('modal-teacher-img').src = mainPic;
             document.getElementById('modal-teacher-name').textContent = name;
             document.getElementById('modal-teacher-badge').textContent = roleTitle;
             document.getElementById('modal-teacher-bio').textContent = bio;
 
-            const rawGallery = t.gallery || t.pictures || t.photos || t.extraPics || "";
-            let galleryUrls = [];
+            const modalActionContainer = document.getElementById('modal-action-buttons');
+            if (modalActionContainer) {
+                let bookingBadge = isBookingOpen 
+                    ? `<div class="badge badge-success gap-2 py-3 px-4 w-full justify-center text-white font-bold text-xs rounded-xl shadow-xs"><i class="fa-solid fa-circle-check text-sm"></i> Booking Status: Open & Accepting Sessions</div>`
+                    : `<div class="badge badge-error gap-2 py-3 px-4 w-full justify-center text-white font-bold text-xs rounded-xl shadow-xs"><i class="fa-solid fa-circle-xmark text-sm"></i> Booking Status: Booking is closed by teacher</div>`;
 
-            if (typeof rawGallery === 'string' && rawGallery.trim() !== "") {
-                galleryUrls = rawGallery.split(',').map(url => parseDriveLink(url.trim())).filter(u => u.length > 0);
-            } else if (Array.isArray(rawGallery)) {
-                galleryUrls = rawGallery.map(url => parseDriveLink(url)).filter(u => u.length > 0);
-            }
+                let timetableBtn = isBookingOpen 
+                    ? `<button onclick="showTimetableGridView()" class="btn btn-primary btn-md flex-1 gap-2 font-bold text-white rounded-xl shadow-md"><i class="fa-solid fa-calendar-days text-base"></i> View Teachers' Schedule & Book</button>`
+                    : `<button disabled class="btn btn-disabled btn-md flex-1 gap-2 font-bold rounded-xl opacity-60 cursor-not-allowed"><i class="fa-solid fa-ban text-base"></i> Booking Closed</button>`;
 
-            ['pic1', 'pic2', 'pic3', 'pic4', 'picture1', 'picture2', 'photo1', 'photo2'].forEach(key => {
-                if (t[key] && parseDriveLink(t[key])) {
-                    galleryUrls.push(parseDriveLink(t[key]));
-                }
-            });
-
-  
-            while (galleryUrls.length < 4) {
-                galleryUrls.push(mainPic);
-            }
-            galleryUrls = galleryUrls.slice(0, 4);
-
-            const galleryGrid = document.getElementById('modal-gallery-grid');
-            galleryGrid.innerHTML = "";
-
-            galleryUrls.forEach((imgUrl, i) => {
-                const thumb = document.createElement('div');
-                thumb.className = "aspect-square rounded-xl overflow-hidden border border-base-300 bg-base-200 cursor-pointer group relative shadow-sm hover:border-primary transition-all";
-                thumb.innerHTML = `
-                    <img src="${imgUrl}" alt="Gallery Photo ${i+1}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-primary-content">
-                        <i class="fa-solid fa-expand text-sm"></i>
+                modalActionContainer.innerHTML = `
+                    ${bookingBadge}
+                    <div class="flex gap-3 w-full mt-1">
+                        ${timetableBtn}
+                        <button onclick="showGalleryView()" class="btn btn-outline btn-primary btn-md gap-2 font-bold rounded-xl">
+                            <i class="fa-solid fa-images"></i> Full Profile & Gallery
+                        </button>
                     </div>
                 `;
-                thumb.onclick = () => openLightbox(imgUrl);
-                galleryGrid.appendChild(thumb);
-            });
+            }
 
-            const modal = document.getElementById('teacher-detail-modal');
-            if (modal) modal.showModal();
+            document.getElementById('teacher-detail-modal').showModal();
+        }
+
+        function showProfileView() {
+            document.getElementById('modal-profile-view').classList.remove('hidden');
+            document.getElementById('modal-gallery-view').classList.add('hidden');
+            document.getElementById('modal-timetable-view').classList.add('hidden');
+            document.getElementById('modal-booking-view').classList.add('hidden');
+        }
+
+        function showGalleryView() {
+            const t = allTeachers[activeTeacherIndex];
+            if (!t) return;
+
+            let name = t.name || t.username || "Teacher";
+            if (name.toLowerCase().startsWith('teacher ')) name = name.substring(8).trim();
+
+            document.getElementById('gallery-modal-title').textContent = `${name}'s Profile & Gallery`;
+            document.getElementById('gallery-main-img').src = parseDriveLink(t.profilePic) || "https://via.placeholder.com/400";
+            document.getElementById('gallery-teacher-name').textContent = name;
+            document.getElementById('gallery-teacher-role').textContent = (String(t.role) === "3" || String(t.role).toLowerCase() === "admin") ? "Administrator" : "ESL Instructor";
+            document.getElementById('gallery-teacher-bio').textContent = t.bio || t.description || "Professional ESL Instructor.";
+
+            const picsContainer = document.getElementById('gallery-pics-grid');
+            picsContainer.innerHTML = "";
+
+            let galleryArray = [];
+            if (t.galleryPics) {
+                galleryArray = String(t.galleryPics).split(',').map(p => parseDriveLink(p.trim())).filter(p => p.length > 0);
+            }
+
+            for (let i = 0; i < 4; i++) {
+                let imgUrl = galleryArray[i] || `https://via.placeholder.com/300?text=Gallery+${i+1}`;
+                picsContainer.innerHTML += `
+                    <div class="aspect-square rounded-xl overflow-hidden border border-base-300 bg-base-100 shadow-xs group relative cursor-pointer" onclick="openImageLightbox('${imgUrl}', '${name} Photo ${i+1}')">
+                        <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Gallery Photo ${i+1}">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-[11px] gap-1">
+                            <i class="fa-solid fa-expand"></i> Preview
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('modal-profile-view').classList.add('hidden');
+            document.getElementById('modal-gallery-view').classList.remove('hidden');
+            document.getElementById('modal-timetable-view').classList.add('hidden');
+            document.getElementById('modal-booking-view').classList.add('hidden');
+        }
+
+        function showTimetableGridView() {
+            document.getElementById('modal-profile-view').classList.add('hidden');
+            document.getElementById('modal-gallery-view').classList.add('hidden');
+            document.getElementById('modal-timetable-view').classList.remove('hidden');
+            document.getElementById('modal-booking-view').classList.add('hidden');
+            renderModalCalendarMatrix();
+        }
+
+        function hideTimetableGridView() {
+            showProfileView();
+        }
+
+        function showBookingViewFromTimetable() {
+            document.getElementById('modal-profile-view').classList.add('hidden');
+            document.getElementById('modal-gallery-view').classList.add('hidden');
+            document.getElementById('modal-timetable-view').classList.add('hidden');
+            document.getElementById('modal-booking-view').classList.remove('hidden');
+        }
+
+        function backToTimetableOrProfile() {
+            showTimetableGridView();
+        }
+
+        async function submitBooking(e) {
+            e.preventDefault();
+            let studentName = localStorage.getItem('teacherName') || localStorage.getItem('username') || localStorage.getItem('name') || "Student";
+            const teacherName = document.getElementById('booking-teacher-name').value;
+            const sessionDate = document.getElementById('booking-date').value;
+            const rawTime = document.getElementById('booking-time').value;
+            const sessionTime = formatTimeTo12Hour(rawTime);
+
+            const btn = document.getElementById('confirm-booking-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Booking...`;
+
+            try {
+                const params = `&student=${encodeURIComponent(studentName)}&teacher=${encodeURIComponent(teacherName)}&sessionDate=${encodeURIComponent(sessionDate)}&sessionTime=${encodeURIComponent(sessionTime)}&lesson=Requested Session`;
+                const res = await fetchJsonp('bookSession', params);
+
+                if (res && res.status === "success") {
+                    cachedSessions.push({
+                        student: studentName,
+                        teacher: teacherName,
+                        sessionDate: sessionDate,
+                        sessionTime: sessionTime,
+                        lesson: 'Requested Session'
+                    });
+
+                    showToast("Session successfully booked! Confirmation notice sent.", "success");
+
+                    const bookingFormContainer = document.getElementById('modal-booking-view');
+                    bookingFormContainer.innerHTML = `
+                        <div class="py-12 px-6 text-center space-y-6">
+                            <div class="w-20 h-20 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto text-3xl shadow-sm border border-success/20 animate-bounce">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <h3 class="font-extrabold text-2xl text-base-content tracking-tight">Booking Confirmed Successfully</h3>
+                                <p class="text-sm text-base-content/70 max-w-md mx-auto leading-relaxed">
+                                    Thank you for scheduling your session with <strong>${teacherName}</strong> on <strong>${sessionDate}</strong> at <strong>${sessionTime}</strong> (Philippine Standard Time). We look forward to seeing you in class!
+                                </p>
+                            </div>
+                            <div class="pt-4">
+                                <button type="button" onclick="closeTeacherModal(); location.reload();" class="btn btn-primary btn-md px-8 font-bold rounded-xl shadow-md">
+                                    <i class="fa-solid fa-check mr-1"></i> Done
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    showToast("Failed to confirm booking request. Please try again.", "error");
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-calendar-check"></i> Confirm & Book Session`;
+                }
+            } catch (err) {
+                showToast("Network error while booking session. Please check your connection.", "error");
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-calendar-check"></i> Confirm & Book Session`;
+            }
         }
 
         function closeTeacherModal() {
-            const modal = document.getElementById('teacher-detail-modal');
-            if (modal) modal.close();
-        }
-
-        function openLightbox(imgUrl) {
-            const lightbox = document.getElementById('image-lightbox-modal');
-            const lightboxImg = document.getElementById('lightbox-img');
-            if (lightbox && lightboxImg) {
-                lightboxImg.src = imgUrl;
-                lightbox.showModal();
-            }
-        }
-
-        function closeLightbox() {
-            const lightbox = document.getElementById('image-lightbox-modal');
-            if (lightbox) lightbox.close();
+            document.getElementById('teacher-detail-modal').close();
         }
 
         function renderTeachers(teachersList) {
             const grid = document.getElementById('teachers-grid');
             if (!grid) return;
-
-            if (!teachersList || teachersList.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-16 text-base-content/60">
-                        <i class="fa-solid fa-user-slash text-3xl mb-2 opacity-40"></i>
-                        <p class="text-sm font-medium">No instructors found matching your search.</p>
-                    </div>
-                `;
-                return;
-            }
 
             grid.innerHTML = "";
             teachersList.forEach((t) => {
@@ -267,27 +834,32 @@
                     name = name.substring(8).trim();
                 }
                 const pic = parseDriveLink(t.profilePic) || "https://via.placeholder.com/300";
-                const bio = t.bio || t.description || "Professional ESL Instructor dedicated to helping students achieve conversational fluency and confidence.";
+                const bio = t.bio || t.description || "Professional ESL Instructor.";
                 const roleTitle = (String(t.role) === "3" || String(t.role).toLowerCase() === "admin") ? "Administrator" : "ESL Instructor";
-                const badgeClass = (roleTitle === "Administrator") ? "badge-secondary" : "badge-primary";
+                
+                const bookingStatusVal = String(t.bookingStatus || "").toLowerCase();
+                const isBookingOpen = bookingStatusVal === "open" || bookingStatusVal === "accepted" || (!bookingStatusVal.includes("closed") && !bookingStatusVal.includes("disable"));
 
                 const originalIndex = allTeachers.indexOf(t);
 
                 const card = document.createElement('div');
-                card.className = "card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden group";
+                card.className = "card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden group rounded-2xl";
                 card.innerHTML = `
                     <figure class="aspect-[4/3] bg-base-200 overflow-hidden relative cursor-pointer" onclick="openTeacherModal(${originalIndex})">
-                        <img src="${pic}" alt="${name}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
-                        <span class="absolute top-3 right-3 badge ${badgeClass} font-semibold text-xs shadow-sm">${roleTitle}</span>
+                        <img src="${pic}" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 right-3 badge badge-primary font-semibold text-xs shadow-sm">${roleTitle}</span>
+                        <span class="absolute bottom-3 left-3 badge ${isBookingOpen ? 'badge-success' : 'badge-error'} font-semibold text-[10px] text-white shadow-sm">
+                            <i class="fa-solid ${isBookingOpen ? 'fa-circle-check' : 'fa-circle-xmark'} mr-1"></i> ${isBookingOpen ? 'Booking Open' : 'Booking Closed'}
+                        </span>
                     </figure>
                     <div class="card-body p-5 flex flex-col justify-between flex-1">
                         <div>
-                            <h3 class="card-title text-base font-bold cursor-pointer hover:text-primary transition-colors" onclick="openTeacherModal(${originalIndex})">${name}</h3>
+                            <h3 class="card-title text-base font-bold cursor-pointer hover:text-primary transition-colors capitalize" onclick="openTeacherModal(${originalIndex})">${name}</h3>
                             <p class="text-xs text-base-content/70 mt-2 leading-relaxed line-clamp-2">${bio}</p>
                         </div>
                         <div class="card-actions justify-end mt-4 pt-3 border-t border-base-200">
-                            <button onclick="openTeacherModal(${originalIndex})" class="btn btn-outline btn-primary btn-sm w-full gap-2 font-semibold">
-                                <i class="fa-solid fa-address-card"></i> View Profile & Details
+                            <button onclick="openTeacherModal(${originalIndex})" class="btn btn-outline btn-primary btn-sm w-full gap-2 font-bold rounded-xl">
+                                <i class="fa-solid id-card"></i> View Profile & Timetable
                             </button>
                         </div>
                     </div>
@@ -296,10 +868,29 @@
             });
         }
 
-        async function loadTeachers() {
-            const grid = document.getElementById('teachers-grid');
-            if (!grid) return;
+        function initTeacherSearch() {
+            const searchInput = document.getElementById('teacher-search-input');
+            if (!searchInput) return;
 
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (!query) {
+                    renderTeachers(allTeachers);
+                    return;
+                }
+
+                const filtered = allTeachers.filter(t => {
+                    let name = (t.name || t.username || "").toLowerCase();
+                    if (name.startsWith('teacher ')) name = name.substring(8).trim();
+                    const bio = (t.bio || t.description || "").toLowerCase();
+                    return name.includes(query) || bio.includes(query);
+                });
+
+                renderTeachers(filtered);
+            });
+        }
+
+        async function loadTeachers() {
             try {
                 const data = await fetchJsonp('initDashboard');
                 if (data && Array.isArray(data.accounts)) {
@@ -308,34 +899,30 @@
                         return r === "2" || r === "3" || r === "teacher" || r === "admin" || r === "content manager";
                     });
                     renderTeachers(allTeachers);
+                    initTeacherSearch();
+                }
+                if (data && Array.isArray(data.schedules)) {
+                    cachedSessions = data.schedules;
+                } else {
+                    const sessionsData = await fetchJsonp('getSessions');
+                    cachedSessions = Array.isArray(sessionsData) ? sessionsData : [];
                 }
             } catch (err) {
-                console.error("Failed to load teachers:", err);
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-16 text-error">
-                        <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
-                        <p class="text-sm font-medium">Failed to load teachers list from database.</p>
-                    </div>
-                `;
+                console.error("Failed to load dashboard data:", err);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTeachers();
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `alert ${type === 'success' ? 'alert-success' : 'alert-error'} text-white shadow-lg text-xs py-3 rounded-xl`;
+            toast.innerHTML = `<span><i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'} mr-2"></i>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
 
-            const searchInput = document.getElementById('teacher-search-input');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    const query = e.target.value.toLowerCase().trim();
-                    const filtered = allTeachers.filter(t => {
-                        const name = (t.name || t.username || "").toLowerCase();
-                        const bio = (t.bio || t.description || "").toLowerCase();
-                        return name.includes(query) || bio.includes(query);
-                    });
-                    renderTeachers(filtered);
-                });
-            }
-        });
+        document.addEventListener('DOMContentLoaded', loadTeachers);
     </script>
 </body>
 </html>

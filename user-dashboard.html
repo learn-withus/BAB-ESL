@@ -17,39 +17,44 @@
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col min-h-screen">
 
-            <div class="p-6 flex-1 flex flex-col gap-6 max-w-7xl mx-auto w-full">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                    <div class="card bg-base-100 shadow-sm border border-base-300 p-6 flex flex-col justify-between h-full">
-                        <div>
-                            <h1 class="text-2xl font-bold tracking-tight">Lesson Library 👋</h1>
-                            <p class="text-sm text-base-content/70 mt-1">Browse and search through available study materials</p>
+            <div class="p-6 lg:p-8 flex-1 flex flex-col gap-8 max-w-full px-6 lg:px-10 w-full">
+
+                <div class="w-full card bg-base-100 border border-base-300 shadow-sm">
+                    <div class="card-body p-6 sm:p-8">
+                        <div class="flex justify-between items-center pb-4 border-b border-base-200">
+                            <h3 class="font-bold text-lg sm:text-xl flex items-center gap-3">
+                                <span class="flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-xl text-lg shadow-sm">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </span>
+                                Class Schedules
+                            </h3>
+                            <span class="badge badge-success font-semibold text-xs text-white px-3.5 py-2.5 shadow-sm" id="scheduled-badge">Online</span>
                         </div>
-                        <div class="mt-6 flex items-center gap-2 text-xs text-base-content/60">
-                            <i class="fa-solid fa-circle-info text-primary"></i> Select any lesson card below to view study materials.
-                        </div>
-                    </div>
-                    <div class="card bg-base-100 border border-base-300 shadow-sm">
-                        <div class="card-body p-5">
-                            <div class="flex justify-between items-center pb-3 border-b border-base-200">
-                                <h3 class="font-bold text-base flex items-center gap-3">
-                                    <span class="flex items-center justify-center w-8 h-8 bg-primary/10 text-primary rounded-lg text-sm">
-                                        <i class="fa-solid fa-calendar-days"></i>
-                                    </span>
-                                    Class Schedules
-                                </h3>
-                                <span class="badge badge-success font-semibold text-xs text-white" id="scheduled-badge">Online</span>
-                            </div>
-                            <div class="max-h-64 overflow-y-auto pr-1 mt-3 custom-scroll">
-                                <div id="scheduledClassesBody" class="flex flex-col gap-3">
-                                    <div class="text-center py-6 text-base-content/60 text-sm">
-                                        Syncing database schedules...
-                                    </div>
+                        <div class="max-h-80 overflow-y-auto pr-1 mt-4 custom-scroll">
+                            <div id="scheduledClassesBody" class="flex flex-col gap-3">
+                                <div class="text-center py-10 text-base-content/60 text-sm font-medium">
+                                    Syncing database schedules...
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-base-content flex items-center gap-2">
+                            Lesson Library <span class="text-xl">👋</span>
+                        </h1>
+                        <p class="text-sm text-base-content/70 mt-1.5 leading-relaxed">
+                            Browse and search through available study materials, interactive dialogues, and exercises assigned to your account.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-base-content/60 bg-base-200/60 px-4 py-3 rounded-xl border border-base-300 shrink-0">
+                        <i class="fa-solid fa-circle-info text-primary text-sm"></i> Select any lesson card below to start.
+                    </div>
+                </div>
+
+                <!-- LESSON GRID -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="bookGrid">
 
                     <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="customer-service.html">
@@ -652,6 +657,24 @@
             }
         }
 
+        function formatFriendlyTimeClean(timeStr) {
+            if (!timeStr) return '';
+            let trimmed = String(timeStr).replace(/^['"]/, '').trim();
+            const matchExisting = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+            if (matchExisting) {
+                let hours = parseInt(matchExisting[1], 10);
+                const minutes = matchExisting[2];
+                let ampm = (matchExisting[3] || '').toUpperCase();
+                
+                if (!ampm) {
+                    ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12 || 12;
+                }
+                return `${hours}:${minutes} ${ampm}`;
+            }
+            return trimmed;
+        }
+
         async function fetchDashboardData() {
             const scheduleBody = document.getElementById('scheduledClassesBody');
             if (!scheduleBody) return;
@@ -717,52 +740,41 @@
                             } catch(e) {}
                         }
 
-                        let formattedTime = session.sessionTime || session.time || '';
-                        if (formattedTime && String(formattedTime).includes(':')) {
-                            try {
-                                const parts = formattedTime.split(':');
-                                let hours = parseInt(parts[0], 10);
-                                const minutes = parts[1];
-                                const ampm = hours >= 12 ? 'PM' : 'AM';
-                                hours = hours % 12 || 12;
-                                formattedTime = `${hours}:${minutes} ${ampm}`;
-                            } catch(e) {}
-                        }
+                        const rawTime = session.sessionTime || session.time || '';
+                        const formattedTime = formatFriendlyTimeClean(rawTime);
 
                         const lessonTitle = session.lessonPrebook || session.lesson || 'Class Session';
                         const teacherName = session.teacher || 'Teacher';
                         const meetLink = session.link || '#';
 
                         const cardItem = document.createElement('div');
-                        cardItem.className = "bg-base-200/60 border border-base-300 rounded-xl p-3 flex flex-col gap-2.5 transition-all";
+                        cardItem.className = "bg-base-200/60 border border-base-300 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-all hover:bg-base-200";
 
                         cardItem.innerHTML = `
-                            <div class="flex justify-between items-start gap-3">
-                                <div>
-                                    <span class="text-xs font-bold text-base-content block mb-0.5">${lessonTitle}</span>
-                                    <span class="text-xs text-base-content/70 flex items-center gap-1.5">
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-sm sm:text-base font-bold text-base-content">${lessonTitle}</span>
+                                <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-base-content/70">
+                                    <span class="flex items-center gap-1.5 font-medium">
                                         <i class="fa-solid fa-chalkboard-user text-primary"></i> ${teacherName}
                                     </span>
+                                    <span class="flex items-center gap-1.5 font-medium">
+                                        <i class="fa-regular fa-calendar text-primary"></i> ${formattedDate}
+                                    </span>
+                                    <span class="flex items-center gap-1.5 font-medium">
+                                        <i class="fa-regular fa-clock text-primary"></i> ${formattedTime}
+                                    </span>
                                 </div>
-                                <a href="${meetLink}" target="_blank" class="btn btn-success btn-xs text-white gap-1.5 shadow-sm whitespace-nowrap">
-                                    <i class="fa-solid fa-video"></i> Join Classroom
-                                </a>
                             </div>
-                            <div class="flex items-center justify-between border-t border-base-300/60 pt-2 text-xs text-base-content/70">
-                                <span class="flex items-center gap-1.5 font-semibold text-base-content">
-                                    <i class="fa-regular fa-calendar text-primary"></i> ${formattedDate}
-                                </span>
-                                <span class="flex items-center gap-1.5 font-semibold text-base-content">
-                                    <i class="fa-regular fa-clock text-primary"></i> ${formattedTime}
-                                </span>
-                            </div>
+                            <a href="${meetLink}" target="_blank" class="btn btn-success btn-sm sm:btn-md text-white gap-2 shadow-sm whitespace-nowrap self-end sm:self-auto">
+                                <i class="fa-solid fa-video"></i> Join Classroom
+                            </a>
                         `;
                         scheduleBody.appendChild(cardItem);
                     });
                 } else {
                     scheduleBody.innerHTML = `
-                        <div class="text-center py-6 text-base-content/60 text-xs">
-                            <i class="fa-regular fa-calendar-xmark text-2xl mb-2 opacity-50 block"></i>
+                        <div class="text-center py-10 text-base-content/60 text-xs sm:text-sm">
+                            <i class="fa-regular fa-calendar-xmark text-3xl mb-2 opacity-50 block"></i>
                             <p>No classes scheduled for you right now.</p>
                         </div>
                     `;

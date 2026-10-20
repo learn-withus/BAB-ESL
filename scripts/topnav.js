@@ -30,12 +30,17 @@
 
         const roleVal = String(localStorage.getItem('role') || localStorage.getItem('userRole') || '1').trim().toLowerCase();
         let roleTitle = "Student";
+        let isTeacherOrAdmin = false;
+
         if (roleVal === "3" || roleVal === "admin") {
             roleTitle = "Administrator";
+            isTeacherOrAdmin = true;
         } else if (roleVal === "2" || roleVal === "teacher" || roleVal === "content manager") {
             roleTitle = "Teacher";
+            isTeacherOrAdmin = true;
         } else {
             roleTitle = "Student";
+            isTeacherOrAdmin = false;
         }
 
         const cachedPic = localStorage.getItem('profilePic') || localStorage.getItem('userProfilePic') || "";
@@ -46,7 +51,7 @@
         const logoutRedirect = isInPagesFolder ? "../login.html" : "./login.html";
 
         const navHTML = `
-            <nav id="global-shared-navbar" class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sticky top-0 z-30">
+            <nav id="global-shared-navbar" class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-6 sticky top-0 z-50 shadow-xs">
                 <div class="flex-none lg:hidden">
                     <label for="main-drawer" class="btn btn-square btn-ghost">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -67,6 +72,42 @@
                 </div>
 
                 <div class="flex flex-row gap-4 items-center">
+                    ${isTeacherOrAdmin ? `
+                    <div class="flex items-center gap-2 bg-base-200/70 px-3 py-1.5 rounded-xl border border-base-300 shadow-xs">
+                        <div class="flex flex-col text-right">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-base-content/60">Booking</span>
+                            <span id="topnav-booking-label" class="text-xs font-bold text-success">Open</span>
+                        </div>
+                        <input type="checkbox" id="topnav-booking-toggle" class="toggle toggle-primary toggle-sm" checked onchange="toggleTeacherBookingStatus()" />
+                    </div>
+                    
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm relative">
+                            <div class="indicator">
+                                <i class="fa-solid fa-bell text-base text-base-content/80"></i>
+                                <span id="notification-badge" class="badge badge-xs badge-primary indicator-item hidden font-bold">0</span>
+                            </div>
+                        </div>
+                        <ul tabindex="0" class="dropdown-content menu p-4 shadow-2xl bg-base-100 rounded-box border border-base-300 w-80 sm:w-96 z-[9999] mt-3 right-0 space-y-3">
+                            <li class="p-0 hover:bg-transparent">
+                                <div class="flex justify-between items-center border-b border-base-200 pb-2 w-full p-0">
+                                    <h3 class="font-bold text-sm flex items-center gap-2 text-base-content">
+                                        <i class="fa-solid fa-bell text-primary"></i> Session Requests
+                                    </h3>
+                                    <span class="badge badge-primary badge-sm text-[10px]" id="notification-count-tag">0 New</span>
+                                </div>
+                            </li>
+                            <li class="p-0 hover:bg-transparent">
+                                <div id="notification-list" class="max-h-72 overflow-y-auto flex flex-col gap-2 w-full p-0 custom-scroll">
+                                    <div class="text-center py-4 text-xs text-base-content/50 italic w-full">
+                                        No new session requests.
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    ` : ''}
+
                     <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
                         <input type="checkbox" id="global-theme-checkbox" />
                         <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path></svg>
@@ -80,12 +121,12 @@
                                     <img alt="User Avatar" src="${profilePicUrl}" id="global-header-avatar">
                                 </div>
                             </div>
-                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-10 mt-3 w-52 p-2 shadow border border-base-300">
+                            <ul tabindex="-1" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-[9999] mt-3 w-52 p-2 shadow border border-base-300">
                                 <li><a href="${profileLink}" class="py-2">Profile</a></li>
                                 <li><button onclick="localStorage.clear(); window.location.href='${logoutRedirect}';" class="text-error py-2 w-full text-left">Logout</button></li>
                             </ul>
                         </div>
-                        <div class="flex flex-col text-left mr-2">
+                        <div class="flex flex-col text-left mr-1">
                             <span id="global-username-display" class="font-bold text-xs sm:text-sm">${username}</span>
                             <span class="font-bold text-[10px] text-primary" id="global-role-display">${roleTitle}</span>
                         </div>
@@ -101,6 +142,9 @@
 
         fetchProfilePicture(username);
         initGlobalBookSearch();
+        if (isTeacherOrAdmin) {
+            initNotificationChecker(username);
+        }
 
         const themeCheckbox = document.getElementById('global-theme-checkbox');
         const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
@@ -114,6 +158,70 @@
                 document.documentElement.setAttribute('data-theme', newTheme);
             };
         }
+    }
+
+    function initNotificationChecker(currentUsername) {
+        function checkStudentRequests() {
+            const cleanStored = currentUsername.toLowerCase().trim();
+
+            const cbName = 'notif_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(sessions) {
+                const badge = document.getElementById('notification-badge');
+                const countTag = document.getElementById('notification-count-tag');
+                const listContainer = document.getElementById('notification-list');
+                
+                if (!Array.isArray(sessions) || !listContainer) return;
+
+                const pendingRequests = sessions.filter(s => {
+                    if (!s.teacher) return false;
+                    let sheetTeacher = String(s.teacher).trim().toLowerCase();
+                    if (sheetTeacher.startsWith('teacher ')) sheetTeacher = sheetTeacher.substring(8).trim();
+                    const isForThisTeacher = sheetTeacher === cleanStored || sheetTeacher.includes(cleanStored) || cleanStored.includes(sheetTeacher);
+                    
+                    const hasNoLink = !s.link || s.link.trim() === "" || s.link === "#" || s.link === "Pending Link";
+                    return isForThisTeacher && hasNoLink;
+                });
+
+                const count = pendingRequests.length;
+                if (count > 0 && badge) {
+                    badge.classList.remove('hidden');
+                    badge.textContent = count;
+                    if (countTag) countTag.textContent = `${count} New`;
+                    
+                    listContainer.innerHTML = '';
+                    pendingRequests.reverse().forEach(req => {
+                        const item = document.createElement('div');
+                        item.className = "p-3 bg-base-200/80 rounded-xl border border-base-300 flex flex-col gap-1.5 text-xs w-full";
+                        item.innerHTML = `
+                            <div class="flex justify-between items-center font-bold text-base-content w-full">
+                                <span class="truncate"><i class="fa-solid fa-user-graduate text-primary mr-1"></i> ${req.student || 'Student'}</span>
+                                <span class="badge badge-warning badge-xs shrink-0">Pending Link</span>
+                            </div>
+                            <div class="text-base-content/70 whitespace-normal">Requested lesson: <strong class="text-primary">${req.lesson || 'Session'}</strong></div>
+                            <div class="text-[10px] text-base-content/50 flex items-center gap-3 mt-0.5">
+                                <span><i class="fa-regular fa-calendar mr-1"></i> ${req.sessionDate || ''}</span>
+                                <span><i class="fa-regular fa-clock mr-1"></i> ${req.sessionTime || ''}</span>
+                            </div>
+                        `;
+                        listContainer.appendChild(item);
+                    });
+                } else if (listContainer) {
+                    if (badge) badge.classList.add('hidden');
+                    if (countTag) countTag.textContent = `0 New`;
+                    listContainer.innerHTML = `<div class="text-center py-4 text-xs text-base-content/50 italic w-full">No new session requests.</div>`;
+                }
+
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=getSessions&callback=${cbName}`;
+            document.body.appendChild(script);
+        }
+
+        setInterval(checkStudentRequests, 10000);
+        setTimeout(checkStudentRequests, 1000);
     }
 
     function initGlobalBookSearch() {
@@ -130,23 +238,29 @@
             return;
         }
 
-        const cardElements = document.querySelectorAll('.book-card, .menu-tooltip, article, .grid > div, .lesson-card, .card[data-book]');
+        const roleVal = String(localStorage.getItem('role') || localStorage.getItem('userRole') || '1').trim().toLowerCase();
+        const isAdmin = roleVal === "2" || roleVal === "3" || roleVal === "admin" || roleVal === "teacher";
+        const rawBooks = localStorage.getItem('books') || "";
+        const allowedBooks = rawBooks.toLowerCase().split(/[,|\n]+/).map(b => b.trim().replace(/['"]+/g, '')).filter(b => b.length > 0);
+
+        const cardElements = document.querySelectorAll('.card[data-book]');
         const cards = [];
 
         cardElements.forEach(card => {
-            const titleEl = card.querySelector('h1, h2, h3, h4, .book-title, .btn-title, span.font-bold, strong');
+            const bookFileName = card.getAttribute('data-book')?.toLowerCase().trim() || "";
+            const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
+            if (!isAllowed) return; // Skip unallowed books for students in search/suggestions
+
+            const titleEl = card.querySelector('h1, h2, h3, h4, .card-title, .book-title, .btn-title, span.font-bold, strong');
             const descEl = card.querySelector('p, .book-desc, .btn-target, span:not(.font-bold)');
             const linkEl = card.querySelector('a');
             const imgEl = card.querySelector('img');
             const badgeEl = card.querySelector('.badge, span[class*="badge"]');
 
             const title = titleEl ? titleEl.textContent.trim() : '';
-            if (!title || title.toLowerCase() === "lesson library" || title.toLowerCase() === "search lessons") return;
+            if (!title) return;
 
             if (cards.some(c => c.title.toLowerCase() === title.toLowerCase())) return;
-
-            card.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
-            card.style.willChange = 'opacity, transform';
 
             cards.push({
                 title: title,
@@ -165,48 +279,15 @@
 
             if (!query) {
                 suggestionsBox.classList.add('hidden');
-                cards.forEach((cardObj, idx) => {
-                    if (cardObj.element) {
-                        cardObj.element.style.display = '';
-                        setTimeout(() => {
-                            cardObj.element.style.opacity = '1';
-                            cardObj.element.style.transform = 'translateY(0) scale(1)';
-                        }, idx * 25);
-                    }
-                });
-                if (noResultsMsg) noResultsMsg.classList.add('hidden');
                 return;
             }
 
             const seenTitles = new Set();
-            let visibleIndex = 0;
 
             cards.forEach(cardObj => {
                 const isMatch = cardObj.title.toLowerCase().includes(query) || 
                                 cardObj.badge.toLowerCase().includes(query) || 
                                 cardObj.description.toLowerCase().includes(query);
-                
-                if (cardObj.element) {
-                    if (isMatch) {
-                        cardObj.element.style.display = '';
-                        const delay = visibleIndex * 40;
-                        visibleIndex++;
-                        setTimeout(() => {
-                            if (searchInput.value.trim() !== '') {
-                                cardObj.element.style.opacity = '1';
-                                cardObj.element.style.transform = 'translateY(0) scale(1)';
-                            }
-                        }, delay);
-                    } else {
-                        cardObj.element.style.opacity = '0';
-                        cardObj.element.style.transform = 'translateY(10px) scale(0.96)';
-                        setTimeout(() => {
-                            if (searchInput.value.trim() !== '') {
-                                cardObj.element.style.display = 'none';
-                            }
-                        }, 300);
-                    }
-                }
 
                 if (isMatch) {
                     matchCount++;
@@ -230,20 +311,8 @@
                         item.addEventListener('click', () => {
                             searchInput.value = cardObj.title;
                             suggestionsBox.classList.add('hidden');
-
                             if (cardObj.url && cardObj.url !== '#') {
                                 window.location.href = cardObj.url;
-                            } else {
-                                cards.forEach(c => {
-                                    if (c.element) {
-                                        const match = c.title.toLowerCase() === cardObj.title.toLowerCase();
-                                        c.element.style.display = match ? '' : 'none';
-                                        if (match) {
-                                            c.element.style.opacity = '1';
-                                            c.element.style.transform = 'translateY(0) scale(1)';
-                                        }
-                                    }
-                                });
                             }
                         });
                         suggestionsBox.appendChild(item);
@@ -254,10 +323,7 @@
             suggestionsBox.classList.remove('hidden');
 
             if (matchCount === 0) {
-                if (noResultsMsg) noResultsMsg.classList.remove('hidden');
                 suggestionsBox.innerHTML = `<div class="px-4 py-4 text-xs text-base-content/60 text-center italic">No matching books found</div>`;
-            } else {
-                if (noResultsMsg) noResultsMsg.classList.add('hidden');
             }
         });
 
@@ -273,7 +339,7 @@
         const cbName = 'topnav_pic_cb_' + Math.round(Math.random() * 1000000);
         window[cbName] = function(res) {
             if (res && res.status === "success" && Array.isArray(res.accounts)) {
-                const user = res.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase());
+                const user = res.accounts.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase()) || res.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase());
                 if (user) {
                     if (user.profilePic) {
                         localStorage.setItem('profilePic', user.profilePic);
@@ -283,6 +349,9 @@
                     }
                     if (user.role !== undefined) {
                         localStorage.setItem('role', user.role);
+                    }
+                    if (user.books !== undefined) {
+                        localStorage.setItem('books', user.books);
                     }
                 }
             }

@@ -8,89 +8,128 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="bg-base-200 min-h-screen font-sans">
+<body class="bg-base-200 min-h-screen font-['Inter']">
     <div class="drawer lg:drawer-open">
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col min-h-screen">
 
+            <!-- FLUID CONTAINER -->
+            <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 w-full max-w-full mx-auto">
 
-            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-                <div class="card bg-base-100 shadow-sm border border-base-300 lg:col-span-3 p-6 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div>
-                        <h2 class="text-2xl font-bold">Good Day! 👋</h2>
-                        <p class="text-base-content/70 text-sm mt-1">Ready for your lessons today?</p>
-                    </div>
-                    <div class="flex items-center gap-6 flex-wrap">
-                        <div class="flex items-center gap-4 bg-base-200 px-4 py-3 rounded-xl border border-base-300">
-                            <div class="relative w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center analog-clock-mini" id="mini-clock">
-                                <div class="w-1.5 h-1.5 bg-primary rounded-full absolute clock-center-dot"></div>
-                            </div>
-                            <div class="text-xs">
-                                <div id="ph-date" class="font-semibold">LOADING...</div>
-                                <div id="ph-time" class="text-primary font-bold text-sm">00:00:00 AM</div>
-                                <div class="text-base-content/50 text-[10px]">Philippine Standard Time</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 lg:col-span-2">
-                    <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-primary">
-                        <i class="fa-solid fa-calendar-plus"></i> Generate Google Meet Class Link
-                    </h3>
-                    <form id="schedule-session-form" class="flex flex-col gap-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- MAIN DASHBOARD CONTENT GRID -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start w-full">
+                    
+                    <!-- Manual Generator Form (Spans 2 columns) -->
+                    <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 lg:col-span-2 flex flex-col justify-between h-full">
+                        <div class="flex flex-col h-full justify-between">
                             <div>
-                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Student</label>
-                                <select id="session-student-select" class="select select-bordered w-full text-sm bg-base-100" required>
-                                    <option value="">Select Student...</option>
-                                </select>
+                                <h3 class="text-base sm:text-lg font-bold mb-4 flex items-center gap-2.5 text-primary">
+                                    <span class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-sm shadow-xs">
+                                        <i class="fa-solid fa-calendar-plus"></i>
+                                    </span>
+                                    Generate Google Meet Class Link
+                                </h3>
+                                <form id="schedule-session-form" class="flex flex-col gap-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="form-control">
+                                            <label class="text-xs font-semibold text-base-content/70 block mb-1.5">Student</label>
+                                            <select id="session-student-select" class="select select-bordered w-full text-sm bg-base-150" required>
+                                                <option value="">Select Student...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-control">
+                                            <label class="text-xs font-semibold text-base-content/70 block mb-1.5">Date</label>
+                                            <input type="date" id="session-date" class="input input-bordered w-full text-sm bg-base-150" required />
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div class="form-control">
+                                            <label class="text-xs font-semibold text-base-content/70 block mb-1.5">Lesson Title / Topic</label>
+                                            <input type="text" id="session-lesson-input" list="lesson-suggestions" placeholder="Type custom title or select lesson..." class="input input-bordered w-full text-sm bg-base-150" required />
+                                            <datalist id="lesson-suggestions"></datalist>
+                                        </div>
+                                        <div class="form-control">
+                                            <label class="text-xs font-semibold text-base-content/70 block mb-1.5">Time</label>
+                                            <input type="time" id="session-time" class="input input-bordered w-full text-sm bg-base-150" required />
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div>
-                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Date</label>
-                                <input type="date" id="session-date" class="input input-bordered w-full text-sm bg-base-100" required />
+                            
+                            <div class="pt-6 flex justify-center w-full">
+                                <button type="submit" form="schedule-session-form" id="btn-create-session" class="btn btn-primary gap-2 px-8 shadow-sm">
+                                    <i class="fa-solid fa-paper-plane" id="btn-icon"></i> <span id="btn-text">Generate Link</span>
+                                </button>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Lesson Title / Topic</label>
-                                <input type="text" id="session-lesson-input" list="lesson-suggestions" placeholder="Type custom title or select lesson..." class="input input-bordered w-full text-sm bg-base-100" required />
-                                <datalist id="lesson-suggestions"></datalist>
-                            </div>
-                            <div>
-                                <label class="text-xs font-semibold text-base-content/70 block mb-1">Time</label>
-                                <input type="time" id="session-time" class="input input-bordered w-full text-sm bg-base-100" required />
-                            </div>
-                        </div>
-                        <div class="flex justify-center mt-2">
-                            <button type="submit" id="btn-create-session" class="btn btn-primary px-6">
-                                <i class="fa-solid fa-paper-plane" id="btn-icon"></i> <span id="btn-text">Generate Link</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 flex flex-col justify-between">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="text-sm font-medium text-base-content/70">Completed Lessons</div>
-                            <div id="completed-lessons-text" class="text-3xl font-extrabold mt-2">0 Lessons</div>
-                            <div class="badge badge-success badge-sm gap-1 mt-3 text-white">
-                                <i class="fa-solid fa-arrow-trend-up text-[9px]"></i> On Track
-                            </div>
-                        </div>
-                        <div class="p-3 bg-primary/10 text-primary rounded-xl text-xl">
-                            <i class="fa-solid fa-graduation-cap"></i>
                         </div>
                     </div>
+
+                    <!-- Right-Hand Column Card (Clock & Lesson Progress) -->
+                    <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 flex flex-col justify-between h-full">
+                        <div class="flex flex-col gap-5">
+                            
+                            <div class="flex justify-between items-start">
+                                <div class="space-y-1">
+                                    <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-base-content">Good Day! 👋</h2>
+                                    <p class="text-base-content/70 text-xs sm:text-sm font-medium">Ready for your lessons and student sessions today?</p>
+                                </div>
+                                <div class="p-3 bg-primary/10 text-primary rounded-2xl text-xl shadow-xs shrink-0">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                            </div>
+
+                            <div class="divider my-0 opacity-40"></div>
+
+                            <!-- Live Clock Module -->
+                            <div class="flex items-center gap-4 bg-base-200/60 px-4 py-3.5 rounded-2xl border border-base-300 shadow-xs">
+                                <div class="relative w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center analog-clock-mini bg-base-100 shadow-xs shrink-0" id="mini-clock">
+                                    <div class="w-1.5 h-1.5 bg-primary rounded-full absolute clock-center-dot"></div>
+                                </div>
+                                <div class="text-xs">
+                                    <div id="ph-date" class="font-bold text-base-content tracking-wide">LOADING...</div>
+                                    <div id="ph-time" class="text-primary font-extrabold text-sm">00:00:00 AM</div>
+                                    <div class="text-base-content/50 text-[10px] font-medium uppercase tracking-wider">Philippine Standard Time</div>
+                                </div>
+                            </div>
+
+                            <div class="divider my-0 opacity-40"></div>
+
+                            <div>
+                                <h3 class="text-sm sm:text-base font-bold text-base-content flex items-center gap-2">
+                                    Lesson Progress
+                                </h3>
+                                <p class="text-[11px] text-base-content/60 mt-0.5">Tracked completed student sessions</p>
+                            </div>
+
+                            <div class="bg-base-200/60 p-4 rounded-2xl border border-base-300 flex items-center justify-between">
+                                <div>
+                                    <div class="text-[10px] font-bold uppercase tracking-wider text-base-content/60">Completed Lessons</div>
+                                    <div id="completed-lessons-text" class="text-2xl font-extrabold text-base-content mt-0.5">0 Lessons</div>
+                                </div>
+                                <div class="badge badge-success badge-sm gap-1 text-white font-semibold px-2.5 py-1.5 shadow-xs">
+                                    <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> On Track
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 lg:col-span-3">
-                    <h3 class="text-base font-bold mb-4 flex items-center gap-2 text-primary">
-                        <i class="fa-solid fa-list-check"></i> Scheduled Class Sessions
-                    </h3>
+                <!-- Scheduled Sessions Table -->
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 w-full">
+                    <div class="flex justify-between items-center pb-4 border-b border-base-200 mb-4">
+                        <h3 class="font-bold text-lg flex items-center gap-3">
+                            <span class="flex items-center justify-center w-9 h-9 bg-primary/10 text-primary rounded-xl text-base shadow-xs">
+                                <i class="fa-solid fa-list-check"></i>
+                            </span>
+                            Scheduled Class Sessions
+                        </h3>
+                        <span class="badge badge-success font-semibold text-xs text-white px-3 py-2">Live Sync</span>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="table w-full text-sm">
                             <thead>
@@ -105,12 +144,13 @@
                             </thead>
                             <tbody id="sessions-table-body">
                                 <tr>
-                                    <td colspan="6" class="text-center py-6 text-base-content/50">Loading scheduled sessions...</td>
+                                    <td colspan="6" class="text-center py-8 text-base-content/50 font-medium">Loading scheduled sessions...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -123,79 +163,67 @@
 
     <div id="toast-container" class="toast toast-end toast-bottom z-50"></div>
     
+    <!-- Confirmation Modal for Completing Class -->
     <div class="modal" id="confirm-modal">
-        <div class="modal-box text-center">
+        <div class="modal-box text-center shadow-xl border border-base-300">
             <h3 class="text-lg font-bold">Mark Class as Complete?</h3>
-            <div class="modal-action justify-center">
-                <button id="modal-cancel-btn" class="btn">Cancel</button>
-                <button id="modal-confirm-btn" class="btn btn-success text-white">Confirm Done</button>
+            <p class="text-xs text-base-content/60 mt-1 mb-4">This will record the lesson as completed and clear it from active schedules.</p>
+            <div class="modal-action justify-center gap-2">
+                <button id="modal-cancel-btn" class="btn btn-sm">Cancel</button>
+                <button id="modal-confirm-btn" class="btn btn-sm btn-success text-white">Confirm Done</button>
             </div>
         </div>
     </div>
 
-<div class="modal" id="link-modal">
-    <div class="modal-box max-w-md p-0 overflow-hidden shadow-2xl bg-base-100 border border-base-300">
-        <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
-            <h3 class="font-bold text-lg flex items-center gap-2">
-                <i class="fa-solid fa-video"></i> Class Session Details
+    <!-- Enhanced Edit/Generate Link Modal -->
+    <div class="modal" id="edit-session-modal">
+        <div class="modal-box max-w-lg bg-base-100 border border-base-300 p-6 sm:p-8 shadow-2xl">
+            <h3 class="font-bold text-lg mb-1 flex items-center gap-2 text-primary">
+                <i class="fa-solid fa-video"></i> Manage Class & Google Meet Link
             </h3>
-            <button onclick="closeLinkModal()" class="btn btn-sm btn-circle btn-ghost text-primary-content hover:bg-primary-focus">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-        </div>
+            <p class="text-xs text-base-content/60 mb-5">Update timing details or set the Google Meet URL for this session.</p>
 
-        <div class="p-6 space-y-4">
-            <div class="bg-base-200/60 rounded-xl p-4 border border-base-300 space-y-3 text-sm">
-                <div class="flex justify-between items-center">
-                    <span class="text-base-content/60 font-medium flex items-center gap-2">
-                        <i class="fa-solid fa-user-graduate w-4 text-primary"></i> Student:
-                    </span>
-                    <span id="modal-detail-student" class="font-bold text-base-content">--</span>
-                </div>
-                <div class="divider my-0"></div>
-                <div class="flex justify-between items-center">
-                    <span class="text-base-content/60 font-medium flex items-center gap-2">
-                        <i class="fa-solid fa-book-open w-4 text-primary"></i> Lesson / Topic:
-                    </span>
-                    <span id="modal-detail-title" class="font-bold text-primary text-right max-w-[200px] truncate" title="">--</span>
-                </div>
-                <div class="divider my-0"></div>
-                <div class="flex justify-between items-center">
-                    <span class="text-base-content/60 font-medium flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-day w-4 text-primary"></i> Date:
-                    </span>
-                    <span id="modal-detail-date" class="font-semibold text-base-content">--</span>
-                </div>
-                <div class="divider my-0"></div>
-                <div class="flex justify-between items-center">
-                    <span class="text-base-content/60 font-medium flex items-center gap-2">
-                        <i class="fa-solid fa-clock w-4 text-primary"></i> Time:
-                    </span>
-                    <span id="modal-detail-time" class="font-semibold text-base-content">--</span>
-                </div>
-            </div>
+            <form id="edit-session-form" onsubmit="saveSessionLink(event)" class="space-y-4">
+                <input type="hidden" id="edit-session-id">
 
-            <div>
-                <label class="text-xs font-semibold text-base-content/70 block mb-1.5 uppercase tracking-wider">Meeting URL</label>
-                <div class="join w-full">
-                    <input type="text" id="modal-link-input" readonly class="input input-bordered join-item w-full text-xs bg-base-100 font-mono" />
-                    <button id="copy-link-btn" class="btn btn-primary join-item px-4">
-                        <i class="fa-solid fa-copy"></i> Copy
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="form-control">
+                        <label class="label text-xs font-semibold py-1"><span class="label-text">Date</span></label>
+                        <input type="date" id="edit-session-date" class="input input-bordered input-sm w-full bg-base-150">
+                    </div>
+                    <div class="form-control">
+                        <label class="label text-xs font-semibold py-1"><span class="label-text">Time Slot</span></label>
+                        <input type="time" id="edit-session-time" class="input input-bordered input-sm w-full bg-base-150">
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label text-xs font-semibold py-1"><span class="label-text">Lesson Topic / Title</span></label>
+                    <input type="text" id="edit-session-lesson" class="input input-bordered input-sm w-full bg-base-150" placeholder="e.g. Festival / Free Conversation">
+                </div>
+
+                <div class="form-control">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="label text-xs font-semibold py-0"><span class="label-text">Google Meet URL</span></label>
+                        <button type="button" onclick="autoGenerateMeetUrl()" class="btn btn-xs btn-outline btn-primary gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Generate
+                        </button>
+                    </div>
+                    <input type="url" id="edit-session-link" class="input input-bordered input-sm w-full bg-base-150" placeholder="https://meet.google.com/abc-defg-hij" required>
+                </div>
+
+                <div class="modal-action pt-3">
+                    <button type="button" onclick="closeEditSessionModal()" class="btn btn-sm">Cancel</button>
+                    <button type="submit" id="save-link-btn" class="btn btn-primary btn-sm gap-2 shadow-sm">
+                        <i class="fa-solid fa-paper-plane"></i> Save & Generate Link
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <div class="bg-base-200 px-6 py-4 flex gap-3 justify-end border-t border-base-300">
-            <a id="modal-join-btn" href="#" target="_blank" class="btn btn-success btn-sm text-white gap-2 px-5">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Join Class Now
-            </a>
+            </form>
         </div>
     </div>
-</div>
 
     <script src="./scripts/nav.js"></script>
-    <script src="./scripts/script.js"></script>
     <script src="./scripts/topnav.js"></script>
+    <script src="./scripts/script.js"></script>
 </body>
 </html>

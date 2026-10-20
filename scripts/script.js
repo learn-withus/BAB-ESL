@@ -101,7 +101,9 @@ async function loadData() {
         }
         if (quizData.length > 0) loadQuestion();
 
-        loadNoteFromSheet(); 
+        if (typeof loadNoteFromSheet === 'function') {
+            loadNoteFromSheet(); 
+        }
 
     } catch (e) { console.error("Connection Error:", e); }
 }
@@ -166,8 +168,8 @@ function parseCSV(text) {
                     const contentItem = { label: "", text: colC, isSubheader: false };
                     if (currentSection === "warmup") warmupData.push(contentItem);
                     else if (currentSection === "vocab") vocabData.push(contentItem);
-                    else if (currentSection === "reading") vocabData.push(contentItem);
-                    else if (currentSection === "speaking") vocabData.push(contentItem);
+                    else if (currentSection === "reading") readingData.push(contentItem);
+                    else if (currentSection === "speaking") speakingData.push(contentItem);
                 }
                 return;
             }
@@ -807,6 +809,12 @@ function connectQuizThreads(index) {
 const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
 
 window.addEventListener('DOMContentLoaded', () => {
+    // AUTOMATIC LOGIN STATE SAFEGUARD
+    const activeUser = localStorage.getItem('teacherName') || localStorage.getItem('username') || localStorage.getItem('name') || localStorage.getItem('currentUser');
+    if (activeUser) {
+        localStorage.setItem('isLoggedIn', 'true');
+    }
+
     const menuBtn = document.getElementById('menu-btn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
@@ -864,21 +872,124 @@ window.addEventListener('DOMContentLoaded', () => {
         copyBtn.addEventListener('click', () => {
             linkInput.select();
             navigator.clipboard.writeText(linkInput.value)
-                .then(() => showToast("Link copied to clipboard!", "success"))
+                .then(() => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    setTimeout(() => { copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy'; }, 2000);
+                })
                 .catch(() => showToast("Failed to copy link", "error"));
         });
     }
 
-    const closeLinkModalBtn = document.getElementById('close-link-modal');
     const linkModal = document.getElementById('link-modal');
-    if (closeLinkModalBtn && linkModal) {
-        closeLinkModalBtn.addEventListener('click', () => linkModal.classList.remove('modal-open'));
-        linkModal.addEventListener('click', (e) => { if (e.target === linkModal) linkModal.classList.remove('modal-open'); });
+    if (linkModal) {
+        linkModal.addEventListener('click', (e) => { 
+            if (e.target === linkModal) closeLinkModal(); 
+        });
     }
 
     initBookSearch();
     initThemeToggle();
 });
+
+// --- OPEN BOOKING STATUS FUNCTIONS (COLUMN J SYNC) ---
+function updateBookingToggleUI(isOpen) {
+    const toggle = document.getElementById('topnav-booking-toggle');
+    const label = document.getElementById('topnav-booking-label');
+
+    if (!toggle || !label) return;
+    toggle.checked = isOpen;
+
+    if (isOpen) {
+        label.textContent = "Open";
+        label.className = "text-xs font-bold text-success";
+    } else {
+        label.textContent = "Closed";
+        label.className = "text-xs font-bold text-error";
+    }
+}
+
+function toggleTeacherBookingStatus() {
+    const toggle = document.getElementById('topnav-booking-toggle');
+    if (!toggle) return;
+    
+    const isOpen = toggle.checked;
+    updateBookingToggleUI(isOpen);
+
+    const statusString = isOpen ? "open" : "closed";
+
+    if (isOpen) {
+        showToast("Student booking is now ACCEPTED.", "success");
+    } else {
+        showToast("Student booking is now CLOSED.", "error");
+    }
+
+    let teacherName = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
+    if (teacherName.toLowerCase().startsWith('teacher ')) {
+        teacherName = teacherName.substring(8).trim();
+    }
+
+    const cbName = 'toggle_booking_cb_' + Math.round(Math.random() * 1000000);
+    window[cbName] = function(res) {
+        if (script.parentNode) document.body.removeChild(script);
+        delete window[cbName];
+    };
+
+    const script = document.createElement('script');
+    script.src = `${API_URL}?action=setBookingStatus&teacher=${encodeURIComponent(teacherName)}&status=${encodeURIComponent(statusString)}&callback=${cbName}`;
+    document.body.appendChild(script);
+}
+
+function initDashboardData(username) {
+    const cbName = 'init_cb_' + Math.round(Math.random() * 1000000);
+    window[cbName] = function(res) {
+        if (res && res.status === "success") {
+            if (Array.isArray(res.accounts)) {
+                const currentUser = res.accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
+                if (currentUser) {
+                    const lessonsContainer = document.getElementById('completed-lessons-text');
+                    if (lessonsContainer && currentUser.completedLessons !== undefined) {
+                        lessonsContainer.textContent = currentUser.completedLessons + " Lessons";
+                    }
+
+                    const statusVal = String(currentUser.bookingStatus || currentUser.booking_status || "open").toLowerCase();
+                    const isOpen = statusVal === "open" || statusVal === "accepted" || (!statusVal.includes("closed") && !statusVal.includes("disable"));
+                    updateBookingToggleUI(isOpen);
+                }
+
+                const studentSelect = document.getElementById('session-student-select');
+                if (studentSelect) {
+                    studentSelect.innerHTML = '<option value="">Select Student...</option>';
+                    res.accounts.forEach(acc => {
+                        if (String(acc.role) === "1" || String(acc.role).toLowerCase() === "student") {
+                            const opt = document.createElement('option');
+                            opt.value = acc.username;
+                            opt.textContent = acc.username;
+                            studentSelect.appendChild(opt);
+                        }
+                    });
+                }
+            }
+
+            if (Array.isArray(res.lessons)) {
+                const lessonDatalist = document.getElementById('lesson-suggestions');
+                if (lessonDatalist) {
+                    lessonDatalist.innerHTML = '';
+                    res.lessons.forEach(lesson => {
+                        const opt = document.createElement('option');
+                        opt.value = formatLessonTitle(lesson);
+                        lessonDatalist.appendChild(opt);
+                    });
+                }
+            }
+        }
+        if (script.parentNode) document.body.removeChild(script);
+        delete window[cbName];
+    };
+
+    const script = document.createElement('script');
+    script.src = `${API_URL}?action=initDashboard&callback=${cbName}`;
+    document.body.appendChild(script);
+}
 
 function initBookSearch() {
     const searchInput = document.getElementById('book-search-input') || document.getElementById('lesson-search');
@@ -919,7 +1030,6 @@ function initBookSearch() {
 
         if (cards.some(c => c.title.toLowerCase() === title.toLowerCase())) return;
 
-        // Apply buttery-smooth layout transition for fading/scaling cards
         card.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
         card.style.willChange = 'opacity, transform';
 
@@ -948,7 +1058,6 @@ function initBookSearch() {
                 if (searchInput.value.trim() === '') suggestionsBox.style.display = 'none'; 
             }, 300);
 
-            // Staggered reset fade-in for grid cards
             cards.forEach((cardObj, idx) => {
                 if (cardObj.element) {
                     cardObj.element.style.display = '';
@@ -1101,13 +1210,35 @@ function formatFriendlyDate(dateStr) {
 
 function formatFriendlyTime(timeStr) {
     if (!timeStr) return '';
-    const parts = timeStr.split(':');
+    const trimmed = timeStr.trim();
+    if (/\b(AM|PM)\b/i.test(trimmed)) {
+        return trimmed;
+    }
+    const parts = trimmed.split(':');
     if (parts.length < 2) return timeStr;
     let hours = parseInt(parts[0], 10);
     const minutes = parts[1];
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12 || 12;
     return `${hours}:${minutes} ${ampm}`;
+}
+
+function convertTo24Hour(timeStr) {
+    if (!timeStr) return '';
+    let trimmed = String(timeStr).replace(/^['"]/, '').trim();
+    if (/^\d{2}:\d{2}$/.test(trimmed)) return trimmed;
+    
+    const match = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+    if (!match) return '';
+    
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const ampm = (match[3] || '').toUpperCase();
+    
+    if (ampm === 'PM' && hours < 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+    
+    return `${String(hours).padStart(2, '0')}:${minutes}`;
 }
 
 function showToast(message, type = 'success') {
@@ -1124,15 +1255,29 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3500);
 }
 
-function openLinkModal(url) {
+function openLinkModal(url, student = 'N/A', title = 'N/A', date = 'N/A', time = 'N/A') {
     const modal = document.getElementById('link-modal');
     const input = document.getElementById('modal-link-input');
-    const openBtn = document.getElementById('modal-open-link-btn');
-    if (!modal || !input || !openBtn) return;
+    const joinBtn = document.getElementById('modal-join-btn') || document.getElementById('modal-open-link-btn');
+    
+    const studentEl = document.getElementById('modal-detail-student');
+    const titleEl = document.getElementById('modal-detail-title');
+    const dateEl = document.getElementById('modal-detail-date');
+    const timeEl = document.getElementById('modal-detail-time');
 
-    input.value = url;
-    openBtn.href = url;
-    modal.classList.add('modal-open');
+    if (studentEl) studentEl.textContent = student;
+    if (titleEl) titleEl.textContent = title;
+    if (dateEl) dateEl.textContent = date;
+    if (timeEl) timeEl.textContent = time;
+
+    if (input) input.value = url;
+    if (joinBtn) joinBtn.href = url;
+    if (modal) modal.classList.add('modal-open');
+}
+
+function closeLinkModal() {
+    const modal = document.getElementById('link-modal');
+    if (modal) modal.classList.remove('modal-open');
 }
 
 function openConfirmModal(onConfirm) {
@@ -1187,54 +1332,6 @@ function updateClock() {
     `;
 }
 
-function initDashboardData(username) {
-    const cbName = 'init_cb_' + Math.round(Math.random() * 1000000);
-    window[cbName] = function(res) {
-        if (res && res.status === "success") {
-            if (Array.isArray(res.accounts)) {
-                const currentUser = res.accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
-                if (currentUser) {
-                    const lessonsContainer = document.getElementById('completed-lessons-text');
-                    if (lessonsContainer && currentUser.completedLessons !== undefined) {
-                        lessonsContainer.textContent = currentUser.completedLessons + " Lessons";
-                    }
-                }
-
-                const studentSelect = document.getElementById('session-student-select');
-                if (studentSelect) {
-                    studentSelect.innerHTML = '<option value="">Select Student...</option>';
-                    res.accounts.forEach(acc => {
-                        if (String(acc.role) === "1" || String(acc.role).toLowerCase() === "student") {
-                            const opt = document.createElement('option');
-                            opt.value = acc.username;
-                            opt.textContent = acc.username;
-                            studentSelect.appendChild(opt);
-                        }
-                    });
-                }
-            }
-
-            if (Array.isArray(res.lessons)) {
-                const lessonDatalist = document.getElementById('lesson-suggestions');
-                if (lessonDatalist) {
-                    lessonDatalist.innerHTML = '';
-                    res.lessons.forEach(lesson => {
-                        const opt = document.createElement('option');
-                        opt.value = formatLessonTitle(lesson);
-                        lessonDatalist.appendChild(opt);
-                    });
-                }
-            }
-        }
-        if (script.parentNode) document.body.removeChild(script);
-        delete window[cbName];
-    };
-
-    const script = document.createElement('script');
-    script.src = `${API_URL}?action=initDashboard&callback=${cbName}`;
-    document.body.appendChild(script);
-}
-
 function completeClass(username, sessionId) {
     openConfirmModal(() => {
         const callbackName = 'complete_cb_' + Math.round(Math.random() * 1000000);
@@ -1272,11 +1369,47 @@ function deleteSession(sessionId, username) {
     document.body.appendChild(script);
 }
 
+function autoGenerateMeetUrl() {
+    const linkInput = document.getElementById('edit-session-link');
+    const sessionId = document.getElementById('edit-session-id').value;
+    const newLesson = document.getElementById('edit-session-lesson').value.trim();
+    const newDate = document.getElementById('edit-session-date').value;
+    const rawTime = document.getElementById('edit-session-time').value;
+    const newTime = formatFriendlyTime(rawTime);
+
+    if (linkInput) {
+        linkInput.value = "Generating official Google Meet link...";
+    }
+
+    showToast("Requesting Google Calendar API...", "success");
+
+    const callbackName = 'autogen_meet_cb_' + Math.round(Math.random() * 1000000);
+    window[callbackName] = function(res) {
+        if (res && res.status === "success" && res.updatedLink) {
+            if (linkInput) {
+                linkInput.value = res.updatedLink; 
+            }
+            showToast("Official Google Meet link generated successfully!", "success");
+            fetchScheduledSessions();
+        } else {
+            if (linkInput) linkInput.value = "";
+            showToast("Failed to generate link via Calendar API.", "error");
+        }
+        if (script.parentNode) document.body.removeChild(script);
+        delete window[callbackName];
+    };
+
+    const script = document.createElement('script');
+    script.src = `${API_URL}?action=updateSessionLink&id=${encodeURIComponent(sessionId)}&link=&lesson=${encodeURIComponent(newLesson)}&sessionDate=${encodeURIComponent(newDate)}&sessionTime=${encodeURIComponent(newTime)}&callback=${callbackName}`;
+    document.body.appendChild(script);
+}
+
 function scheduleNewSession(teacherName) {
     const student = document.getElementById('session-student-select').value;
     const lesson = document.getElementById('session-lesson-input').value.trim();
     const sessionDate = document.getElementById('session-date').value;
-    const sessionTime = document.getElementById('session-time').value;
+    const rawTime = document.getElementById('session-time').value;
+    const sessionTime = formatFriendlyTime(rawTime);
 
     if (!student || !lesson || !sessionDate || !sessionTime) {
         showToast("Please fill out all session details.", "error");
@@ -1298,7 +1431,7 @@ function scheduleNewSession(teacherName) {
         if (btnText) btnText.textContent = 'Generate Link';
 
         if (resp && resp.status === "success") {
-            showToast("Class session scheduled successfully!", "success");
+            showToast("Google Calendar event & Meet link generated successfully!", "success");
             document.getElementById('schedule-session-form').reset();
             fetchScheduledSessions();
         } else {
@@ -1310,6 +1443,69 @@ function scheduleNewSession(teacherName) {
 
     const script = document.createElement('script');
     script.src = `${API_URL}?action=createSession&teacher=${encodeURIComponent(teacherName)}&student=${encodeURIComponent(student)}&lesson=${encodeURIComponent(lesson)}&sessionDate=${encodeURIComponent(sessionDate)}&sessionTime=${encodeURIComponent(sessionTime)}&callback=${callbackName}`;
+    document.body.appendChild(script);
+}
+
+function openEditSessionModal(sessionId, currentLesson, currentLink, currentDate, currentTime) {
+    document.getElementById('edit-session-id').value = sessionId;
+    document.getElementById('edit-session-lesson').value = currentLesson || '';
+    document.getElementById('edit-session-link').value = currentLink || '';
+
+    if (currentDate) {
+        const d = new Date(currentDate);
+        if (!isNaN(d)) {
+            document.getElementById('edit-session-date').value = d.toISOString().split('T')[0];
+        }
+    }
+    
+    if (currentTime) {
+        document.getElementById('edit-session-time').value = convertTo24Hour(currentTime);
+    }
+
+    const modal = document.getElementById('edit-session-modal');
+    if (modal) modal.classList.add('modal-open');
+}
+
+function closeEditSessionModal() {
+    const modal = document.getElementById('edit-session-modal');
+    if (modal) modal.classList.remove('modal-open');
+}
+
+function saveSessionLink(e) {
+    if (e) e.preventDefault();
+    const sessionId = document.getElementById('edit-session-id').value;
+    const newLesson = document.getElementById('edit-session-lesson').value.trim();
+    const newLink = document.getElementById('edit-session-link').value.trim();
+    const newDate = document.getElementById('edit-session-date').value;
+    const rawTime = document.getElementById('edit-session-time').value;
+    const newTime = formatFriendlyTime(rawTime);
+
+    const saveBtn = document.getElementById('save-link-btn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
+    }
+
+    const callbackName = 'update_link_cb_' + Math.round(Math.random() * 1000000);
+    window[callbackName] = function(res) {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save & Generate Link";
+        }
+
+        if (res && res.status === "success") {
+            showToast("Session updated successfully!", "success");
+            closeEditSessionModal();
+            fetchScheduledSessions();
+        } else {
+            showToast("Failed to save session updates.", "error");
+        }
+        if (script.parentNode) document.body.removeChild(script);
+        delete window[callbackName];
+    };
+
+    const script = document.createElement('script');
+    script.src = `${API_URL}?action=updateSessionLink&id=${encodeURIComponent(sessionId)}&link=${encodeURIComponent(newLink)}&lesson=${encodeURIComponent(newLesson)}&sessionDate=${encodeURIComponent(newDate)}&sessionTime=${encodeURIComponent(newTime)}&callback=${callbackName}`;
     document.body.appendChild(script);
 }
 
@@ -1403,55 +1599,6 @@ function handleLogin(event) {
     };
 }
 
-function openLinkModal(url, student = 'N/A', title = 'N/A', date = 'N/A', time = 'N/A') {
-    const modal = document.getElementById('link-modal');
-    const input = document.getElementById('modal-link-input');
-    const joinBtn = document.getElementById('modal-join-btn');
-    
-    const studentEl = document.getElementById('modal-detail-student');
-    const titleEl = document.getElementById('modal-detail-title');
-    const dateEl = document.getElementById('modal-detail-date');
-    const timeEl = document.getElementById('modal-detail-time');
-
-    if (studentEl) studentEl.textContent = student;
-    if (titleEl) titleEl.textContent = title;
-    if (dateEl) dateEl.textContent = date;
-    if (timeEl) timeEl.textContent = time;
-
-    if (input) input.value = url;
-    if (joinBtn) joinBtn.href = url;
-    if (modal) modal.classList.add('modal-open');
-}
-
-function closeLinkModal() {
-    const modal = document.getElementById('link-modal');
-    if (modal) modal.classList.remove('modal-open');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const copyBtn = document.getElementById('copy-link-btn');
-    if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-            const input = document.getElementById('modal-link-input');
-            if (input) {
-                navigator.clipboard.writeText(input.value)
-                    .then(() => {
-                        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-                        setTimeout(() => { copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy'; }, 2000);
-                    })
-                    .catch(() => showToast("Failed to copy link", "error"));
-            }
-        });
-    }
-
-    const linkModal = document.getElementById('link-modal');
-    if (linkModal) {
-        linkModal.addEventListener('click', (e) => { 
-            if (e.target === linkModal) closeLinkModal(); 
-        });
-    }
-});
-
 function fetchScheduledSessions() {
     let storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
     if (storedName.toLowerCase().startsWith('teacher ')) {
@@ -1473,37 +1620,57 @@ function fetchScheduledSessions() {
             return sheetTeacher === cleanStored || sheetTeacher.includes(cleanStored) || cleanStored.includes(sheetTeacher);
         }) : [];
 
+        // Sort sessions in ascending order by date and time
+        teacherSessions.sort((a, b) => {
+            const dateA = a.sessionDate ? new Date(a.sessionDate) : new Date(0);
+            const dateB = b.sessionDate ? new Date(b.sessionDate) : new Date(0);
+
+            if (dateA.getTime() !== dateB.getTime()) {
+                return dateA - dateB; // Ascending date
+            }
+
+            const timeA = convertTo24Hour(a.sessionTime || "00:00");
+            const timeB = convertTo24Hour(b.sessionTime || "00:00");
+            return timeA.localeCompare(timeB); // Ascending time
+        });
+
         if (teacherSessions.length > 0) {
-            teacherSessions.reverse().forEach(s => {
-                const formattedTitle = formatLessonTitle(s.lesson);
+            teacherSessions.forEach(s => {
+                const formattedTitle = formatLessonTitle(s.lesson) || "Requested Session";
                 const sessionId = s.id;
                 const friendlyDate = formatFriendlyDate(s.sessionDate);
                 const friendlyTime = formatFriendlyTime(s.sessionTime);
 
-                const safeStudent = (s.student || '').replace(/'/g, "\\'");
                 const safeTitle = (formattedTitle || '').replace(/'/g, "\\'");
-                const safeDate = (friendlyDate || '').replace(/'/g, "\\'");
-                const safeTime = (friendlyTime || '').replace(/'/g, "\\'");
+                const safeDate = (s.sessionDate || '').replace(/'/g, "\\'");
+                const safeTime = (s.sessionTime || '').replace(/'/g, "\\'");
                 const safeLink = (s.link || '').replace(/'/g, "\\'");
+                const safeStudent = (s.student || '').replace(/'/g, "\\'");
+
+                const hasLink = s.link && s.link.trim() !== "" && s.link !== "#" && s.link !== "Pending Link";
 
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-base-300 hover:bg-base-200/50';
                 tr.innerHTML = `
-                    <td class="font-semibold py-3">${s.student}</td>
+                    <td class="font-semibold py-3">${s.student || 'Student'}</td>
                     <td class="py-3">${formattedTitle}</td>
                     <td class="py-3">${friendlyDate}</td>
                     <td class="py-3">${friendlyTime}</td>
                     <td class="text-center py-3">
-                        ${s.link ? `
+                        ${hasLink ? `
                             <div class="flex gap-2 items-center justify-center">
                                 <a href="${s.link}" target="_blank" class="btn custom-primary-bg text-white btn-xs">
                                     <i class="fa-solid fa-video"></i> Join
-                                    </a>
-                                <button onclick="openLinkModal('${safeLink}', '${safeStudent}', '${safeTitle}', '${safeDate}', '${safeTime}')" class="btn btn-ghost btn-xs border border-base-300">
-                                    <i class="fa-solid fa-eye"></i> View Link
+                                </a>
+                                <button onclick="openEditSessionModal('${sessionId}', '${safeTitle}', '${safeLink}', '${safeDate}', '${safeTime}')" class="btn btn-ghost btn-xs border border-base-300">
+                                    <i class="fa-solid fa-pen"></i> Edit Link
                                 </button>
                             </div>
-                        ` : '<span class="text-base-content/50">No Link</span>'}
+                        ` : `
+                            <button onclick="openEditSessionModal('${sessionId}', '${safeTitle}', '', '${safeDate}', '${safeTime}')" class="btn btn-warning btn-xs gap-1 font-semibold shadow-sm">
+                                <i class="fa-solid fa-plus"></i> Input New Link
+                            </button>
+                        `}
                     </td>
                     <td class="text-center py-3">
                         <button onclick="completeClass('${storedName}', '${sessionId}')" class="btn btn-success btn-xs text-white">

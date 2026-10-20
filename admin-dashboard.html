@@ -311,7 +311,6 @@
             });
         });
 
-        // Toggle function linked to topnav booking toggle
         window.toggleTeacherBookingStatus = function() {
             const toggle = document.getElementById('topnav-booking-toggle');
             const label = document.getElementById('topnav-booking-label');
@@ -373,7 +372,6 @@
             }
         }
 
-        // --- JSONP IMPLEMENTATION FOR BOOKS CONFIG ---
         function loadDynamicBooksLists() {
             const createContainer = document.getElementById('createBooksContainer');
             const editContainer = document.getElementById('editBooksContainer');
@@ -456,7 +454,6 @@
             });
         }
 
-        // --- JSONP IMPLEMENTATION FOR ACCOUNTS ---
         function fetchGoogleSheetAccounts() {
             const tbody = document.getElementById('account-table-body');
             const cbName = 'get_accounts_cb_' + Math.round(Math.random() * 1000000);
@@ -470,7 +467,6 @@
                     allAccountsData = result;
                     filterAndRenderAccounts();
 
-                    // Sync topnav booking toggle with fetched account data
                     setTimeout(() => {
                         const currentAdmin = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
                         const adminAcc = allAccountsData.find(a => a.username.toLowerCase() === currentAdmin.toLowerCase());

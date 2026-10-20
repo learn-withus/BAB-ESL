@@ -255,7 +255,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const nameSpan = document.getElementById('username-display');
-            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username');
+            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
             if (nameSpan && storedName) {
                 nameSpan.textContent = storedName;
             }
@@ -311,6 +311,39 @@
             });
         });
 
+        // Toggle function linked to topnav booking toggle
+        window.toggleTeacherBookingStatus = function() {
+            const toggle = document.getElementById('topnav-booking-toggle');
+            const label = document.getElementById('topnav-booking-label');
+            if (!toggle || !label) return;
+
+            const newStatus = toggle.checked ? 'open' : 'closed';
+            label.textContent = toggle.checked ? 'Open' : 'Closed';
+            label.className = toggle.checked ? 'text-xs font-bold text-success' : 'text-xs font-bold text-error';
+
+            const currentAdmin = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
+
+            const cbName = 'toggle_booking_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(result) {
+                if (result && result.status === "success") {
+                    showToast(`Booking status updated to ${newStatus}`, "success");
+                } else {
+                    showToast("Failed to update booking status", "error");
+                }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?action=setBookingStatus&teacher=${encodeURIComponent(currentAdmin)}&status=${encodeURIComponent(newStatus)}&callback=${cbName}`;
+            script.onerror = () => {
+                showToast("Connection failed for booking toggle.", "error");
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+            document.body.appendChild(script);
+        };
+
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -340,54 +373,69 @@
             }
         }
 
-        async function loadDynamicBooksLists() {
+        // --- JSONP IMPLEMENTATION FOR BOOKS CONFIG ---
+        function loadDynamicBooksLists() {
             const createContainer = document.getElementById('createBooksContainer');
             const editContainer = document.getElementById('editBooksContainer');
             
-            try {
-                let config = JSON.parse(localStorage.getItem('pageConfig') || '{}');
-                
-                if (Object.keys(config).length === 0) {
-                    const response = await fetch(`${scriptURL}?action=getConfig`);
-                    config = await response.json();
-                    localStorage.setItem('pageConfig', JSON.stringify(config));
-                }
+            let config = JSON.parse(localStorage.getItem('pageConfig') || '[]');
+            if (Array.isArray(config) && config.length > 0) {
+                renderBooksCheckboxes(config);
+                return;
+            }
 
-                let keys = [];
-                if (Array.isArray(config)) {
-                    keys = config;
-                } else if (config && typeof config === 'object') {
-                    keys = Object.keys(config);
-                }
+            const cbName = 'get_config_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(config) {
+                localStorage.setItem('pageConfig', JSON.stringify(config));
+                renderBooksCheckboxes(config);
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
 
-                if (keys.length === 0) {
-                    const emptyMsg = `<span class="text-xs text-base-content/50 col-span-full text-center py-2">No books found in Config sheet.</span>`;
-                    createContainer.innerHTML = emptyMsg;
-                    editContainer.innerHTML = emptyMsg;
-                    return;
-                }
-
-                createContainer.innerHTML = '';
-                editContainer.innerHTML = '';
-
-                keys.forEach(pageName => {
-                    const createLabel = document.createElement('label');
-                    createLabel.className = 'book-toggle-label';
-                    createLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="createAllowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
-                    createContainer.appendChild(createLabel);
-
-                    const editLabel = document.createElement('label');
-                    editLabel.className = 'book-toggle-label';
-                    editLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="allowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
-                    editContainer.appendChild(editLabel);
-                });
-
-            } catch (err) {
-                console.error("Failed to load dynamic config books:", err);
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?action=getConfig&callback=${cbName}`;
+            script.onerror = () => {
                 const errorMsg = `<span class="text-xs text-error col-span-full text-center py-2">Failed to load book options.</span>`;
                 createContainer.innerHTML = errorMsg;
                 editContainer.innerHTML = errorMsg;
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function renderBooksCheckboxes(config) {
+            const createContainer = document.getElementById('createBooksContainer');
+            const editContainer = document.getElementById('editBooksContainer');
+
+            let keys = [];
+            if (Array.isArray(config)) {
+                keys = config;
+            } else if (config && typeof config === 'object') {
+                keys = Object.keys(config);
             }
+
+            if (keys.length === 0) {
+                const emptyMsg = `<span class="text-xs text-base-content/50 col-span-full text-center py-2">No books found in Config sheet.</span>`;
+                createContainer.innerHTML = emptyMsg;
+                editContainer.innerHTML = emptyMsg;
+                return;
+            }
+
+            createContainer.innerHTML = '';
+            editContainer.innerHTML = '';
+
+            keys.forEach(pageName => {
+                const createLabel = document.createElement('label');
+                createLabel.className = 'book-toggle-label';
+                createLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="createAllowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
+                createContainer.appendChild(createLabel);
+
+                const editLabel = document.createElement('label');
+                editLabel.className = 'book-toggle-label';
+                editLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="allowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
+                editContainer.appendChild(editLabel);
+            });
         }
 
         function filterBooks(modalType) {
@@ -408,28 +456,49 @@
             });
         }
 
-        async function fetchGoogleSheetAccounts() {
+        // --- JSONP IMPLEMENTATION FOR ACCOUNTS ---
+        function fetchGoogleSheetAccounts() {
             const tbody = document.getElementById('account-table-body');
+            const cbName = 'get_accounts_cb_' + Math.round(Math.random() * 1000000);
             
-            try {
-                const response = await fetch(`${scriptURL}?action=getAccounts`);
-                const result = await response.json();
-
+            window[cbName] = function(result) {
                 if (!result || result.length === 0) {
                     allAccountsData = [];
                     tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-base-content/50">No accounts found in sheet.</td></tr>`;
                     updateAccountsCounter(0, 0);
-                    return;
+                } else {
+                    allAccountsData = result;
+                    filterAndRenderAccounts();
+
+                    // Sync topnav booking toggle with fetched account data
+                    setTimeout(() => {
+                        const currentAdmin = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
+                        const adminAcc = allAccountsData.find(a => a.username.toLowerCase() === currentAdmin.toLowerCase());
+                        if (adminAcc) {
+                            const isClosed = adminAcc.bookingStatus === 'closed';
+                            const toggle = document.getElementById('topnav-booking-toggle');
+                            const label = document.getElementById('topnav-booking-label');
+                            if (toggle) toggle.checked = !isClosed;
+                            if (label) {
+                                label.textContent = isClosed ? 'Closed' : 'Open';
+                                label.className = isClosed ? 'text-xs font-bold text-error' : 'text-xs font-bold text-success';
+                            }
+                        }
+                    }, 200);
                 }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
 
-                allAccountsData = result;
-                filterAndRenderAccounts();
-
-            } catch (error) {
-                console.error('Error fetching sheet data:', error);
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?action=getAccounts&callback=${cbName}`;
+            script.onerror = () => {
                 tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-error">Failed to load data from Google Sheet. Check your Web App URL.</td></tr>`;
                 updateAccountsCounter(0, 0);
-            }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+            document.body.appendChild(script);
         }
 
         function filterAndRenderAccounts() {
@@ -516,7 +585,7 @@
             document.getElementById('createModalOverlay').classList.remove('modal-open');
         }
 
-        async function submitCreateForm(event) {
+        function submitCreateForm(event) {
             event.preventDefault();
 
             const user = document.getElementById('createUsername').value.trim();
@@ -538,27 +607,32 @@
             btn.textContent = "Creating...";
             btn.disabled = true;
 
-            try {
-                const url = `${scriptURL}?action=signup&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&role=${encodeURIComponent(role)}&books=${encodeURIComponent(booksParam)}`;
-                const response = await fetch(url);
-                const textResponse = await response.text();
-                
-                let result = JSON.parse(textResponse);
+            const cbName = 'signup_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(result) {
+                btn.textContent = "Create Account";
+                btn.disabled = false;
 
-                if (result.status === "success") {
+                if (result && result.status === "success") {
                     showToast("Account created successfully!", "success");
                     closeCreateModal();
                     fetchGoogleSheetAccounts();
                 } else {
-                    showToast(result.message || "Username already taken or creation failed.", "error");
+                    showToast(result ? result.message : "Username already taken or creation failed.", "error");
                 }
-            } catch (err) {
-                console.error(err);
-                showToast("Connection failed. Check Deployment URL.", "error");
-            } finally {
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?action=signup&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&role=${encodeURIComponent(role)}&books=${encodeURIComponent(booksParam)}&callback=${cbName}`;
+            script.onerror = () => {
                 btn.textContent = "Create Account";
                 btn.disabled = false;
-            }
+                showToast("Connection failed. Check Deployment URL.", "error");
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+            document.body.appendChild(script);
         }
 
         function openEditModal(username, password, role, booksString = "") {
@@ -581,7 +655,7 @@
             document.getElementById('editModalOverlay').classList.remove('modal-open');
         }
 
-        async function submitEditForm(event) {
+        function submitEditForm(event) {
             event.preventDefault();
             
             const oldUsername = document.getElementById('editOldUsername').value;
@@ -595,22 +669,27 @@
             });
             const booksParam = selectedBooks.join(',');
 
-            try {
-                const url = `${scriptURL}?action=editAccount&oldUsername=${encodeURIComponent(oldUsername)}&username=${encodeURIComponent(newUsername)}&password=${encodeURIComponent(newPassword)}&role=${encodeURIComponent(newRole)}&books=${encodeURIComponent(booksParam)}`;
-                const response = await fetch(url);
-                const result = await response.json();
-
-                if (result.status === "success") {
+            const cbName = 'edit_acc_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(result) {
+                if (result && result.status === "success") {
                     showToast("Account updated successfully!", "success");
                     closeEditModal();
                     fetchGoogleSheetAccounts();
                 } else {
-                    showToast("Error: " + result.message, "error");
+                    showToast("Error: " + (result ? result.message : "Unknown error"), "error");
                 }
-            } catch (err) {
-                console.error(err);
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?action=editAccount&oldUsername=${encodeURIComponent(oldUsername)}&username=${encodeURIComponent(newUsername)}&password=${encodeURIComponent(newPassword)}&role=${encodeURIComponent(newRole)}&books=${encodeURIComponent(booksParam)}&callback=${cbName}`;
+            script.onerror = () => {
                 showToast("Failed to update account.", "error");
-            }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+            document.body.appendChild(script);
         }
 
         function openDeleteModal(username) {
@@ -623,25 +702,30 @@
             document.getElementById('deleteModalOverlay').classList.remove('modal-open');
         }
 
-        async function confirmDeleteAccount() {
+        function confirmDeleteAccount() {
             const username = document.getElementById('deleteTargetUsername').value;
             closeDeleteModal();
 
-            try {
-                const url = `${scriptURL}?action=deleteAccount&username=${encodeURIComponent(username)}`;
-                const response = await fetch(url);
-                const result = await response.json();
-
-                if (result.status === "success") {
+            const cbName = 'del_acc_cb_' + Math.round(Math.random() * 1000000);
+            window[cbName] = function(result) {
+                if (result && result.status === "success") {
                     showToast("Account deleted successfully!", "success");
                     fetchGoogleSheetAccounts();
                 } else {
-                    showToast("Error: " + result.message, "error");
+                    showToast("Error: " + (result ? result.message : "Unknown error"), "error");
                 }
-            } catch (err) {
-                console.error(err);
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${scriptURL}?action=deleteAccount&username=${encodeURIComponent(username)}&callback=${cbName}`;
+            script.onerror = () => {
                 showToast("Failed to delete account.", "error");
-            }
+                if (script.parentNode) document.body.removeChild(script);
+                delete window[cbName];
+            };
+            document.body.appendChild(script);
         }
     </script>
 </body>

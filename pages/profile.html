@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title>BAB - ESL User Profile</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -59,7 +59,7 @@
             <div class="p-6 flex-1 max-w-4xl w-full mx-auto">
                 
                 <div class="card bg-base-100 shadow-xl overflow-hidden mb-8">
-                    <div class="h-32 bg-secondary/20"></div>
+                    <div id="profile-banner-bg" class="h-32 bg-info transition-colors duration-300"></div>
                     <div class="px-8 pb-8 pt-0 relative">
                         <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16 mb-6">
                         
@@ -165,7 +165,8 @@
             const usernameDisplay = document.getElementById('username-display');
             if (usernameDisplay) usernameDisplay.textContent = currentUsername;
 
-            updateRoleUI(localStorage.getItem('role') || localStorage.getItem('userRole') || '1');
+            const initialRole = localStorage.getItem('role') || localStorage.getItem('userRole') || '1';
+            updateRoleUI(initialRole);
 
             loadUserProfile();
             initThemeToggle();
@@ -186,6 +187,18 @@
             const headerRoleEl = document.getElementById('header-role-display');
             if (roleEl) roleEl.textContent = roleTitle;
             if (headerRoleEl) headerRoleEl.textContent = roleTitle;
+
+            const bannerEl = document.getElementById('profile-banner-bg');
+            if (bannerEl) {
+                bannerEl.classList.remove('bg-primary', 'bg-info', 'bg-error', 'bg-secondary', 'bg-warning', 'bg-base-300');
+                if (roleStr === "2" || roleStr === "teacher" || roleStr === "content manager") {
+                    bannerEl.classList.add('bg-secondary');
+                } else if (roleStr === "3" || roleStr === "admin") {
+                    bannerEl.classList.add('bg-error');    
+                } else {
+                    bannerEl.classList.add('bg-info');     
+                }
+            }
         }
 
         function parseDriveLink(url) {

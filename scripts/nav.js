@@ -273,7 +273,6 @@ function getSessionsForLoggedInTeacherSlot(dateKey, hourStr) {
         const isTeacherMatch = tName === myName || myName.includes(tName) || tName.includes(myName);
         if (!isTeacherMatch || sDate !== dateKey) return false;
 
-        // Convert 24-hour format (e.g., "14:15") to 12-hour format
         if (/^\d{2}:\d{2}$/.test(sTimeRaw)) {
             let [h, m] = sTimeRaw.split(':');
             let hourNum = parseInt(h, 10);
@@ -282,7 +281,6 @@ function getSessionsForLoggedInTeacherSlot(dateKey, hourStr) {
             sTimeRaw = `${hourNum}:${m} ${ampm}`;
         }
 
-        // Match by exact hour block (ignoring minutes like :15 or :30 so it snaps to the calendar row)
         try {
             const slotHourMatch = hourStr.match(/^(\d+):/);
             const sessionHourMatch = sTimeRaw.match(/^(\d+):/);
@@ -293,7 +291,6 @@ function getSessionsForLoggedInTeacherSlot(dateKey, hourStr) {
                 return parseInt(slotHourMatch[1], 10) === parseInt(sessionHourMatch[1], 10) && slotAmPm === sessionAmPm;
             }
         } catch (e) {
-            // fallback comparison
         }
 
         return sTimeRaw === hourStr.toLowerCase();

@@ -809,7 +809,6 @@ function connectQuizThreads(index) {
 const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
 
 window.addEventListener('DOMContentLoaded', () => {
-    // AUTOMATIC LOGIN STATE SAFEGUARD
     const activeUser = localStorage.getItem('teacherName') || localStorage.getItem('username') || localStorage.getItem('name') || localStorage.getItem('currentUser');
     if (activeUser) {
         localStorage.setItem('isLoggedIn', 'true');
@@ -891,7 +890,6 @@ window.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
 });
 
-// --- OPEN BOOKING STATUS FUNCTIONS (COLUMN J SYNC) ---
 function updateBookingToggleUI(isOpen) {
     const toggle = document.getElementById('topnav-booking-toggle');
     const label = document.getElementById('topnav-booking-label');
@@ -1620,18 +1618,17 @@ function fetchScheduledSessions() {
             return sheetTeacher === cleanStored || sheetTeacher.includes(cleanStored) || cleanStored.includes(sheetTeacher);
         }) : [];
 
-        // Sort sessions in ascending order by date and time
         teacherSessions.sort((a, b) => {
             const dateA = a.sessionDate ? new Date(a.sessionDate) : new Date(0);
             const dateB = b.sessionDate ? new Date(b.sessionDate) : new Date(0);
 
             if (dateA.getTime() !== dateB.getTime()) {
-                return dateA - dateB; // Ascending date
+                return dateA - dateB;
             }
 
             const timeA = convertTo24Hour(a.sessionTime || "00:00");
             const timeB = convertTo24Hour(b.sessionTime || "00:00");
-            return timeA.localeCompare(timeB); // Ascending time
+            return timeA.localeCompare(timeB); 
         });
 
         if (teacherSessions.length > 0) {

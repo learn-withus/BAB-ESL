@@ -1,7 +1,6 @@
 (function () {
     const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
 
-    // Inject CSS keyframe animations for the bell ringing effect
     const styleTag = document.createElement('style');
     styleTag.innerHTML = `
         @keyframes bellBounce {
@@ -12,7 +11,7 @@
             80% { transform: rotate(10deg); }
         }
         .animate-bell-ring {
-            animation: bellBounce 1s ease-in-out infinite;
+            animation: bellBounce 2s ease-in-out infinite;
             transform-origin: top center;
         }
     `;
@@ -67,6 +66,8 @@
         const profileLink = isInPagesFolder ? "profile.html" : "pages/profile.html";
         const logoutRedirect = isInPagesFolder ? "../login.html" : "./login.html";
 
+        const isTeachersPage = window.location.pathname.toLowerCase().includes('teachers.html');
+
         const navHTML = `
             <nav id="global-shared-navbar" class="navbar w-full bg-base-100 border-b border-base-300 shrink-0 px-4 sm:px-6 sticky top-0 z-50 shadow-xs justify-between gap-4">
                 <div class="flex items-center gap-3">
@@ -76,8 +77,8 @@
                         </label>
                     </div> 
 
-                    <!-- Desktop Search Bar (Left Side) -->
-                    <div class="w-64 xl:w-80 hidden lg:block relative" id="global-search-container">
+                    <!-- Desktop Search Bar (Hidden on teachers.html) -->
+                    <div class="w-64 xl:w-80 ${isTeachersPage ? 'hidden' : 'hidden lg:block'} relative" id="global-search-container">
                         <label class="input input-bordered input-sm flex items-center gap-2 input-primary w-full bg-base-100 shadow-sm">
                             <svg class="h-4 w-4 opacity-50 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
                             <input type="text" id="global-book-search-input" placeholder="Search lessons..." autocomplete="off" class="grow text-xs bg-transparent outline-none"> 
@@ -157,7 +158,9 @@
         }
 
         fetchProfilePicture(username);
-        initGlobalBookSearch();
+        if (!isTeachersPage) {
+            initGlobalBookSearch();
+        }
         if (isTeacherOrAdmin) {
             initNotificationChecker(username);
             injectMobileBookingToggle();
@@ -304,62 +307,8 @@
 
         if (!searchInput || !suggestionsBox) return;
 
-        const currentPath = window.location.pathname.toLowerCase();
-        const isBookMenu = currentPath.includes('book-menu.html') || currentPath.endsWith('/') || currentPath.endsWith('index.html');
-
-        const roleVal = String(localStorage.getItem('role') || localStorage.getItem('userRole') || '1').trim().toLowerCase();
-        const isAdmin = roleVal === "2" || roleVal === "3" || roleVal === "admin" || roleVal === "teacher";
-        const rawBooks = localStorage.getItem('books') || "";
-        const allowedBooks = rawBooks.toLowerCase().split(/[,|\n]+/).map(b => b.trim().replace(/['"]+/g, '')).filter(b => b.length > 0);
-
-        const items = [];
-
-        if (isBookMenu) {
-            const bookCards = document.querySelectorAll('.book-card');
-            bookCards.forEach(card => {
-                const bookFileName = (card.querySelector('a')?.getAttribute('href') || '').toLowerCase().trim();
-                const isAllowed = isAdmin || allowedBooks.some(b => bookFileName.includes(b));
-                if (!isAllowed && !isAdmin) return;
-
-                const titleEl = card.querySelector('.card-title');
-                const linkEl = card.querySelector('a');
-                const imgEl = card.querySelector('img');
-                const badgeEl = card.querySelector('.badge');
-
-                const title = titleEl ? titleEl.textContent.trim() : '';
-                if (!title) return;
-
-                items.push({
-                    title: title,
-                    badge: badgeEl ? badgeEl.textContent.trim() : '',
-                    element: card,
-                    imgSrc: imgEl ? imgEl.getAttribute('src') : '',
-                    url: linkEl ? linkEl.getAttribute('href') : '#'
-                });
-            });
-        } else {
-            const lessonRows = document.querySelectorAll('ol li');
-            lessonRows.forEach(row => {
-                const titleEl = row.querySelector('.btn-title');
-                const linkEl = row.querySelector('a');
-                const imgEl = row.querySelector('.btn-thumb');
-
-                const title = titleEl ? titleEl.textContent.trim() : '';
-                if (!title) return;
-
-                items.push({
-                    title: title,
-                    badge: '',
-                    element: row,
-                    imgSrc: imgEl ? imgEl.getAttribute('src') : '',
-                    url: linkEl ? linkEl.getAttribute('href') : '#'
-                });
-            });
-        }
-
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
-            let matchCount = 0;
             suggestionsBox.innerHTML = '';
 
             if (!query) {
@@ -367,11 +316,72 @@
                 return;
             }
 
+            const currentPath = window.location.pathname.toLowerCase();
+            const isBookMenu = currentPath.includes('book-menu.html') || currentPath.endsWith('/') || currentPath.endsWith('index.html');
+
+            const roleVal = String(localStorage.getItem('role') || localStorage.getItem('userRole') || '1').trim().toLowerCase();
+            const isAdmin = roleVal === "2" || roleVal === "3" || roleVal === "admin" || roleVal === "teacher";
+            const rawBooks = localStorage.getItem('books') || "";
+            const allowedBooks = rawBooks.toLowerCase().split(/[,|\n]+/).map(b => b.trim().replace(/['"]+/g, '')).filter(b => b.length > 0);
+
+            const items = [];
+
+            if (isBookMenu) {
+                const bookCards = document.querySelectorAll('.book-card');
+                bookCards.forEach(card => {
+                    const bookFileName = (card.querySelector('a')?.getAttribute('href') || '').toLowerCase().trim();
+                    const isAllowed = isAdmin || allowedBooks.some(b => bookFileName.includes(b) || b.includes(bookFileName));
+                    if (!isAllowed) return;
+
+                    const titleEl = card.querySelector('.card-title');
+                    const linkEl = card.querySelector('a');
+                    const imgEl = card.querySelector('img');
+                    const badgeEl = card.querySelector('.badge');
+
+                    const title = titleEl ? titleEl.textContent.trim() : '';
+                    if (!title) return;
+
+                    items.push({
+                        title: title,
+                        badge: badgeEl ? badgeEl.textContent.trim() : '',
+                        element: card,
+                        imgSrc: imgEl ? imgEl.getAttribute('src') : '',
+                        url: linkEl ? linkEl.getAttribute('href') : '#'
+                    });
+                });
+            } else {
+                const lessonRows = document.querySelectorAll('ol li, .lesson-card, .card');
+                lessonRows.forEach(row => {
+                    const titleEl = row.querySelector('.card-title, .btn-title, h3, h4');
+                    const linkEl = row.querySelector('a');
+                    const imgEl = row.querySelector('img, .btn-thumb');
+
+                    const title = titleEl ? titleEl.textContent.trim() : '';
+                    if (!title) return;
+
+                    if (!isAdmin && allowedBooks.length > 0) {
+                        const rowText = (row.textContent || "").toLowerCase();
+                        const linkHref = (linkEl?.getAttribute('href') || "").toLowerCase();
+                        const isAllowedLesson = allowedBooks.some(b => rowText.includes(b) || linkHref.includes(b));
+                        if (!isAllowedLesson) return;
+                    }
+
+                    items.push({
+                        title: title,
+                        badge: '',
+                        element: row,
+                        imgSrc: imgEl ? imgEl.getAttribute('src') : '',
+                        url: linkEl ? linkEl.getAttribute('href') : '#'
+                    });
+                });
+            }
+
+            let matchCount = 0;
             const seenTitles = new Set();
 
             items.forEach(itemObj => {
-                const isMatch = itemObj.title.toLowerCase().includes(query) || 
-                                itemObj.badge.toLowerCase().includes(query);
+                const titleLower = itemObj.title.toLowerCase();
+                const isMatch = titleLower.includes(query);
 
                 if (isMatch) {
                     matchCount++;

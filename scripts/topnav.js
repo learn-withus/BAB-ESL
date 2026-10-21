@@ -60,7 +60,7 @@
 
                 <div class="px-2 flex-1 whitespace-nowrap font-bold">
                     <div class="flex flex-row flex-nowrap items-center gap-4">
-                        <div class="hidden sm:block relative w-80" id="global-search-container">
+                        <div class="block relative w-80" id="global-search-container">
                             <label class="input input-bordered input-sm flex items-center gap-2 input-primary w-full bg-base-100 shadow-sm">
                                 <svg class="h-4 w-4 opacity-50 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
                                 <input type="text" id="global-book-search-input" placeholder="Search lessons..." autocomplete="off" class="grow text-xs bg-transparent outline-none"> 
@@ -227,50 +227,61 @@
     function initGlobalBookSearch() {
         const searchInput = document.getElementById('global-book-search-input');
         const suggestionsBox = document.getElementById('global-search-suggestions');
-        const searchContainer = document.getElementById('global-search-container');
-        const noResultsMsg = document.getElementById('no-results-msg');
 
         if (!searchInput || !suggestionsBox) return;
 
-        const currentFile = window.location.pathname.split("/").pop();
-        if (currentFile === "index.html" || currentFile === "" || currentFile === "teachers.html") {
-            if (searchContainer) searchContainer.style.display = 'none';
-            return;
-        }
+        const currentPath = window.location.pathname.toLowerCase();
+        const isBookMenu = currentPath.includes('book-menu.html') || currentPath.endsWith('/') || currentPath.endsWith('index.html');
 
         const roleVal = String(localStorage.getItem('role') || localStorage.getItem('userRole') || '1').trim().toLowerCase();
         const isAdmin = roleVal === "2" || roleVal === "3" || roleVal === "admin" || roleVal === "teacher";
         const rawBooks = localStorage.getItem('books') || "";
         const allowedBooks = rawBooks.toLowerCase().split(/[,|\n]+/).map(b => b.trim().replace(/['"]+/g, '')).filter(b => b.length > 0);
 
-        const cardElements = document.querySelectorAll('.card[data-book]');
-        const cards = [];
+        const items = [];
 
-        cardElements.forEach(card => {
-            const bookFileName = card.getAttribute('data-book')?.toLowerCase().trim() || "";
-            const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
-            if (!isAllowed) return; // Skip unallowed books for students in search/suggestions
+        if (isBookMenu) {
+            const bookCards = document.querySelectorAll('.book-card');
+            bookCards.forEach(card => {
+                const bookFileName = (card.querySelector('a')?.getAttribute('href') || '').toLowerCase().trim();
+                const isAllowed = isAdmin || allowedBooks.some(b => bookFileName.includes(b));
+                if (!isAllowed && !isAdmin) return;
 
-            const titleEl = card.querySelector('h1, h2, h3, h4, .card-title, .book-title, .btn-title, span.font-bold, strong');
-            const descEl = card.querySelector('p, .book-desc, .btn-target, span:not(.font-bold)');
-            const linkEl = card.querySelector('a');
-            const imgEl = card.querySelector('img');
-            const badgeEl = card.querySelector('.badge, span[class*="badge"]');
+                const titleEl = card.querySelector('.card-title');
+                const linkEl = card.querySelector('a');
+                const imgEl = card.querySelector('img');
+                const badgeEl = card.querySelector('.badge');
 
-            const title = titleEl ? titleEl.textContent.trim() : '';
-            if (!title) return;
+                const title = titleEl ? titleEl.textContent.trim() : '';
+                if (!title) return;
 
-            if (cards.some(c => c.title.toLowerCase() === title.toLowerCase())) return;
-
-            cards.push({
-                title: title,
-                badge: badgeEl ? badgeEl.textContent.trim() : '',
-                description: descEl ? descEl.textContent.trim() : '',
-                element: card,
-                imgSrc: imgEl ? imgEl.getAttribute('src') : '',
-                url: linkEl ? linkEl.getAttribute('href') : ''
+                items.push({
+                    title: title,
+                    badge: badgeEl ? badgeEl.textContent.trim() : '',
+                    element: card,
+                    imgSrc: imgEl ? imgEl.getAttribute('src') : '',
+                    url: linkEl ? linkEl.getAttribute('href') : '#'
+                });
             });
-        });
+        } else {
+            const lessonRows = document.querySelectorAll('ol li');
+            lessonRows.forEach(row => {
+                const titleEl = row.querySelector('.btn-title');
+                const linkEl = row.querySelector('a');
+                const imgEl = row.querySelector('.btn-thumb');
+
+                const title = titleEl ? titleEl.textContent.trim() : '';
+                if (!title) return;
+
+                items.push({
+                    title: title,
+                    badge: '',
+                    element: row,
+                    imgSrc: imgEl ? imgEl.getAttribute('src') : '',
+                    url: linkEl ? linkEl.getAttribute('href') : '#'
+                });
+            });
+        }
 
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
@@ -284,38 +295,39 @@
 
             const seenTitles = new Set();
 
-            cards.forEach(cardObj => {
-                const isMatch = cardObj.title.toLowerCase().includes(query) || 
-                                cardObj.badge.toLowerCase().includes(query) || 
-                                cardObj.description.toLowerCase().includes(query);
+            items.forEach(itemObj => {
+                const isMatch = itemObj.title.toLowerCase().includes(query) || 
+                                itemObj.badge.toLowerCase().includes(query);
 
                 if (isMatch) {
                     matchCount++;
-                    if (!seenTitles.has(cardObj.title)) {
-                        seenTitles.add(cardObj.title);
-                        const item = document.createElement('div');
-                        item.className = 'suggestion-item flex items-center gap-3 px-4 py-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-300 last:border-none transition-all duration-200';
+                    if (!seenTitles.has(itemObj.title)) {
+                        seenTitles.add(itemObj.title);
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.className = 'suggestion-item flex items-center gap-3 px-4 py-3 hover:bg-primary/10 cursor-pointer text-sm border-b border-base-300 last:border-none transition-all duration-200';
                         
                         const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                         const regex = new RegExp(`(${escapedQuery})`, 'gi');
-                        const highlightedTitle = cardObj.title.replace(regex, `<span class="text-primary font-bold bg-primary/15 px-1 rounded">$1</span>`);
+                        const highlightedTitle = itemObj.title.replace(regex, `<span class="text-primary font-bold bg-primary/15 px-1 rounded">$1</span>`);
 
-                        item.innerHTML = `
-                            ${cardObj.imgSrc ? `<img src="${cardObj.imgSrc}" class="w-8 h-8 object-cover rounded shrink-0 shadow-sm">` : '<i class="fa-solid fa-book-open text-primary text-base"></i>'}
+                        suggestionItem.innerHTML = `
+                            ${itemObj.imgSrc ? `<img src="${itemObj.imgSrc}" class="w-8 h-8 object-cover rounded shrink-0 shadow-sm">` : '<i class="fa-solid fa-book-open text-primary text-base"></i>'}
                             <div class="flex flex-col min-w-0 flex-1">
                                 <span class="font-semibold text-xs text-base-content">${highlightedTitle}</span>
-                                ${cardObj.description ? `<span class="text-[11px] text-base-content/70 truncate">${cardObj.description}</span>` : ''}
+                                ${itemObj.badge ? `<span class="text-[10px] text-primary font-bold uppercase tracking-wider">${itemObj.badge}</span>` : ''}
                             </div>
                         `;
                         
-                        item.addEventListener('click', () => {
-                            searchInput.value = cardObj.title;
+                        suggestionItem.addEventListener('click', () => {
+                            searchInput.value = itemObj.title;
                             suggestionsBox.classList.add('hidden');
-                            if (cardObj.url && cardObj.url !== '#') {
-                                window.location.href = cardObj.url;
+                            if (itemObj.url && itemObj.url !== '#') {
+                                window.location.href = itemObj.url;
+                            } else {
+                                itemObj.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             }
                         });
-                        suggestionsBox.appendChild(item);
+                        suggestionsBox.appendChild(suggestionItem);
                     }
                 }
             });
@@ -323,7 +335,7 @@
             suggestionsBox.classList.remove('hidden');
 
             if (matchCount === 0) {
-                suggestionsBox.innerHTML = `<div class="px-4 py-4 text-xs text-base-content/60 text-center italic">No matching books found</div>`;
+                suggestionsBox.innerHTML = `<div class="px-4 py-4 text-xs text-base-content/60 text-center italic">No matching titles found</div>`;
             }
         });
 
@@ -339,7 +351,7 @@
         const cbName = 'topnav_pic_cb_' + Math.round(Math.random() * 1000000);
         window[cbName] = function(res) {
             if (res && res.status === "success" && Array.isArray(res.accounts)) {
-                const user = res.accounts.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase()) || res.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase());
+                const user = res.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase());
                 if (user) {
                     if (user.profilePic) {
                         localStorage.setItem('profilePic', user.profilePic);
@@ -360,7 +372,7 @@
         };
 
         const script = document.createElement('script');
-        script.src = `${API_URL}?action=initDashboard&callback=${cbName}`;
+        script.src = `${API_URL}?action=initDashboard&username=${encodeURIComponent(username)}&callback=${cbName}`;
         document.body.appendChild(script);
     }
 

@@ -187,12 +187,12 @@
         if (document.getElementById('mobile-booking-drawer-item')) return;
 
         const mobileBookingHTML = `
-            <div id="mobile-booking-drawer-item" class="mt-auto p-3 bg-base-200/70 rounded-2xl border border-base-300 flex items-center justify-between shadow-xs lg:hidden mx-2 mb-3">
-                <div class="flex flex-col text-left">
+            <div id="mobile-booking-drawer-item" class="mt-auto p-3 bg-base-200/70 rounded-2xl border border-base-300 flex items-center justify-between shadow-xs lg:hidden mx-2 mb-3 cursor-pointer" onclick="const toggle = document.getElementById('topnav-mobile-booking-toggle'); if(toggle) { toggle.checked = !toggle.checked; syncTeacherBookingStatus('mobile'); }">
+                <div class="flex flex-col text-left pointer-events-none">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-base-content/60">Booking Status</span>
                     <span id="topnav-mobile-booking-label" class="text-xs font-bold text-success">Open</span>
                 </div>
-                <input type="checkbox" id="topnav-mobile-booking-toggle" class="toggle toggle-primary toggle-sm" checked onchange="syncTeacherBookingStatus('mobile')" />
+                <input type="checkbox" id="topnav-mobile-booking-toggle" class="toggle toggle-primary toggle-sm pointer-events-auto" checked onclick="event.stopPropagation(); syncTeacherBookingStatus('mobile');" />
             </div>
         `;
         drawerSideMenu.insertAdjacentHTML('beforeend', mobileBookingHTML);
@@ -201,7 +201,7 @@
     window.toggleTeacherBookingStatus = function() {
         const desktopToggle = document.getElementById('topnav-booking-toggle');
         const mobileToggle = document.getElementById('topnav-mobile-booking-toggle');
-        const isOpen = desktopToggle ? desktopToggle.checked : true;
+        const isOpen = desktopToggle ? desktopToggle.checked : (mobileToggle ? mobileToggle.checked : true);
 
         if (desktopToggle) desktopToggle.checked = isOpen;
         if (mobileToggle) mobileToggle.checked = isOpen;
@@ -223,10 +223,10 @@
         const desktopToggle = document.getElementById('topnav-booking-toggle');
         const mobileToggle = document.getElementById('topnav-mobile-booking-toggle');
         
-        if (source === 'mobile' && desktopToggle && mobileToggle) {
-            desktopToggle.checked = mobileToggle.checked;
-        } else if (source === 'desktop' && desktopToggle && mobileToggle) {
-            mobileToggle.checked = desktopToggle.checked;
+        if (source === 'mobile' && mobileToggle) {
+            if (desktopToggle) desktopToggle.checked = mobileToggle.checked;
+        } else if (source === 'desktop' && desktopToggle) {
+            if (mobileToggle) mobileToggle.checked = desktopToggle.checked;
         }
         window.toggleTeacherBookingStatus();
     };

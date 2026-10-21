@@ -55,31 +55,26 @@
                 </div>
             </nav>
 
-    
-            <div class="p-6 flex-1 max-w-4xl w-full mx-auto">
+            <div class="p-6 flex-1 max-w-4xl w-full mx-auto space-y-6">
                 
-                <div class="card bg-base-100 shadow-xl overflow-hidden mb-8">
+                <div class="card bg-base-100 shadow-xl overflow-hidden">
                     <div id="profile-banner-bg" class="h-32 bg-info transition-colors duration-300"></div>
                     <div class="px-8 pb-8 pt-0 relative">
                         <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-16 mb-6">
-                        
                             <div class="avatar">
                                 <div class="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 shadow-lg bg-base-100">
                                     <img src="https://via.placeholder.com/150" alt="Profile Picture" id="profile-avatar" />
                                 </div>
                             </div>
-                         
                             <div class="text-center sm:text-left flex-1">
                                 <h1 class="text-2xl font-bold text-base-content" id="profile-name">Loading...</h1>
                                 <p class="text-sm text-base-content/60" id="profile-role">Student</p>
                             </div>
-                       
                             <button onclick="openEditModal()" class="btn btn-primary btn-sm">
                                 <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Profile
                             </button>
                         </div>
 
-                    
                         <div class="border-t border-base-200 pt-4">
                             <h3 class="font-bold text-base-content mb-2">About Me</h3>
                             <p class="text-sm text-base-content/80 leading-relaxed italic" id="profile-bio">
@@ -89,13 +84,10 @@
                     </div>
                 </div>
 
-             
                 <div class="card bg-base-100 shadow-xl p-6">
                     <h3 class="font-bold text-base-content mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-images text-primary"></i> Photo Gallery
                     </h3>
-                    
-                
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="gallery-grid">
                         <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex items-center justify-center text-base-content/40 text-xs">Photo 1</div>
                         <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex items-center justify-center text-base-content/40 text-xs">Photo 2</div>
@@ -104,9 +96,21 @@
                     </div>
                 </div>
 
+                <div id="teacher-payment-section" class="card bg-base-100 shadow-xl p-6 hidden">
+                    <h3 class="font-bold text-base-content mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-qrcode text-primary"></i> Payment Methods (Bank / E-Wallet QR Codes)
+                    </h3>
+                    <p class="text-xs text-base-content/60 mb-4">Upload up to 4 QR code images for student session payments (GCash, Maya, Bank Transfer, etc.).</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" id="payment-qr-grid">
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex flex-col items-center justify-center text-base-content/40 text-xs p-2 text-center">GCash QR</div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex flex-col items-center justify-center text-base-content/40 text-xs p-2 text-center">Maya QR</div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex flex-col items-center justify-center text-base-content/40 text-xs p-2 text-center">Bank Transfer QR</div>
+                        <div class="aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex flex-col items-center justify-center text-base-content/40 text-xs p-2 text-center">Other QR</div>
+                    </div>
+                </div>
+
             </div>
         </div>
-
 
         <div class="drawer-side z-[999] overflow-visible">
             <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -115,9 +119,8 @@
         </div>
     </div>
 
-
     <div id="edit-profile-modal" class="modal">
-        <div class="modal-box max-w-lg">
+        <div class="modal-box max-w-lg max-h-[90vh] overflow-y-auto">
             <h3 class="font-bold text-lg mb-4">Edit Profile & Photos</h3>
             <form id="edit-profile-form" onsubmit="saveProfile(event)">
                 
@@ -134,6 +137,11 @@
                 <div class="form-control mb-3">
                     <label class="label"><span class="label-text">4 Gallery Pictures (Comma separated links)</span></label>
                     <textarea id="gallery-pics-textarea" class="textarea textarea-bordered h-20 text-xs" placeholder="Paste 4 image links separated by commas..."></textarea>
+                </div>
+
+                <div class="form-control mb-4" id="edit-qr-container">
+                    <label class="label"><span class="label-text font-bold text-primary">Payment QR Codes (4 links comma-separated)</span></label>
+                    <textarea id="qr-pics-textarea" class="textarea textarea-bordered h-20 text-xs" placeholder="Paste 4 QR code image links separated by commas..."></textarea>
                 </div>
 
                 <div class="modal-action">
@@ -155,6 +163,10 @@
             localStorage.getItem('name') || ''
         ).trim();
 
+        let cachedProfilePic = "";
+        let cachedGalleryLinks = [];
+        let cachedQrLinks = [];
+
         window.addEventListener('DOMContentLoaded', () => {
             if (!currentUsername) {
                 showToast("Please log in first.", "error");
@@ -175,12 +187,17 @@
         function updateRoleUI(roleVal) {
             const roleStr = String(roleVal).trim().toLowerCase();
             let roleTitle = "Student";
+            let isTeacherOrAdmin = false;
+
             if (roleStr === "3" || roleStr === "admin") {
                 roleTitle = "Administrator";
+                isTeacherOrAdmin = true;
             } else if (roleStr === "2" || roleStr === "teacher" || roleStr === "content manager") {
                 roleTitle = "Teacher";
+                isTeacherOrAdmin = true;
             } else {
                 roleTitle = "Student";
+                isTeacherOrAdmin = false;
             }
 
             const roleEl = document.getElementById('profile-role');
@@ -188,13 +205,22 @@
             if (roleEl) roleEl.textContent = roleTitle;
             if (headerRoleEl) headerRoleEl.textContent = roleTitle;
 
+            const paymentSection = document.getElementById('teacher-payment-section');
+            const editQrContainer = document.getElementById('edit-qr-container');
+
+            if (isTeacherOrAdmin) {
+                if (paymentSection) paymentSection.classList.remove('hidden');
+                if (editQrContainer) editQrContainer.classList.remove('hidden');
+            } else {
+                if (paymentSection) paymentSection.classList.add('hidden');
+                if (editQrContainer) editQrContainer.classList.add('hidden');
+            }
+
             const bannerEl = document.getElementById('profile-banner-bg');
             if (bannerEl) {
                 bannerEl.classList.remove('bg-primary', 'bg-info', 'bg-error', 'bg-secondary', 'bg-warning', 'bg-base-300');
-                if (roleStr === "2" || roleStr === "teacher" || roleStr === "content manager") {
+                if (isTeacherOrAdmin) {
                     bannerEl.classList.add('bg-secondary');
-                } else if (roleStr === "3" || roleStr === "admin") {
-                    bannerEl.classList.add('bg-error');    
                 } else {
                     bannerEl.classList.add('bg-info');     
                 }
@@ -213,15 +239,13 @@
             return cleanUrl;
         }
 
-        let cachedProfilePic = "";
-        let cachedGalleryLinks = [];
-
         function loadUserProfile() {
             const nameEl = document.getElementById('profile-name');
             const bioEl = document.getElementById('profile-bio');
             const avatarEl = document.getElementById('profile-avatar');
             const headerAvatar = document.getElementById('header-avatar-img');
             const galleryGrid = document.getElementById('gallery-grid');
+            const paymentGrid = document.getElementById('payment-qr-grid');
 
             nameEl.textContent = currentUsername;
 
@@ -230,7 +254,6 @@
                 if (res && res.status === "success" && Array.isArray(res.accounts)) {
                     const user = res.accounts.find(acc => acc.username.toLowerCase() === currentUsername.toLowerCase());
                     if (user) {
-              
                         if (user.bio) {
                             bioEl.textContent = user.bio;
                             bioEl.classList.remove('italic', 'text-base-content/60');
@@ -239,7 +262,6 @@
                             bioEl.classList.add('italic', 'text-base-content/60');
                         }
                         
-    
                         if (user.role !== undefined) {
                             localStorage.setItem('role', user.role);
                             updateRoleUI(user.role);
@@ -271,6 +293,28 @@
                                 galleryGrid.appendChild(div);
                             }
                         }
+
+                        if (user.qrCode || user.qrPics) {
+                            const rawQr = user.qrCode || user.qrPics;
+                            cachedQrLinks = String(rawQr).split(',').map(l => l.trim()).filter(l => l.length > 0);
+                            paymentGrid.innerHTML = '';
+                            const qrLabels = ["GCash QR", "Maya QR", "Bank QR", "Other QR"];
+
+                            for (let i = 0; i < 4; i++) {
+                                const link = cachedQrLinks[i] || "";
+                                const div = document.createElement('div');
+                                div.className = "aspect-square rounded-xl overflow-hidden bg-base-200 shadow-sm border border-base-300 flex flex-col items-center justify-center p-1";
+                                
+                                if (link) {
+                                    const directUrl = parseDriveLink(link);
+                                    div.innerHTML = `<img src="${directUrl}" alt="${qrLabels[i]}" class="w-full h-full object-contain hover:scale-105 transition-transform duration-300">`;
+                                } else {
+                                    div.className += " text-base-content/40 text-xs text-center";
+                                    div.textContent = qrLabels[i];
+                                }
+                                paymentGrid.appendChild(div);
+                            }
+                        }
                     }
                 }
                 if (script.parentNode) document.body.removeChild(script);
@@ -287,6 +331,7 @@
             document.getElementById('bio-textarea').value = bioEl.textContent.includes("No bio added yet") ? "" : bioEl.textContent;
             document.getElementById('profile-pic-input').value = cachedProfilePic;
             document.getElementById('gallery-pics-textarea').value = cachedGalleryLinks.join(', ');
+            document.getElementById('qr-pics-textarea').value = cachedQrLinks.join(', ');
             document.getElementById('edit-profile-modal').classList.add('modal-open');
         }
 
@@ -299,6 +344,7 @@
             const newBio = document.getElementById('bio-textarea').value.trim();
             const newProfilePic = document.getElementById('profile-pic-input').value.trim();
             const newGalleryPics = document.getElementById('gallery-pics-textarea').value.trim();
+            const newQrPics = document.getElementById('qr-pics-textarea').value.trim();
             const saveBtn = document.getElementById('save-profile-btn');
             
             saveBtn.disabled = true;
@@ -321,7 +367,7 @@
             };
 
             const script = document.createElement('script');
-            script.src = `${API_URL}?action=updateProfileImages&username=${encodeURIComponent(currentUsername)}&bio=${encodeURIComponent(newBio)}&profilePic=${encodeURIComponent(newProfilePic)}&galleryPics=${encodeURIComponent(newGalleryPics)}&callback=${cbName}`;
+            script.src = `${API_URL}?action=updateProfileImages&username=${encodeURIComponent(currentUsername)}&bio=${encodeURIComponent(newBio)}&profilePic=${encodeURIComponent(newProfilePic)}&galleryPics=${encodeURIComponent(newGalleryPics)}&qrCode=${encodeURIComponent(newQrPics)}&callback=${cbName}`;
             document.body.appendChild(script);
         }
 

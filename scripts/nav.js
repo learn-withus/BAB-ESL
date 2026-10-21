@@ -141,52 +141,58 @@ function injectTeacherScheduleModal() {
     if (document.getElementById('teacher-schedule-modal')) return;
 
     const modalHTML = `
-        <dialog id="teacher-schedule-modal" class="modal modal-bottom sm:modal-middle backdrop-blur-xs">
-            <div class="modal-box p-6 sm:p-8 overflow-hidden w-11/12 max-w-7xl h-[88vh] max-h-[92vh] bg-base-100 border border-base-300 shadow-2xl rounded-3xl relative flex flex-col justify-between">
-                <button onclick="closeTeacherScheduleModal()" class="btn btn-sm btn-circle btn-ghost absolute top-5 right-5 z-20 bg-base-100/60 backdrop-blur-md text-base-content/70 hover:text-base-content hover:bg-base-200 border border-base-300/50 shadow-xs">✕</button>
+        <dialog id="teacher-schedule-modal" class="modal modal-bottom sm:modal-middle backdrop-blur-xs cursor-pointer">
+            <div class="modal-box p-6 sm:p-8 overflow-hidden w-11/12 max-w-7xl h-[88vh] max-h-[92vh] bg-base-100 border border-base-300 shadow-2xl rounded-3xl relative flex flex-col justify-between cursor-default">
+                <button onclick="closeTeacherScheduleModal()" class="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 z-30 bg-base-100/80 text-error hover:bg-error hover:text-white border border-error/30 shadow-sm">✕</button>
 
-                <div>
+                <div class="relative pr-8">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
                         <div class="flex items-center gap-3">
-                            <span class="flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-2xl text-lg shadow-xs">
+                            <span class="flex items-center justify-center w-11 h-11 bg-primary/10 text-primary rounded-2xl text-lg shadow-xs border border-primary/20">
                                 <i class="fa-solid fa-calendar-days"></i>
                             </span>
                             <div>
-                                <h3 id="t-modal-title" class="font-bold text-xl text-base-content">My Teaching Schedule</h3>
-                                <p id="t-modal-subtitle" class="text-xs text-base-content/60">Loading scheduled classes...</p>
+                                <h3 id="t-modal-title" class="font-extrabold text-xl sm:text-2xl text-base-content tracking-tight">My Teaching Schedule</h3>
+                                <p id="t-modal-subtitle" class="text-xs sm:text-sm text-base-content/60 font-medium mt-0.5">Loading scheduled classes...</p>
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3 pr-8 sm:pr-0">
+                        <div class="flex items-center gap-3">
                             <div class="join shadow-xs">
-                                <button onclick="changeTNavView('day')" id="tnav-btn-day" class="btn btn-sm join-item btn-ghost border border-base-300">Day</button>
-                                <button onclick="changeTNavView('week')" id="tnav-btn-week" class="btn btn-sm join-item btn-primary">Week</button>
-                                <button onclick="changeTNavView('month')" id="tnav-btn-month" class="btn btn-sm join-item btn-ghost border border-base-300">Month</button>
+                                <button onclick="changeTNavView('day')" id="tnav-btn-day" class="btn btn-sm join-item btn-ghost border border-base-300 font-semibold">Day</button>
+                                <button onclick="changeTNavView('week')" id="tnav-btn-week" class="btn btn-sm join-item btn-primary font-bold">Week</button>
+                                <button onclick="changeTNavView('month')" id="tnav-btn-month" class="btn btn-sm join-item btn-ghost border border-base-300 font-semibold">Month</button>
                             </div>
                             
-                            <div class="flex items-center gap-1 bg-base-200 p-1 rounded-lg border border-base-300">
+                            <div class="flex items-center gap-1 bg-base-200/80 p-1 rounded-xl border border-base-300 shadow-xs">
                                 <button onclick="navigateTNavCalendar(-1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-left"></i></button>
-                                <button onclick="navigateTNavCalendar(0)" class="btn btn-sm btn-ghost font-semibold text-xs">Today</button>
+                                <button onclick="navigateTNavCalendar(0)" class="btn btn-sm btn-ghost font-bold text-xs">Today</button>
                                 <button onclick="navigateTNavCalendar(1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="h-px bg-base-200 my-3"></div>
+                    <div class="h-px bg-base-300/60 my-3"></div>
                 </div>
 
-                <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl flex-1 my-2">
+                <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl flex-1 my-2 bg-base-100 shadow-inner">
                     <div id="tnav-grid-container" class="min-w-[900px]"></div>
-                </div>
-
-                <div class="pt-2 border-t border-base-200 flex justify-end">
-                    <button onclick="closeTeacherScheduleModal()" class="btn btn-primary btn-sm px-6 font-bold rounded-xl">Close Schedule</button>
                 </div>
             </div>
         </dialog>
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    const modalEl = document.getElementById('teacher-schedule-modal');
+    if (modalEl) {
+        modalEl.addEventListener('click', (event) => {
+            const box = modalEl.querySelector('.modal-box');
+            if (box && !box.contains(event.target)) {
+                closeTeacherScheduleModal();
+            }
+        });
+    }
 }
 
 function openTeacherScheduleModal() {
@@ -328,7 +334,7 @@ function renderTNavWeekView(container, titleEl, subtitleEl) {
     const startStr = weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const endStr = weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const myName = localStorage.getItem('teacherName') || localStorage.getItem('username') || "Teacher";
-    titleEl.textContent = `${myName}'s Weekly Schedule (${startStr} - ${endStr})`;
+    titleEl.textContent = `${myName}'s Weekly Schedule`;
 
     const hours = [
         '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
@@ -347,18 +353,18 @@ function renderTNavWeekView(container, titleEl, subtitleEl) {
         });
     });
 
-    subtitleEl.innerHTML = `<span class="text-primary font-bold">${totalBookedCount} total bookings</span> for this week.`;
+    subtitleEl.innerHTML = `<span class="text-base-content/80 font-semibold">${startStr} - ${endStr}</span> • <span class="text-primary font-bold">${totalBookedCount} total bookings</span> this week.`;
 
     let html = `
         <table class="table table-pin-rows table-zebra text-center w-full border-collapse">
             <thead>
-                <tr class="bg-base-200 text-base-content text-xs uppercase">
-                    <th class="w-28 border-r border-base-300">Time</th>
+                <tr class="bg-base-200/90 text-base-content text-xs uppercase tracking-wider font-extrabold">
+                    <th class="w-28 border-r border-base-300 py-3">Time</th>
                     ${weekDays.map(d => {
                         const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
                         const todayPSTStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
                         const isToday = (todayPSTStr === dateKey);
-                        return `<th class="border-r border-base-300 ${isToday ? 'bg-primary/10 text-primary font-bold' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-70">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
+                        return `<th class="border-r border-base-300 py-3 ${isToday ? 'bg-primary/15 text-primary font-black' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-80">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
                     }).join('')}
                 </tr>
             </thead>
@@ -366,25 +372,29 @@ function renderTNavWeekView(container, titleEl, subtitleEl) {
     `;
 
     hours.forEach(hour => {
-        html += `<tr><th class="bg-base-200/60 text-xs border-r border-base-300 font-semibold">${hour}</th>`;
+        html += `<tr><th class="bg-base-200/50 text-xs border-r border-base-300 font-bold py-3">${hour}</th>`;
         weekDays.forEach(d => {
             const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
             const matchedSessions = getSessionsForLoggedInTeacherSlot(dateKey, hour);
 
             if (matchedSessions.length > 0) {
-                html += `<td class="border-r border-base-300 p-1.5 bg-primary/10 space-y-1">`;
+                html += `<td class="border-r border-base-300 p-2 bg-primary/10 space-y-1.5 align-middle">`;
                 matchedSessions.forEach(matched => {
                     const studentName = matched.Student || matched.student || 'Student';
                     const lessonName = matched.Lesson || matched.lesson || 'Class';
                     const timeStr = matched.Time || matched.time || matched.sessionTime || '';
                     html += `
-                        <div class="bg-base-100 p-1.5 rounded-lg border border-primary/30 shadow-xs text-left">
+                        <div class="bg-base-100 p-2 rounded-xl border border-primary/30 shadow-sm text-left hover:shadow-md transition-all">
                             <div class="flex justify-between items-center">
-                                <span class="badge badge-primary badge-xs font-bold text-white">Booked</span>
-                                <span class="text-[9px] opacity-70">${timeStr}</span>
+                                <span class="badge badge-primary badge-xs font-bold text-white px-2 py-0.5">Booked</span>
+                                <span class="text-[10px] font-semibold opacity-70">${timeStr}</span>
                             </div>
-                            <div class="text-[10px] font-bold mt-0.5 text-primary truncate">👤 ${studentName}</div>
-                            <div class="text-[9px] opacity-80 truncate">📚 ${lessonName}</div>
+                            <div class="text-xs font-bold mt-1 text-primary truncate flex items-center gap-1">
+                                <i class="fa-solid fa-user-graduate text-[10px]"></i> ${studentName}
+                            </div>
+                            <div class="text-[11px] font-medium text-base-content/80 truncate mt-0.5 flex items-center gap-1">
+                                <i class="fa-solid fa-book text-[10px] opacity-70"></i> ${lessonName}
+                            </div>
                         </div>
                     `;
                 });
@@ -392,7 +402,7 @@ function renderTNavWeekView(container, titleEl, subtitleEl) {
             } else {
                 html += `
                     <td class="border-r border-base-300 p-2">
-                        <span class="text-[10px] text-base-content/40 font-medium">Available</span>
+                        <span class="text-[11px] text-base-content/40 font-medium">Available</span>
                     </td>`;
             }
         });
@@ -405,7 +415,8 @@ function renderTNavWeekView(container, titleEl, subtitleEl) {
 
 function renderTNavDayView(container, titleEl, subtitleEl) {
     const myName = localStorage.getItem('teacherName') || localStorage.getItem('username') || "Teacher";
-    titleEl.textContent = `${myName}'s Daily Schedule (${teacherNavCurrentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' })})`;
+    titleEl.textContent = `${myName}'s Daily Schedule`;
+    const dateFormatted = teacherNavCurrentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
     const dateKey = teacherNavCurrentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
     const hours = [
@@ -415,7 +426,7 @@ function renderTNavDayView(container, titleEl, subtitleEl) {
         '10:00 PM', '11:00 PM', '12:00 AM'
     ];
 
-    let html = `<div class="p-4 space-y-2">`;
+    let html = `<div class="p-6 space-y-3 max-w-3xl mx-auto w-full">`;
     let allTodaySessions = [];
 
     hours.forEach(hour => {
@@ -435,20 +446,23 @@ function renderTNavDayView(container, titleEl, subtitleEl) {
             const linkUrl = matched.Link || matched.link || '';
 
             html += `
-                <div class="flex justify-between items-center bg-primary/10 p-3.5 rounded-xl border border-primary/25">
-                    <div>
-                        <span class="font-bold text-xs text-primary">${timeStr}</span> — <span class="font-bold text-xs">${lessonName}</span>
-                        <p class="text-[11px] text-base-content/70 mt-0.5">Student: <strong>${studentName}</strong></p>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-base-100 p-4 rounded-2xl border border-primary/30 shadow-sm gap-4 hover:border-primary transition-all">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="badge badge-primary font-bold text-xs px-2.5 py-1">${timeStr}</span>
+                            <span class="font-bold text-sm sm:text-base text-base-content">${lessonName}</span>
+                        </div>
+                        <p class="text-xs font-medium text-base-content/70 pl-1">Student: <strong class="text-primary font-bold">${studentName}</strong></p>
                     </div>
-                    ${linkUrl ? `<a href="${linkUrl}" target="_blank" class="btn btn-primary btn-xs font-bold gap-1"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-xs">No Link Yet</span>'}
+                    ${linkUrl ? `<a href="${linkUrl}" target="_blank" class="btn btn-primary btn-sm font-bold gap-2 rounded-xl px-4"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-sm font-semibold">No Link Yet</span>'}
                 </div>
             `;
         });
     } else {
-        html += `<p class="text-xs text-base-content/50 italic py-8 text-center">No scheduled classes booked for this day.</p>`;
+        html += `<div class="text-center py-12"><p class="text-sm text-base-content/50 italic">No scheduled classes booked for this day (${dateFormatted}).</p></div>`;
     }
 
-    subtitleEl.innerHTML = `<span class="text-primary font-bold">${allTodaySessions.length} classes scheduled</span> for this day.`;
+    subtitleEl.innerHTML = `<span class="text-base-content/80 font-semibold">${dateFormatted}</span> • <span class="text-primary font-bold">${allTodaySessions.length} classes scheduled</span>.`;
     html += `</div>`;
     container.innerHTML = html;
 }
@@ -457,8 +471,9 @@ function renderTNavMonthView(container, titleEl, subtitleEl) {
     const year = teacherNavCurrentDate.getFullYear();
     const month = teacherNavCurrentDate.getMonth();
     const myName = localStorage.getItem('teacherName') || localStorage.getItem('username') || "Teacher";
-    titleEl.textContent = `${myName}'s Monthly Schedule (${teacherNavCurrentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' })})`;
-    subtitleEl.textContent = `Click any day to switch to day view.`;
+    titleEl.textContent = `${myName}'s Monthly Schedule`;
+    const monthFormatted = teacherNavCurrentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' });
+    subtitleEl.innerHTML = `<span class="text-base-content/80 font-semibold">${monthFormatted}</span> • Click any day to switch to day view.`;
 
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -471,16 +486,16 @@ function renderTNavMonthView(container, titleEl, subtitleEl) {
     ];
 
     let html = `
-        <table class="table text-center w-full border-collapse">
+        <table class="table text-center w-full border-collapse h-full">
             <thead>
-                <tr class="bg-base-200 text-xs uppercase">
-                    <th class="border border-base-300">Sun</th>
-                    <th class="border border-base-300">Mon</th>
-                    <th class="border border-base-300">Tue</th>
-                    <th class="border border-base-300">Wed</th>
-                    <th class="border border-base-300">Thu</th>
-                    <th class="border border-base-300">Fri</th>
-                    <th class="border border-base-300">Sat</th>
+                <tr class="bg-base-200/90 text-xs uppercase font-extrabold tracking-wider text-base-content">
+                    <th class="border border-base-300 py-3">Sun</th>
+                    <th class="border border-base-300 py-3">Mon</th>
+                    <th class="border border-base-300 py-3">Tue</th>
+                    <th class="border border-base-300 py-3">Wed</th>
+                    <th class="border border-base-300 py-3">Thu</th>
+                    <th class="border border-base-300 py-3">Fri</th>
+                    <th class="border border-base-300 py-3">Sat</th>
                 </tr>
             </thead>
             <tbody>
@@ -503,14 +518,14 @@ function renderTNavMonthView(container, titleEl, subtitleEl) {
             });
 
             html += `
-                <td class="border border-base-300 h-20 align-top p-2 hover:bg-base-200/50 cursor-pointer" onclick="selectTNavMonthDay('${dateKey}')">
-                    <div class="font-bold text-xs">${dayCount}</div>
-                    ${daySessions.length > 0 ? `<div class="mt-1 badge badge-primary badge-xs font-bold">${daySessions.length} class(es)</div>` : ''}
+                <td class="border border-base-300 h-24 align-top p-2.5 hover:bg-primary/5 cursor-pointer transition-all group" onclick="selectTNavMonthDay('${dateKey}')">
+                    <div class="font-bold text-xs text-base-content group-hover:text-primary">${dayCount}</div>
+                    ${daySessions.length > 0 ? `<div class="mt-2 badge badge-primary badge-xs font-bold p-2">${daySessions.length} class(es)</div>` : ''}
                 </td>
             `;
             dayCount++;
         } else {
-            html += `<td class="border border-base-300 bg-base-200/20 h-20"></td>`;
+            html += `<td class="border border-base-300 bg-base-200/20 h-24"></td>`;
         }
         if ((i + 1) % 7 === 0 && i < 41) html += `</tr><tr>`;
     }

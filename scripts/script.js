@@ -420,23 +420,80 @@ function loadQuestion() {
 
             if (sectionBlanks.length > 0) {
                 const bank = document.createElement("div");
-                bank.className = "sticky top-4 z-10 bg-base-200 border-2 border-primary p-4 rounded-xl my-4 text-center shadow-md";
+                bank.id = `word-bank-${sectionIndex}`;
+                bank.className = "sticky top-4 z-10 bg-base-200 border-2 border-primary p-4 rounded-xl my-4 text-center shadow-md transition-all duration-300";
                 bank.innerHTML = `<p class="font-bold custom-primary-text mb-2">Word Bank</p>`;
                 sectionBlanks.sort(() => Math.random() - 0.5).forEach(word => {
                     bank.innerHTML += `<span draggable="true" ondragstart="event.dataTransfer.setData('text', '${word}')" 
-                        class="inline-block m-1.5 px-4 py-1.5 font-bold text-base-content bg-base-100 border border-primary rounded-lg cursor-grab shadow-xs">${word}</span>`;
+                        data-word="${word}"
+                        class="inline-block m-1.5 px-4 py-1.5 font-bold text-base-content bg-base-100 border border-primary rounded-lg cursor-grab shadow-xs transition-all duration-300 ease-in-out">${word}</span>`;
                 });
                 currentSectionDiv.appendChild(bank);
             }
             questionCounter = 1; 
         } else if (currentSectionDiv) {
-            currentSectionDiv.appendChild(renderQuestionElement(item, index, questionCounter++, shuffledMatchingDefs));
+            currentSectionDiv.appendChild(renderQuestionElement(item, index, questionCounter++, shuffledMatchingDefs, sectionIndex));
         }
     });
     if (currentSectionDiv) addSectionControls(container, sectionIndex);
 }
 
-function renderQuestionElement(q, realIndex, displayNum, shuffledDefs) {
+function handleBlankDrop(event, realIndex, sectionIndex) {
+    const word = event.dataTransfer.getData('text');
+    const input = document.getElementById(`blank-${realIndex}`);
+    if (input && word) {
+        input.value = word;
+        updateWordBank(sectionIndex);
+    }
+}
+
+function handleBlankInput(realIndex, sectionIndex) {
+    updateWordBank(sectionIndex);
+}
+
+function updateWordBank(sectionIndex) {
+    const bank = document.getElementById(`word-bank-${sectionIndex}`);
+    const section = document.getElementById(`section-${sectionIndex}`);
+    if (!bank || !section) return;
+
+    const inputs = section.querySelectorAll(`input[data-section="${sectionIndex}"]`);
+    const usedWords = Array.from(inputs).map(inp => inp.value.toLowerCase().trim()).filter(val => val !== "");
+
+    const usedCounts = {};
+    usedWords.forEach(w => {
+        usedCounts[w] = (usedCounts[w] || 0) + 1;
+    });
+
+    const wordSpans = bank.querySelectorAll('span[data-word]');
+    const seenCounts = {};
+
+    wordSpans.forEach(span => {
+        const word = span.getAttribute('data-word').toLowerCase().trim();
+        seenCounts[word] = (seenCounts[word] || 0) + 1;
+        const currentSeen = seenCounts[word];
+        const totalUsed = usedCounts[word] || 0;
+
+        if (currentSeen <= totalUsed) {
+            span.style.opacity = '0';
+            span.style.transform = 'scale(0.7)';
+            span.style.pointerEvents = 'none';
+            setTimeout(() => {
+                if (currentSeen <= (usedCounts[word] || 0)) {
+                    span.style.display = 'none';
+                }
+            }, 250);
+        } else {
+            span.style.display = 'inline-block';
+            setTimeout(() => {
+                span.style.opacity = '1';
+                span.style.transform = 'scale(1)';
+                span.style.pointerEvents = 'auto';
+            }, 10);
+        }
+    });
+}
+
+function renderQuestionElement(q, realIndex, displayNum, shuffledDefs, sectionIndex) {
     const qDiv = document.createElement("div");
     qDiv.className = "mb-5 p-2.5 text-base-content";
 
@@ -444,10 +501,11 @@ function renderQuestionElement(q, realIndex, displayNum, shuffledDefs) {
         const parts = q.sentence.split("___");
         qDiv.innerHTML = `
             <p class="text-base-content"><strong>${displayNum}.</strong> ${parts[0]} 
-            <input type="text" id="blank-${realIndex}" 
+            <input type="text" id="blank-${realIndex}" data-section="${sectionIndex}"
                    ondragover="event.preventDefault()" 
-                   ondrop="event.preventDefault(); this.value=event.dataTransfer.getData('text')"
-                   class="input input-bordered input-sm mx-1.5 bg-base-200 text-base-content font-bold inline-block w-auto text-center border-b-2 border-primary" placeholder="drag or type your answer."> ${parts[1] || ""}</p>
+                   ondrop="event.preventDefault(); handleBlankDrop(event, ${realIndex}, ${sectionIndex})"
+                   oninput="handleBlankInput(${realIndex}, ${sectionIndex})"
+                   class="input input-bordered input-sm mx-1.5 bg-base-200 text-base-content font-bold inline-block w-auto text-center border-b-2 border-primary transition-all duration-200" placeholder="drag or type your answer."> ${parts[1] || ""}</p>
             <div id="fb-${realIndex}" class="font-bold mt-1.5 text-sm"></div>`;
     } 
     else if (q.type === "SPELLING") {
@@ -619,6 +677,8 @@ function resetSection(sIdx) {
     section.querySelectorAll('[id^="fb-"]').forEach(f => f.innerHTML="");
     section.querySelectorAll('[id^="label-q"]').forEach(l => l.classList.remove('bg-success/20', 'rounded'));
     
+    updateWordBank(sIdx);
+
     section.querySelectorAll('[id^="scramble-target-"]').forEach(target => {
         const realIndex = target.id.split('-').pop();
         const pool = section.querySelector(`#scramble-pool-${realIndex}`);

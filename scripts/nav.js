@@ -63,7 +63,6 @@ function loadNavbar() {
                 <a href="${dashboardUrl}" class="inline-block shrink-0">
                     <img src="${pathToRoot}images/bab.png" alt="Logo" class="w-8 h-8 object-contain">
                 </a>
-                <span class="font-bold text-base inline lg:hidden">BAB ESL</span>
             </div>
         </div>
         <div class="divider my-0"></div>

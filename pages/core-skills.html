@@ -138,9 +138,16 @@
                     <div id="back-to-top-container" class="fixed bottom-6 right-6 z-50 opacity-0 pointer-events-none transition-all duration-300 translate-y-4">
                         <div class="tooltip tooltip-left" data-tip="Back to top">
                             <button id="back-to-top-btn" 
-                                class="btn btn-primary btn-circle shadow-lg"
+                                class="btn btn-neutral btn-circle shadow-lg"
                                 aria-label="Back to top"
-                                onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+                                onclick="
+                                    const drawerContent = document.querySelector('.drawer-content');
+                                    if (drawerContent && window.innerWidth >= 1024) {
+                                        drawerContent.scrollTo({top: 0, behavior: 'smooth'});
+                                    } else {
+                                        window.scrollTo({top: 0, behavior: 'smooth'});
+                                    }
+                                ">
                                 <i class="fa-solid fa-arrow-up text-sm"></i>
                             </button>
                         </div>
@@ -161,13 +168,23 @@
     </div>
 
     <script>
+        const drawerContentEl = document.querySelector('.drawer-content');
+        const bttContainer = document.getElementById('back-to-top-container');
+
+        if (drawerContentEl && bttContainer) {
+            drawerContentEl.addEventListener('scroll', function() {
+                if (drawerContentEl.scrollTop > 300) {
+                    bttContainer.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                } else {
+                    bttContainer.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+                }
+            });
+        }
+
         window.addEventListener('scroll', function() {
-            const bttContainer = document.getElementById('back-to-top-container');
             if (!bttContainer) return;
             if (window.scrollY > 300) {
                 bttContainer.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-            } else {
-                bttContainer.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
             }
         });
     </script>

@@ -95,15 +95,18 @@
                             <span class="text-[10px] font-bold uppercase tracking-wider text-base-content/60">Booking</span>
                             <span id="topnav-booking-label" class="text-xs font-bold text-success">Open</span>
                         </div>
-                        <input type="checkbox" id="topnav-booking-toggle" class="toggle toggle-primary toggle-sm" onchange="syncTeacherBookingStatus('desktop')" />
+                        <input type="checkbox" id="topnav-booking-toggle" class="toggle toggle-primary toggle-sm" checked onchange="toggleTeacherBookingStatus()" />
                     </div>
-                    
+                    ` : ''}
+
+                    <!-- Theme Toggle Button (Available for Students, Teachers, and Admins) -->
                     <label class="swap swap-rotate btn btn-ghost btn-circle btn-sm" id="theme-swap-btn">
                         <input type="checkbox" id="global-theme-checkbox" />
                         <svg class="swap-on h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"></path></svg>
                         <svg class="swap-off h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"></path></svg>
                     </label>
 
+                    ${isTeacherOrAdmin ? `
                     <div class="dropdown dropdown-end relative">
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm relative" id="notification-bell-btn">
                             <div class="indicator">
@@ -157,7 +160,7 @@
             drawerContent.insertAdjacentHTML('afterbegin', navHTML);
         }
 
-        fetchProfileAndBookingStatus(username);
+        fetchProfilePicture(username);
         if (!isTeachersPage) {
             initGlobalBookSearch();
         }
@@ -187,12 +190,12 @@
         if (document.getElementById('mobile-booking-drawer-item')) return;
 
         const mobileBookingHTML = `
-            <div id="mobile-booking-drawer-item" class="mt-auto p-3 bg-base-200/70 rounded-2xl border border-base-300 flex items-center justify-between shadow-xs lg:hidden mx-2 mb-3 cursor-pointer" onclick="const toggle = document.getElementById('topnav-mobile-booking-toggle'); if(toggle) { toggle.checked = !toggle.checked; syncTeacherBookingStatus('mobile'); }">
-                <div class="flex flex-col text-left pointer-events-none">
+            <div id="mobile-booking-drawer-item" class="mt-auto p-3 bg-base-200/70 rounded-2xl border border-base-300 flex items-center justify-between shadow-xs lg:hidden mx-2 mb-3">
+                <div class="flex flex-col text-left">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-base-content/60">Booking Status</span>
                     <span id="topnav-mobile-booking-label" class="text-xs font-bold text-success">Open</span>
                 </div>
-                <input type="checkbox" id="topnav-mobile-booking-toggle" class="toggle toggle-primary toggle-sm pointer-events-auto" onchange="syncTeacherBookingStatus('mobile')" onclick="event.stopPropagation();" />
+                <input type="checkbox" id="topnav-mobile-booking-toggle" class="toggle toggle-primary toggle-sm" checked onchange="syncTeacherBookingStatus('mobile')" />
             </div>
         `;
         drawerSideMenu.insertAdjacentHTML('beforeend', mobileBookingHTML);
@@ -201,7 +204,10 @@
     window.toggleTeacherBookingStatus = function() {
         const desktopToggle = document.getElementById('topnav-booking-toggle');
         const mobileToggle = document.getElementById('topnav-mobile-booking-toggle');
-        const isOpen = desktopToggle ? desktopToggle.checked : (mobileToggle ? mobileToggle.checked : true);
+        const isOpen = desktopToggle ? desktopToggle.checked : true;
+
+        if (desktopToggle) desktopToggle.checked = isOpen;
+        if (mobileToggle) mobileToggle.checked = isOpen;
 
         const label1 = document.getElementById('topnav-booking-label');
         const label2 = document.getElementById('topnav-mobile-booking-label');
@@ -214,88 +220,19 @@
             label2.textContent = isOpen ? "Open" : "Closed";
             label2.className = `text-xs font-bold ${isOpen ? 'text-success' : 'text-error'}`;
         }
-
-        const username = localStorage.getItem('teacherName') || localStorage.getItem('username') || '';
-        if (username) {
-            updateBookingStatusInDatabase(username, isOpen);
-        }
     };
 
     window.syncTeacherBookingStatus = function(source) {
         const desktopToggle = document.getElementById('topnav-booking-toggle');
         const mobileToggle = document.getElementById('topnav-mobile-booking-toggle');
         
-        if (source === 'mobile' && mobileToggle) {
-            if (desktopToggle) desktopToggle.checked = mobileToggle.checked;
-        } else if (source === 'desktop' && desktopToggle) {
-            if (mobileToggle) mobileToggle.checked = desktopToggle.checked;
+        if (source === 'mobile' && desktopToggle && mobileToggle) {
+            desktopToggle.checked = mobileToggle.checked;
+        } else if (source === 'desktop' && desktopToggle && mobileToggle) {
+            mobileToggle.checked = desktopToggle.checked;
         }
         window.toggleTeacherBookingStatus();
     };
-
-    function updateBookingStatusInDatabase(username, isOpen) {
-        const cbName = 'update_status_cb_' + Math.round(Math.random() * 1000000);
-        window[cbName] = function(res) {
-            if (script.parentNode) document.body.removeChild(script);
-            delete window[cbName];
-        };
-
-        const statusStr = isOpen ? 'Open' : 'Closed';
-        const script = document.createElement('script');
-        script.src = `${API_URL}?action=updateBookingStatus&username=${encodeURIComponent(username)}&status=${encodeURIComponent(statusStr)}&callback=${cbName}`;
-        document.body.appendChild(script);
-    }
-
-    function fetchProfileAndBookingStatus(username) {
-        if (!username) return;
-        const cbName = 'topnav_init_cb_' + Math.round(Math.random() * 1000000);
-        window[cbName] = function(res) {
-            if (res && res.status === "success" && Array.isArray(res.accounts)) {
-                const user = res.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase());
-                if (user) {
-                    if (user.profilePic) {
-                        localStorage.setItem('profilePic', user.profilePic);
-                        const directUrl = parseDriveLink(user.profilePic);
-                        const avatarImg = document.getElementById('global-header-avatar');
-                        if (avatarImg) avatarImg.src = directUrl;
-                    }
-                    if (user.role !== undefined) {
-                        localStorage.setItem('role', user.role);
-                    }
-                    if (user.books !== undefined) {
-                        localStorage.setItem('books', user.books);
-                    }
-
-                    const dbStatus = String(user.bookingStatus || user.status || 'Open').trim().toLowerCase();
-                    const isOpen = dbStatus === 'open' || dbStatus === 'true' || dbStatus === '1';
-
-                    const desktopToggle = document.getElementById('topnav-booking-toggle');
-                    const mobileToggle = document.getElementById('topnav-mobile-booking-toggle');
-
-                    if (desktopToggle) desktopToggle.checked = isOpen;
-                    if (mobileToggle) mobileToggle.checked = isOpen;
-
-                    const label1 = document.getElementById('topnav-booking-label');
-                    const label2 = document.getElementById('topnav-mobile-booking-label');
-
-                    if (label1) {
-                        label1.textContent = isOpen ? "Open" : "Closed";
-                        label1.className = `text-xs font-bold ${isOpen ? 'text-success' : 'text-error'}`;
-                    }
-                    if (label2) {
-                        label2.textContent = isOpen ? "Open" : "Closed";
-                        label2.className = `text-xs font-bold ${isOpen ? 'text-success' : 'text-error'}`;
-                    }
-                }
-            }
-            if (script.parentNode) document.body.removeChild(script);
-            delete window[cbName];
-        };
-
-        const script = document.createElement('script');
-        script.src = `${API_URL}?action=initDashboard&username=${encodeURIComponent(username)}&callback=${cbName}`;
-        document.body.appendChild(script);
-    }
 
     function initNotificationChecker(currentUsername) {
         function checkStudentRequests() {
@@ -494,6 +431,36 @@
                 suggestionsBox.classList.add('hidden');
             }
         });
+    }
+
+    function fetchProfilePicture(username) {
+        if (!username) return;
+        const cbName = 'topnav_pic_cb_' + Math.round(Math.random() * 1000000);
+        window[cbName] = function(res) {
+            if (res && res.status === "success" && Array.isArray(res.accounts)) {
+                const user = res.accounts.find(acc => acc.username && acc.username.toLowerCase() === username.toLowerCase());
+                if (user) {
+                    if (user.profilePic) {
+                        localStorage.setItem('profilePic', user.profilePic);
+                        const directUrl = parseDriveLink(user.profilePic);
+                        const avatarImg = document.getElementById('global-header-avatar');
+                        if (avatarImg) avatarImg.src = directUrl;
+                    }
+                    if (user.role !== undefined) {
+                        localStorage.setItem('role', user.role);
+                    }
+                    if (user.books !== undefined) {
+                        localStorage.setItem('books', user.books);
+                    }
+                }
+            }
+            if (script.parentNode) document.body.removeChild(script);
+            delete window[cbName];
+        };
+
+        const script = document.createElement('script');
+        script.src = `${API_URL}?action=initDashboard&username=${encodeURIComponent(username)}&callback=${cbName}`;
+        document.body.appendChild(script);
     }
 
     if (document.readyState === 'loading') {

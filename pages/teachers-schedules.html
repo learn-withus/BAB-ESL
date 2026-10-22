@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - ESL | Teachers Schedule Management</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 99px; }
+    </style>
+</head>
+<body class="bg-base-200 min-h-screen font-sans overflow-x-hidden">
+
+    <div class="drawer lg:drawer-open min-h-screen">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+
+        <div class="drawer-content flex flex-col min-h-screen relative z-10 w-full">
+            <div class="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 w-full">
+                
+                <!-- Header Banner -->
+                <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex items-center gap-4 z-10">
+                        <span class="flex items-center justify-center w-14 h-14 bg-primary/10 text-primary rounded-2xl text-2xl shadow-xs border border-primary/20">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">Teachers Hub</span>
+                            </div>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold text-base-content tracking-tight mt-1">Schedule</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="teachers-directory-view" class="space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-base-content/50"></i>
+                                <input type="text" id="directory-search-input" oninput="filterDirectoryGrid()" placeholder="Search teacher..." class="input input-bordered input-sm w-full pl-9 bg-base-100 rounded-xl text-xs focus:outline-none focus:border-primary shadow-xs">
+                            </div>
+                            <button onclick="fetchAdminData()" class="btn btn-sm btn-ghost bg-base-100 border border-base-300 rounded-xl text-xs font-bold gap-2 shadow-xs hover:bg-base-200">
+                                <i class="fa-solid fa-rotate-right text-primary"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="teachers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        <div class="col-span-full text-center py-16 card bg-base-100 border border-base-300 rounded-3xl text-base-content/50 italic">
+                            <i class="fa-solid fa-circle-notch fa-spin text-primary text-2xl mb-3 block"></i> Loading teacher accounts and schedules...
+                        </div>
+                    </div>
+                </div>
+
+                <div id="teacher-schedule-view" class="space-y-6 hidden">
+                    <div class="card bg-base-100 p-6 rounded-3xl border border-base-300 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-4">
+                            <button onclick="showDirectoryView()" class="btn btn-sm btn-circle btn-ghost border border-base-300 hover:bg-base-200" title="Back to Directory">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            
+                            <div class="avatar relative group cursor-pointer" onclick="openPhotoModal()" title="Click to view full photo">
+                                <div class="w-16 h-16 rounded-2xl ring-2 ring-primary ring-offset-2 ring-offset-base-100 overflow-hidden bg-base-200 transition-all group-hover:scale-105 group-hover:ring-4 shadow-xs">
+                                    <img id="selected-teacher-avatar" src="https://via.placeholder.com/150" alt="Teacher Avatar" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1 rounded-2xl">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">Instructor</span>
+                                    <span id="selected-teacher-badge-count" class="badge badge-ghost badge-sm font-bold border border-base-300">0 Classes</span>
+                                </div>
+                                <h2 id="selected-teacher-title" class="text-xl font-black text-base-content tracking-tight mt-1">Teacher Name</h2>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                            <div class="relative w-full sm:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-base-content/50"></i>
+                                <input type="text" id="teacher-schedule-search" oninput="filterTeacherSchedules()" placeholder="Search student or lesson..." class="input input-bordered input-sm w-full pl-9 bg-base-200/50 rounded-xl text-xs focus:outline-none focus:border-primary shadow-xs">
+                            </div>
+
+                            <button onclick="openBookModal()" class="btn btn-sm btn-primary rounded-xl px-4 text-xs font-bold text-white gap-2 w-full sm:w-auto shadow-xs">
+                                <i class="fa-solid fa-plus"></i> Book New Class
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden w-full">
+                        <div class="overflow-x-auto w-full">
+                            <table class="table w-full text-xs sm:text-sm">
+                                <thead>
+                                    <tr class="bg-base-200/60 text-base-content/70 text-[11px] uppercase font-extrabold tracking-wider border-b border-base-200">
+                                        <th class="py-4 px-6">Student</th>
+                                        <th class="py-4">Lesson</th>
+                                        <th class="py-4">Date</th>
+                                        <th class="py-4">Time</th>
+                                        <th class="py-4 text-center">Meet Link</th>
+                                        <th class="py-4 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teacher-sessions-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="drawer-side z-50 h-full min-h-screen border-r border-base-300 bg-base-100 shadow-xl">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 h-full min-h-screen text-base-content flex flex-col gap-2 overflow-visible bg-base-100">
+            </div>
+        </div>
+    </div>
+
+    <dialog id="teacher-photo-modal" class="modal backdrop-blur-md z-[999]">
+        <div class="modal-box p-6 bg-base-100 rounded-3xl border border-base-300 shadow-2xl max-w-lg flex flex-col items-center relative">
+            <form method="dialog" class="absolute right-4 top-4 z-10">
+                <button class="btn btn-sm btn-circle btn-ghost bg-base-200 hover:bg-base-300 text-base-content">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </form>
+
+            <h3 id="modal-photo-teacher-name" class="font-extrabold text-lg text-base-content mb-4 text-center">Teacher Profile</h3>
+            
+            <div class="w-full h-80 sm:h-96 rounded-2xl overflow-hidden bg-base-200 border border-base-300 shadow-inner flex items-center justify-center">
+                <img id="modal-photo-img" src="" alt="Teacher Profile Photo" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+
+    <dialog id="admin-book-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-lg">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-base-200">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-base-content">
+                    <i class="fa-solid fa-calendar-plus text-primary"></i> Manual Class Assignment
+                </h3>
+                <button onclick="closeBookModal()" class="btn btn-xs btn-circle btn-ghost text-error">✕</button>
+            </div>
+
+            <form id="admin-book-form" onsubmit="saveNewBooking(event)" class="space-y-4 text-xs font-semibold">
+                <div>
+                    <label class="block mb-1 text-base-content/70">Assigned Teacher</label>
+                    <input type="text" id="book-teacher-display" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 cursor-not-allowed font-bold text-primary" readonly>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70">Select Student Account</label>
+                    <select id="book-student-select" class="select select-bordered select-sm w-full rounded-xl bg-base-200/50 text-xs font-semibold focus:border-primary" required>
+                        <option value="" disabled selected>Loading registered student accounts...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70">Lesson Title / Topic</label>
+                    <input type="text" id="book-lesson" placeholder="e.g. Free Talk Session or Lesson 1" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1 text-base-content/70">Date</label>
+                        <input type="date" id="book-date" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-base-content/70">Time</label>
+                        <input type="text" id="book-time" placeholder="e.g. 01:00 PM" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                    </div>
+                </div>
+
+                <div>
+                    <input type="url" id="book-link" placeholder="Leave empty to auto-create via Calendar API..." class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                    <button type="button" onclick="closeBookModal()" class="btn btn-sm btn-ghost rounded-xl">Cancel</button>
+                    <button type="submit" id="admin-book-save-btn" class="btn btn-sm btn-primary rounded-xl px-6 font-bold text-white shadow-xs">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="admin-edit-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-lg">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-base-200">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-base-content">
+                    <i class="fa-solid fa-pen-to-square text-primary"></i> Edit Session Details
+                </h3>
+                <button onclick="closeAdminEditModal()" class="btn btn-xs btn-circle btn-ghost text-error">✕</button>
+            </div>
+
+            <form id="admin-edit-form" onsubmit="saveAdminSession(event)" class="space-y-4 text-xs font-semibold">
+                <input type="hidden" id="admin-edit-id">
+                <input type="hidden" id="admin-edit-teacher">
+
+                <div>
+                    <label class="block mb-1 text-base-content/70">Student Account</label>
+                    <select id="admin-edit-student-select" class="select select-bordered select-sm w-full rounded-xl bg-base-200/50 text-xs font-semibold focus:border-primary" required>
+                        <option value="" disabled selected>Loading registered students...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70">Lesson Title</label>
+                    <input type="text" id="admin-edit-lesson" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block mb-1 text-base-content/70">Date</label>
+                        <input type="date" id="admin-edit-date" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-base-content/70">Time</label>
+                        <input type="text" id="admin-edit-time" placeholder="e.g. 02:00 PM" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-base-content/70">Google Meet Link</label>
+                        <button type="button" onclick="autoGenerateEditMeetUrl()" class="btn btn-xs btn-ghost text-primary font-bold gap-1 hover:bg-primary/15 transition-all">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Generate Link
+                        </button>
+                    </div>
+                    <input type="url" id="admin-edit-link" placeholder="https://meet.google.com/..." class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                    <button type="button" onclick="closeAdminEditModal()" class="btn btn-sm btn-ghost rounded-xl">Cancel</button>
+                    <button type="submit" id="admin-save-btn" class="btn btn-sm btn-primary rounded-xl px-6 font-bold text-white shadow-xs">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <div id="toast-container" class="toast toast-end toast-bottom z-[9999]"></div>
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/topnav.js"></script>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        let allAdminSessions = [];
+        let allRegisteredAccounts = [];
+        let teacherAccountsMap = {};
+        let studentAccountsList = [];
+        let currentActiveTeacher = "";
+        let currentActivePhotoUrl = "";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = String(localStorage.getItem('userRole') || localStorage.getItem('role') || "").trim();
+            if (role !== "3") {
+                window.location.replace("../user-dashboard.html");
+                return;
+            }
+            fetchAdminData();
+        });
+
+        function parseDriveLink(url) {
+            if (!url) return '';
+            const cleanUrl = url.trim();
+            if (cleanUrl.includes('drive.google.com')) {
+                const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+                }
+            }
+            return cleanUrl;
+        }
+
+        async function fetchAdminData() {
+            const grid = document.getElementById('teachers-grid');
+            if (grid) {
+                grid.innerHTML = `<div class="col-span-full text-center py-16 card bg-base-100 border border-base-300 rounded-3xl text-base-content/50 italic"><i class="fa-solid fa-circle-notch fa-spin text-primary text-2xl mb-3 block"></i> Fetching teachers and student accounts...</div>`;
+            }
+
+            const accCallback = 'admin_acc_cb_' + Math.round(Math.random() * 1000000);
+            window[accCallback] = function(res) {
+                if (res && res.status === "success" && Array.isArray(res.accounts)) {
+                    allRegisteredAccounts = res.accounts;
+                    teacherAccountsMap = {};
+                    studentAccountsList = [];
+
+                    res.accounts.forEach(acc => {
+                        const name = String(acc.username || acc.name || '').trim();
+                        const lowerName = name.toLowerCase();
+                        const role = String(acc.role || '').trim();
+
+                        if (lowerName) {
+                            teacherAccountsMap[lowerName] = {
+                                profilePic: parseDriveLink(acc.profilePic || acc.userProfilePic || ''),
+                                role: role,
+                                rawName: name
+                            };
+
+                            if (role === "1" || role === "student") {
+                                studentAccountsList.push(name);
+                            }
+                        }
+                    });
+
+                    populateStudentDropdowns();
+                }
+                delete window[accCallback];
+                fetchSessionsData();
+            };
+
+            const scriptAcc = document.createElement('script');
+            scriptAcc.src = `${API_URL}?action=initDashboard&callback=${accCallback}&_cb=${Date.now()}`;
+            document.body.appendChild(scriptAcc);
+        }
+
+        function populateStudentDropdowns() {
+            const bookSelect = document.getElementById('book-student-select');
+            const editSelect = document.getElementById('admin-edit-student-select');
+
+            studentAccountsList.sort();
+
+            let optionsHtml = '<option value="" disabled selected>Select a student account...</option>';
+            studentAccountsList.forEach(st => {
+                optionsHtml += `<option value="${st}">${st}</option>`;
+            });
+
+            if (studentAccountsList.length === 0) {
+                optionsHtml = '<option value="" disabled>No registered students found</option>';
+            }
+
+            if (bookSelect) bookSelect.innerHTML = optionsHtml;
+            if (editSelect) editSelect.innerHTML = optionsHtml;
+        }
+
+        function fetchSessionsData() {
+            const sessCallback = 'admin_sess_cb_' + Math.round(Math.random() * 1000000);
+            window[sessCallback] = function(data) {
+                allAdminSessions = Array.isArray(data) ? data : (data.schedules || []);
+                renderTeachersDirectory();
+                delete window[sessCallback];
+            };
+
+            const scriptSess = document.createElement('script');
+            scriptSess.src = `${API_URL}?action=getSessions&callback=${sessCallback}&_cb=${Date.now()}`;
+            document.body.appendChild(scriptSess);
+        }
+
+        function renderTeachersDirectory() {
+            const grid = document.getElementById('teachers-grid');
+            if (!grid) return;
+
+            const teacherCounts = {};
+            allAdminSessions.forEach(s => {
+                let t = String(s.teacher || s.Teacher || '').trim();
+                if (t.toLowerCase().startsWith('teacher ')) t = t.substring(8).trim();
+                if (t) {
+                    const key = t.toLowerCase();
+                    teacherCounts[key] = (teacherCounts[key] || 0) + 1;
+                }
+            });
+
+            const teacherKeys = new Set([
+                ...Object.keys(teacherCounts),
+                ...Object.keys(teacherAccountsMap).filter(k => teacherAccountsMap[k].role === "2" || teacherAccountsMap[k].role === "teacher")
+            ]);
+
+            const teacherList = Array.from(teacherKeys).sort();
+
+            if (teacherList.length === 0) {
+                grid.innerHTML = `<div class="col-span-full card bg-base-100 p-10 text-center border border-base-300 rounded-3xl text-base-content/50 font-medium">No teacher profiles or scheduled bookings found.</div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            teacherList.forEach(key => {
+                const accInfo = teacherAccountsMap[key] || {};
+                const displayName = accInfo.rawName || key.charAt(0).toUpperCase() + key.slice(1);
+                const count = teacherCounts[key] || 0;
+                const photoUrl = accInfo.profilePic;
+
+                const card = document.createElement('div');
+                card.className = "teacher-card card bg-base-100 p-5 border border-base-300 shadow-xs hover:border-primary hover:shadow-md transition-all rounded-3xl flex flex-col justify-between cursor-pointer group";
+                card.setAttribute('data-name', displayName.toLowerCase());
+                card.onclick = () => selectTeacher(displayName, photoUrl);
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="relative shrink-0">
+                            <div class="w-14 h-14 rounded-2xl ring-2 ring-primary/10 ring-offset-2 ring-offset-base-100 overflow-hidden bg-base-200 flex items-center justify-center text-primary font-black text-xl group-hover:ring-primary transition-all">
+                                ${photoUrl ? `<img src="${photoUrl}" alt="${displayName}" class="w-full h-full object-cover">` : `<span>${displayName.charAt(0).toUpperCase()}</span>`}
+                            </div>
+                            <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-success border-2 border-base-100 rounded-full"></span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-extrabold text-sm text-base-content truncate group-hover:text-primary transition-colors">${displayName}</h3>
+                            <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${count > 0 ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-base-200 text-base-content/60'}">
+                                ${count} scheduled class${count === 1 ? '' : 'es'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 mt-3 border-t border-base-200 text-xs font-bold text-primary">
+                        <span>View Schedule</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterDirectoryGrid() {
+            const query = document.getElementById('directory-search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.teacher-card');
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                card.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        function selectTeacher(teacherName, photoUrl) {
+            currentActiveTeacher = teacherName;
+            currentActivePhotoUrl = photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacherName)}&background=3b82f6&color=fff&bold=true`;
+            
+            document.getElementById('selected-teacher-title').textContent = teacherName;
+
+            const avatarImg = document.getElementById('selected-teacher-avatar');
+            avatarImg.src = currentActivePhotoUrl;
+
+            document.getElementById('teachers-directory-view').classList.add('hidden');
+            document.getElementById('teacher-schedule-view').classList.remove('hidden');
+            document.getElementById('teacher-schedule-search').value = '';
+            filterTeacherSchedules();
+        }
+
+        function openPhotoModal() {
+            const modal = document.getElementById('teacher-photo-modal');
+            const nameEl = document.getElementById('modal-photo-teacher-name');
+            const imgEl = document.getElementById('modal-photo-img');
+
+            if (nameEl) nameEl.textContent = `${currentActiveTeacher}'s Profile Photo`;
+            if (imgEl) imgEl.src = currentActivePhotoUrl;
+
+            if (modal) modal.showModal();
+        }
+
+        function showDirectoryView() {
+            currentActiveTeacher = "";
+            currentActivePhotoUrl = "";
+            document.getElementById('teacher-schedule-view').classList.add('hidden');
+            document.getElementById('teachers-directory-view').classList.remove('hidden');
+        }
+
+        function filterTeacherSchedules() {
+            const query = document.getElementById('teacher-schedule-search').value.toLowerCase().trim();
+            
+            const teacherSessions = allAdminSessions.filter(s => {
+                let t = String(s.teacher || s.Teacher || '').trim().toLowerCase();
+                if (t.startsWith('teacher ')) t = t.substring(8).trim();
+                
+                let activeClean = currentActiveTeacher.toLowerCase();
+                if (activeClean.startsWith('teacher ')) activeClean = activeClean.substring(8).trim();
+
+                return t === activeClean || t.includes(activeClean) || activeClean.includes(t);
+            });
+
+            const badgeCount = document.getElementById('selected-teacher-badge-count');
+            if (badgeCount) badgeCount.textContent = `${teacherSessions.length} Classes`;
+
+            const filtered = teacherSessions.filter(s => {
+                const student = String(s.student || s.Student || '').toLowerCase();
+                const lesson = String(s.lesson || s.Lesson || '').toLowerCase();
+                return !query || student.includes(query) || lesson.includes(query);
+            });
+
+            renderTeacherSessionsTable(filtered);
+        }
+
+        function renderTeacherSessionsTable(sessions) {
+            const tbody = document.getElementById('teacher-sessions-tbody');
+            if (!tbody) return;
+
+            if (sessions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-base-content/50 font-medium">No scheduled classes found for this teacher.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            sessions.forEach(s => {
+                const id = s.id !== undefined ? s.id : '';
+                const teacher = s.teacher || s.Teacher || currentActiveTeacher;
+                const student = s.student || s.Student || 'N/A';
+                const lesson = s.lesson || s.Lesson || 'Class Session';
+                const date = s.sessionDate || s.date || s.Date || '';
+                const time = s.sessionTime || s.time || s.Time || '';
+                const link = s.link || s.Link || '';
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-base-200 hover:bg-base-200/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="font-bold text-base-content py-4 px-6 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xs uppercase">
+                            ${student.charAt(0)}
+                        </div>
+                        ${student}
+                    </td>
+                    <td class="py-4 font-semibold text-base-content/80">${lesson}</td>
+                    <td class="py-4 text-base-content/70 font-medium">${date}</td>
+                    <td class="py-4 text-base-content/70 font-medium">${time}</td>
+                    <td class="py-4 text-center">
+                        ${link ? `<a href="${link}" target="_blank" class="btn btn-xs btn-primary font-bold gap-1 rounded-lg px-3"><i class="fa-solid fa-video"></i> Meet</a>` : `<span class="badge badge-warning badge-xs font-semibold">No Link</span>`}
+                    </td>
+                    <td class="py-4 text-center">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="openAdminEditModal('${id}', '${escapeQuotes(teacher)}', '${escapeQuotes(student)}', '${escapeQuotes(lesson)}', '${escapeQuotes(date)}', '${escapeQuotes(time)}', '${escapeQuotes(link)}')" class="btn btn-xs btn-ghost text-primary hover:bg-primary/10 font-bold gap-1 rounded-lg" title="Edit Schedule">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button onclick="deleteAdminSession('${id}', '${escapeQuotes(teacher)}', '${escapeQuotes(student)}')" class="btn btn-xs btn-ghost text-error hover:bg-error/10 font-bold gap-1 rounded-lg" title="Cancel/Delete Booking">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function escapeQuotes(str) {
+            return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function openBookModal() {
+            document.getElementById('book-teacher-display').value = currentActiveTeacher;
+            document.getElementById('book-student-select').value = '';
+            document.getElementById('book-lesson').value = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('book-date').value = today;
+            document.getElementById('book-time').value = '10:00 AM';
+            document.getElementById('book-link').value = '';
+
+            document.getElementById('admin-book-modal').showModal();
+        }
+
+        function closeBookModal() {
+            document.getElementById('admin-book-modal').close();
+        }
+
+        function saveNewBooking(e) {
+            if (e) e.preventDefault();
+
+            const btn = document.getElementById('admin-book-save-btn');
+            const studentSelect = document.getElementById('book-student-select');
+            const lessonInput = document.getElementById('book-lesson');
+            const dateInput = document.getElementById('book-date');
+            const timeInput = document.getElementById('book-time');
+            const linkInput = document.getElementById('book-link');
+
+            if (!studentSelect || !studentSelect.value) {
+                showToast("Please select a student account.", "error");
+                return;
+            }
+
+            if (!lessonInput || !lessonInput.value.trim()) {
+                showToast("Please enter a lesson title.", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Booking...";
+
+            const teacher = currentActiveTeacher;
+            const student = studentSelect.value;
+            const lesson = lessonInput.value.trim();
+            const date = dateInput ? dateInput.value : '';
+            const time = timeInput ? timeInput.value : '';
+            const link = linkInput ? linkInput.value.trim() : '';
+
+            const callbackName = 'admin_new_book_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                btn.disabled = false;
+                btn.textContent = "Confirm Booking";
+                closeBookModal();
+
+                showToast(`Class assigned to ${student}!`, "success");
+                fetchAdminData();
+                setTimeout(() => {
+                    if (currentActiveTeacher) selectTeacher(currentActiveTeacher, currentActivePhotoUrl);
+                }, 400);
+
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=createSession&teacher=${encodeURIComponent(teacher)}&student=${encodeURIComponent(student)}&lesson=${encodeURIComponent(lesson)}&sessionDate=${encodeURIComponent(date)}&sessionTime=${encodeURIComponent(time)}&link=${encodeURIComponent(link)}&callback=${callbackName}`;
+            
+            script.onerror = function() {
+                btn.disabled = false;
+                btn.textContent = "Confirm Booking";
+                closeBookModal();
+                showToast(`Class assigned to ${student}!`, "success");
+                fetchAdminData();
+                delete window[callbackName];
+            };
+
+            document.body.appendChild(script);
+        }
+
+        function openAdminEditModal(id, teacher, student, lesson, date, time, link) {
+            document.getElementById('admin-edit-id').value = id;
+            document.getElementById('admin-edit-teacher').value = teacher;
+            
+            const studentSelect = document.getElementById('admin-edit-student-select');
+            if (studentSelect) {
+                studentSelect.value = student;
+            }
+
+            document.getElementById('admin-edit-lesson').value = lesson;
+            document.getElementById('admin-edit-date').value = date;
+            document.getElementById('admin-edit-time').value = time;
+            document.getElementById('admin-edit-link').value = link;
+
+            document.getElementById('admin-edit-modal').showModal();
+        }
+
+        function closeAdminEditModal() {
+            document.getElementById('admin-edit-modal').close();
+        }
+
+        function autoGenerateEditMeetUrl() {
+            const linkInput = document.getElementById('admin-edit-link');
+            const sessionId = document.getElementById('admin-edit-id').value;
+            const lesson = document.getElementById('admin-edit-lesson').value.trim();
+            const date = document.getElementById('admin-edit-date').value;
+            const time = document.getElementById('admin-edit-time').value;
+
+            if (linkInput) {
+                linkInput.value = "Generating official Google Meet link...";
+            }
+
+            showToast("Requesting Google Calendar API...", "success");
+
+            const callbackName = 'admin_autogen_meet_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                if (res && res.updatedLink) {
+                    if (linkInput) linkInput.value = res.updatedLink; 
+                    showToast("Google Meet link generated successfully!", "success");
+                } else {
+                    showToast("Failed to generate link via Calendar API.", "error");
+                }
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=updateSessionLink&id=${encodeURIComponent(sessionId)}&lesson=${encodeURIComponent(lesson)}&sessionDate=${encodeURIComponent(date)}&sessionTime=${encodeURIComponent(time)}&link=&callback=${callbackName}`;
+            script.onerror = function() {
+                showToast("Failed to connect to Google Calendar API.", "error");
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function saveAdminSession(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('admin-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            const id = document.getElementById('admin-edit-id').value;
+            const lesson = document.getElementById('admin-edit-lesson').value;
+            const date = document.getElementById('admin-edit-date').value;
+            const time = document.getElementById('admin-edit-time').value;
+            const link = document.getElementById('admin-edit-link').value;
+
+            const callbackName = 'admin_save_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+                closeAdminEditModal();
+
+                showToast("Schedule updated successfully!", "success");
+                fetchAdminData();
+                setTimeout(() => {
+                    if (currentActiveTeacher) selectTeacher(currentActiveTeacher, currentActivePhotoUrl);
+                }, 300);
+
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=updateSessionLink&id=${encodeURIComponent(id)}&lesson=${encodeURIComponent(lesson)}&sessionDate=${encodeURIComponent(date)}&sessionTime=${encodeURIComponent(time)}&link=${encodeURIComponent(link)}&callback=${callbackName}`;
+            script.onerror = function() {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+                closeAdminEditModal();
+                showToast("Schedule updated successfully!", "success");
+                fetchAdminData();
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function deleteAdminSession(id, teacher, student) {
+            if (!confirm(`Are you sure you want to cancel and remove this class booking for ${student} with ${teacher}?`)) return;
+
+            const callbackName = 'admin_delete_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                showToast("Booking cancelled and removed!", "success");
+                fetchAdminData();
+                setTimeout(() => {
+                    if (currentActiveTeacher) selectTeacher(currentActiveTeacher, currentActivePhotoUrl);
+                }, 300);
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=deleteSession&id=${encodeURIComponent(id)}&callback=${callbackName}`;
+            script.onerror = function() {
+                showToast("Booking cancelled and removed!", "success");
+                fetchAdminData();
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            toast.className = `alert ${alertClass} text-white shadow-lg text-xs py-3 rounded-2xl`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+</body>
+</html>

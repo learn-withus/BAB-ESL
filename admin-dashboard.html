@@ -3,725 +3,662 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESL Pro - Admin Dashboard</title>
+    <title>BAB - ESL | Admin Management Center</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .book-toggle-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 10px;
-            background: hsl(var(--b1));
-            border: 1px solid hsl(var(--bc) / 0.15);
-            border-radius: 0.375rem;
-            font-size: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .book-toggle-label:hover {
-            background: hsl(var(--b2));
-        }
-        .book-toggle-label input[type="checkbox"] {
-            accent-color: hsl(var(--p));
-        }
-        .badge-admin { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; border: none; font-weight: 600; }
-        .badge-teacher { background-color: rgba(59, 130, 246, 0.15); color: #3b82f6; border: none; font-weight: 600; }
-        .badge-student { background-color: rgba(16, 185, 129, 0.15); color: #10b981; border: none; font-weight: 600; }
-        .predictive-item {
-            padding: 8px 12px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid hsl(var(--bc) / 0.1);
-        }
-        .predictive-item:hover {
-            background-color: hsl(var(--b2));
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 99px; }
     </style>
 </head>
-<body class="bg-base-200 min-h-screen font-sans">
-    <div class="drawer lg:drawer-open">
-        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content flex flex-col min-h-screen">
+<body class="bg-base-200 min-h-screen font-sans overflow-x-hidden">
 
-            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-                <div class="card bg-base-100 shadow-sm border border-base-300 lg:col-span-3 p-6 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div>
-                        <h2 class="text-2xl font-bold">Admin Control Center 🛡️</h2>
-                        <p class="text-base-content/70 text-sm mt-1">Manage accounts and system controls efficiently.</p>
+    <div class="drawer lg:drawer-open min-h-screen">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+
+        <div class="drawer-content flex flex-col min-h-screen relative z-10 w-full">
+            <div class="p-4 sm:p-6 lg:p-8 space-y-6 flex-1 w-full">
+                
+                <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex items-center gap-4 z-10">
+                        <span class="flex items-center justify-center w-14 h-14 bg-primary/10 text-primary rounded-2xl text-2xl shadow-xs border border-primary/20">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">Admin Panel</span>
+                            </div>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold text-base-content tracking-tight mt-1">Accounts</h1>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-6 flex-wrap">
-                        <div class="flex items-center gap-4 bg-base-200 px-4 py-3 rounded-xl border border-base-300">
-                            <div class="p-2 bg-primary/10 text-primary rounded-lg text-lg">
-                                <i class="fa-regular fa-clock"></i>
-                            </div>
-                            <div class="text-xs">
-                                <div id="live-clock" class="font-bold text-primary text-sm">--:--:-- --</div>
-                                <div class="text-base-content/50 text-[10px]">System Clock</div>
-                            </div>
+
+                    <div class="flex items-center gap-3 bg-base-200/80 p-3 px-5 rounded-2xl border border-base-300 text-base-content shrink-0 z-10 shadow-xs">
+                        <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-sm">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <div id="live-clock" class="text-sm font-extrabold tracking-wide text-primary">00:00:00 AM</div>
+                            <div class="text-[10px] font-bold text-base-content/50 uppercase tracking-wider">System Time</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 lg:col-span-3">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                        <h3 class="text-base font-bold flex items-center gap-2 text-primary">
-                            <i class="fa-solid fa-users-gear"></i> User Accounts
-                        </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">Total Accounts</span>
+                            <h3 id="stat-total" class="text-2xl font-black text-base-content mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">Registered Students</span>
+                            <h3 id="stat-students" class="text-2xl font-black text-success mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-success/10 text-success flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">Faculty Teachers</span>
+                            <h3 id="stat-teachers" class="text-2xl font-black text-info mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-info/10 text-info flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">System Admins</span>
+                            <h3 id="stat-admins" class="text-2xl font-black text-warning mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-warning/10 text-warning flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden w-full">
+                    
+                    <div class="p-6 border-b border-base-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-primary"></span>
+                            <div>
+                                <p class="text-xs text-base-content/60 font-medium">Search, filter, edit credentials, or append new accounts.</p>
+                            </div>
+                        </div>
 
                         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                            <div id="accounts-counter" class="badge badge-neutral gap-2 py-3 px-4 font-semibold text-xs">
-                                <i class="fa-solid fa-users"></i>
-                                <span>Loading accounts...</span>
+                            <div class="relative flex-1 md:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-base-content/40"></i>
+                                <input type="text" id="user-search-input" oninput="filterUserTable()" placeholder="Search username..." class="input input-bordered input-sm w-full pl-9 bg-base-200/50 rounded-xl text-xs focus:outline-none focus:border-primary shadow-xs">
                             </div>
 
-                            <button onclick="openCreateModal()" class="btn btn-primary btn-sm gap-2">
+                            <select id="role-filter-select" onchange="filterUserTable()" class="select select-bordered select-sm rounded-xl text-xs bg-base-200/50 font-semibold focus:outline-none focus:border-primary">
+                                <option value="all">All Roles</option>
+                                <option value="1">Students (Role 1)</option>
+                                <option value="2">Teachers (Role 2)</option>
+                                <option value="3">Admins (Role 3)</option>
+                            </select>
+
+                            <button onclick="openAddUserModal()" class="btn btn-sm btn-primary rounded-xl px-4 text-xs font-bold text-white gap-2 shadow-xs hover:opacity-90">
                                 <i class="fa-solid fa-user-plus"></i> Add Account
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-3 mb-6">
-                        <div class="relative flex-1">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
-                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                            </div>
-                            <input type="text" id="usernameSearchInput" class="input input-bordered input-sm w-full pl-9 text-xs" placeholder="Search by username..." autocomplete="off">
-                            <div class="absolute left-0 right-0 top-full mt-1 bg-base-100 shadow-xl rounded-box border border-base-300 max-h-60 overflow-y-auto z-50 hidden" id="predictiveDropdown"></div>
-                        </div>
-                        <div class="w-full sm:w-48">
-                            <select id="roleSortSelect" class="select select-bordered select-sm w-full text-xs" onchange="filterAndRenderAccounts()">
-                                <option value="all">All Roles</option>
-                                <option value="3">Admin (Role 3)</option>
-                                <option value="2">Teacher (Role 2)</option>
-                                <option value="1">Student (Role 1)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="table w-full text-sm">
+                    <div class="overflow-x-auto w-full">
+                        <table class="table w-full text-xs sm:text-sm">
                             <thead>
-                                <tr class="text-base-content/70 border-b border-base-300">
-                                    <th>User Name</th>
-                                    <th>Password</th>
-                                    <th>Role</th>
-                                    <th class="text-center">Actions</th>
+                                <tr class="bg-base-200/60 text-base-content/70 text-[11px] uppercase font-extrabold tracking-wider border-b border-base-200">
+                                    <th class="py-4 px-6">User Name</th>
+                                    <th class="py-4">Password</th>
+                                    <th class="py-4">Role & Access</th>
+                                    <th class="py-4 text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="account-table-body">
+                            <tbody id="user-table-tbody">
                                 <tr>
-                                    <td colspan="4" class="text-center py-6 text-base-content/50">Fetching accounts from Google Sheet...</td>
+                                    <td colspan="4" class="text-center py-16 text-base-content/50 italic">
+                                        <i class="fa-solid fa-circle-notch fa-spin text-primary text-2xl mb-3 block"></i> Syncing user account database...
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
                 </div>
+
             </div>
         </div>
 
-        <div class="drawer-side z-[999] overflow-visible">
+        <!-- Overlapping Sidebar with High Z-Index for Tooltips -->
+        <div class="drawer-side z-50 h-full min-h-screen border-r border-base-300 bg-base-100 shadow-xl">
             <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 h-full min-h-screen text-base-content flex flex-col gap-2 overflow-visible bg-base-100">
             </div>
         </div>
     </div>
 
-    <div id="toast-container" class="toast toast-end toast-bottom z-50"></div>
-
-    <div class="modal" id="createModalOverlay">
-        <div class="modal-box max-w-lg p-0 overflow-hidden shadow-2xl bg-base-100 border border-base-300">
-            <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
-                <h3 class="font-bold text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus"></i> Create New Account
+    <!-- ADD USER MODAL -->
+    <dialog id="add-user-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-md">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-base-200">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-base-content">
+                    <i class="fa-solid fa-user-plus text-primary"></i> Create New Account
                 </h3>
-                <button onclick="closeCreateModal()" class="btn btn-sm btn-circle btn-ghost text-primary-content">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <button onclick="closeAddUserModal()" class="btn btn-xs btn-circle btn-ghost text-error">✕</button>
             </div>
-            <form id="createForm" onsubmit="submitCreateForm(event)" class="p-6 space-y-4">
+
+            <form id="add-user-form" onsubmit="submitAddUser(event)" class="space-y-4 text-xs font-semibold">
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Username</label>
-                    <input type="text" id="createUsername" class="input input-bordered w-full text-sm bg-base-100" placeholder="Enter username" required autocomplete="off">
+                    <label class="block mb-1 text-base-content/70">Username</label>
+                    <input type="text" id="add-username" placeholder="e.g. john_doe" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
                 </div>
+
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Password</label>
-                    <input type="password" id="createPassword" class="input input-bordered w-full text-sm bg-base-100" placeholder="Enter secure password" required>
+                    <label class="block mb-1 text-base-content/70">Password</label>
+                    <input type="text" id="add-password" placeholder="Enter secure password" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
                 </div>
+
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Account Role</label>
-                    <select id="createRole" class="select select-bordered w-full text-sm bg-base-100">
-                        <option value="1">1 - Student / Normal User</option>
+                    <label class="block mb-1 text-base-content/70">Role</label>
+                    <select id="add-role" class="select select-bordered select-sm w-full rounded-xl bg-base-200/50 text-xs font-semibold focus:border-primary" required>
+                        <option value="1">1 - Student</option>
                         <option value="2">2 - Teacher</option>
                         <option value="3">3 - Admin</option>
                     </select>
                 </div>
-                <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Allowed Books Access</label>
-                    <div class="relative mb-2">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
-                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                        </span>
-                        <input type="text" id="createBookSearch" class="input input-bordered input-sm w-full pl-9 text-xs" placeholder="Search lessons/books..." oninput="filterBooks('create')" autocomplete="off">
-                    </div>
-                    <div id="createBooksContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 bg-base-200 rounded-box border border-base-300">
-                        <span class="text-xs text-base-content/50 col-span-full text-center py-2">Loading books list...</span>
-                    </div>
-                </div>
-                <div class="modal-action bg-base-200 px-6 py-4 -mx-6 -mb-6 mt-6 border-t border-base-300 flex justify-end gap-2">
-                    <button type="button" class="btn btn-sm" onclick="closeCreateModal()">Cancel</button>
-                    <button type="submit" id="btnCreateSubmit" class="btn btn-primary btn-sm">Create Account</button>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                    <button type="button" onclick="closeAddUserModal()" class="btn btn-sm btn-ghost rounded-xl">Cancel</button>
+                    <button type="submit" id="add-save-btn" class="btn btn-sm btn-primary rounded-xl px-6 font-bold text-white shadow-xs">Create Account</button>
                 </div>
             </form>
         </div>
-    </div>
+    </dialog>
 
-    <div class="modal" id="editModalOverlay">
-        <div class="modal-box max-w-lg p-0 overflow-hidden shadow-2xl bg-base-100 border border-base-300">
-            <div class="bg-primary text-primary-content px-6 py-4 flex justify-between items-center">
+    <dialog id="edit-user-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-0 rounded-3xl border border-base-300 shadow-2xl max-w-lg overflow-hidden bg-base-100">
+            
+            <div class="bg-primary text-white p-5 flex justify-between items-center">
                 <h3 class="font-bold text-lg flex items-center gap-2">
                     <i class="fa-solid fa-user-pen"></i> Edit Account Details
                 </h3>
-                <button onclick="closeEditModal()" class="btn btn-sm btn-circle btn-ghost text-primary-content">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <button onclick="closeEditUserModal()" class="btn btn-xs btn-circle btn-ghost text-white hover:bg-white/20">✕</button>
             </div>
-            <form id="editForm" onsubmit="submitEditForm(event)" class="p-6 space-y-4">
-                <input type="hidden" id="editOldUsername">
+
+            <form id="edit-user-form" onsubmit="submitEditUser(event)" class="p-6 space-y-4 text-xs font-semibold">
+                <input type="hidden" id="edit-old-username">
+
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Username</label>
-                    <input type="text" id="editUsername" class="input input-bordered w-full text-sm bg-base-100" required autocomplete="off">
+                    <label class="block mb-1 text-base-content/70 font-bold">Username</label>
+                    <input type="text" id="edit-username" class="input input-bordered input-sm w-full rounded-xl bg-base-100 font-bold text-base-content focus:border-primary" required>
                 </div>
+
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Password</label>
-                    <input type="text" id="editPassword" class="input input-bordered w-full text-sm bg-base-100" required>
+                    <label class="block mb-1 text-base-content/70 font-bold">Password</label>
+                    <input type="text" id="edit-password" class="input input-bordered input-sm w-full rounded-xl bg-base-100 font-bold text-base-content focus:border-primary" required>
                 </div>
+
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Account Role</label>
-                    <select id="editRole" class="select select-bordered w-full text-sm bg-base-100">
-                        <option value="3">3 - Admin</option>
+                    <label class="block mb-1 text-base-content/70 font-bold">Account Role</label>
+                    <select id="edit-role" class="select select-bordered select-sm w-full rounded-xl bg-base-100 text-xs font-bold text-base-content focus:border-primary" required>
+                        <option value="1">1 - Student</option>
                         <option value="2">2 - Teacher</option>
-                        <option value="1">1 - Student / Normal User</option>
+                        <option value="3">3 - Admin</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="text-xs font-semibold text-base-content/70 block mb-1">Allowed Books Access</label>
-                    <div class="relative mb-2">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/50">
-                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                        </span>
-                        <input type="text" id="editBookSearch" class="input input-bordered input-sm w-full pl-9 text-xs" placeholder="Search lessons/books..." oninput="filterBooks('edit')" autocomplete="off">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-base-content/70 font-bold">Allowed Books Access</label>
+                        <span id="selected-books-count" class="text-[11px] font-bold text-primary">0 Selected</span>
                     </div>
-                    <div id="editBooksContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 bg-base-200 rounded-box border border-base-300">
-                        <span class="text-xs text-base-content/50 col-span-full text-center py-2">Loading books list...</span>
+
+                    <div class="relative mb-2">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-base-content/40"></i>
+                        <input type="text" id="book-modal-search" oninput="filterModalBooks()" placeholder="Search lessons/books..." class="input input-bordered input-sm w-full pl-9 rounded-xl bg-base-100 text-xs focus:border-primary">
+                    </div>
+
+                    <div class="bg-base-200/60 p-4 rounded-2xl border border-base-300 max-h-52 overflow-y-auto custom-scroll">
+                        <div id="modal-books-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                        </div>
                     </div>
                 </div>
-                <div class="modal-action bg-base-200 px-6 py-4 -mx-6 -mb-6 mt-6 border-t border-base-300 flex justify-end gap-2">
-                    <button type="button" class="btn btn-sm" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                    <button type="button" onclick="closeEditUserModal()" class="btn btn-sm btn-ghost rounded-xl px-5 font-bold">Cancel</button>
+                    <button type="submit" id="edit-save-btn" class="btn btn-sm btn-primary rounded-xl px-6 font-extrabold text-white shadow-xs">Save Changes</button>
                 </div>
             </form>
         </div>
-    </div>
+    </dialog>
 
-    <div class="modal" id="deleteModalOverlay">
-        <div class="modal-box max-w-sm text-center bg-base-100 border border-base-300">
-            <div class="w-12 h-12 rounded-full bg-error/10 text-error flex items-center justify-center mx-auto mb-4 text-xl">
+    <dialog id="delete-user-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-sm text-center bg-base-100">
+            <div class="w-16 h-16 bg-error/10 text-error rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-error/20">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h3 class="text-lg font-bold mb-2">Delete User Account?</h3>
-            <p class="text-sm text-base-content/70 mb-6">Are you sure you want to delete user <span id="deleteUsernameDisplay" class="font-bold text-error"></span>? This action is permanent.</p>
-            <input type="hidden" id="deleteTargetUsername">
-            <div class="modal-action justify-center">
-                <button type="button" class="btn btn-sm" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="btn btn-sm btn-error text-white" onclick="confirmDeleteAccount()">Yes, Delete</button>
+            <h3 class="font-extrabold text-lg text-base-content mb-1">Delete Account</h3>
+            <p class="text-xs text-base-content/60 font-medium mb-6">Are you sure you want to permanently delete the account <span id="delete-target-name" class="font-bold text-base-content"></span>?</p>
+            
+            <input type="hidden" id="delete-target-username">
+
+            <div class="flex items-center justify-center gap-2">
+                <button type="button" onclick="closeDeleteModal()" class="btn btn-sm btn-ghost rounded-xl flex-1 font-bold">Cancel</button>
+                <button type="button" id="confirm-delete-btn" onclick="confirmDeleteAccount()" class="btn btn-sm btn-error text-white rounded-xl flex-1 font-bold shadow-xs">Yes, Delete</button>
             </div>
         </div>
-    </div>
+        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
 
-    <script src="./scripts/nav.js"></script>
-    <script src="./scripts/topnav.js"></script>
+    <div id="toast-container" class="toast toast-end toast-bottom z-[9999]"></div>
 
+    <script src="scripts/nav.js"></script>
+    <script src="scripts/topnav.js"></script>
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec'; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        let allAccountsList = [];
+        let masterBooksList = [
+            "work-life-balance.html", "workplace-ethics.html", "restaurant.html",
+            "sports-lesson.html", "library.html", "bus-stop.html", "super-market.html",
+            "kitchen-cooking.html", "park.html", "museums.html", "school-life.html",
+            "hospital-healthcare.html", "hotels-airports.html", "commuting-directions.html",
+            "cafe.html", "driving.html", "managing-busy-schedule.html", "zoo.html", 
+            "customer-service.html", "drugstore.html", "workplace-ethics-v2.html", "music.html",
+            "beach.html", "seminar-meeting.html", "stationery.html", "security.html", "barber.html",
+            "festival.html", "agriculture.html", "ophthalmologist.html", "basic-conversation.html",
+            "self-introduction.html", "dynamic-listening.html"
+        ];
+        let selectedBooksSet = new Set();
 
-        let allAccountsData = [];
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const nameSpan = document.getElementById('username-display');
-            const storedName = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
-            if (nameSpan && storedName) {
-                nameSpan.textContent = storedName;
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = String(localStorage.getItem('userRole') || localStorage.getItem('role') || "").trim();
+            if (role !== "3") {
+                window.location.replace("user-dashboard.html");
+                return;
             }
-
-            fetchGoogleSheetAccounts();
-            loadDynamicBooksLists();
-            updateClock();
-            setInterval(updateClock, 1000);
-
-            const searchInput = document.getElementById('usernameSearchInput');
-            const dropdown = document.getElementById('predictiveDropdown');
-
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim().toLowerCase();
-                filterAndRenderAccounts();
-
-                if (!query) {
-                    dropdown.classList.add('hidden');
-                    dropdown.innerHTML = '';
-                    return;
-                }
-
-                const matches = allAccountsData.filter(acc => {
-                    const uname = (acc.username || acc.Username || acc.Name || "").toLowerCase();
-                    return uname.includes(query);
-                });
-
-                if (matches.length > 0) {
-                    dropdown.innerHTML = '';
-                    matches.slice(0, 5).forEach(match => {
-                        const uname = match.username || match.Username || match.Name || "Unknown";
-                        const item = document.createElement('div');
-                        item.className = 'predictive-item';
-                        item.innerHTML = `<i class="fa-solid fa-user text-primary text-xs"></i> <span>${uname}</span>`;
-                        item.onclick = () => {
-                            searchInput.value = uname;
-                            dropdown.classList.add('hidden');
-                            filterAndRenderAccounts();
-                        };
-                        dropdown.appendChild(item);
-                    });
-                    dropdown.classList.remove('hidden');
-                } else {
-                    dropdown.classList.add('hidden');
-                    dropdown.innerHTML = '';
-                }
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.relative')) {
-                    dropdown.classList.add('hidden');
-                }
-            });
+            startLiveClock();
+            fetchUserAccounts();
         });
 
-        window.toggleTeacherBookingStatus = function() {
-            const toggle = document.getElementById('topnav-booking-toggle');
-            const label = document.getElementById('topnav-booking-label');
-            if (!toggle || !label) return;
-
-            const newStatus = toggle.checked ? 'open' : 'closed';
-            label.textContent = toggle.checked ? 'Open' : 'Closed';
-            label.className = toggle.checked ? 'text-xs font-bold text-success' : 'text-xs font-bold text-error';
-
-            const currentAdmin = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
-
-            const cbName = 'toggle_booking_cb_' + Math.round(Math.random() * 1000000);
-            window[cbName] = function(result) {
-                if (result && result.status === "success") {
-                    showToast(`Booking status updated to ${newStatus}`, "success");
-                } else {
-                    showToast("Failed to update booking status", "error");
-                }
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
-
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?action=setBookingStatus&teacher=${encodeURIComponent(currentAdmin)}&status=${encodeURIComponent(newStatus)}&callback=${cbName}`;
-            script.onerror = () => {
-                showToast("Connection failed for booking toggle.", "error");
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
-            document.body.appendChild(script);
-        };
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
-            toast.className = `alert ${alertClass} text-white shadow-lg text-xs py-2 px-4 mb-2 transition-all duration-300`;
-            
-            const iconClass = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-            toast.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid ${iconClass}"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.remove();
-            }, 3500);
-        }
-
-        function updateClock() {
-            const clockEl = document.getElementById('live-clock');
-            if (clockEl) {
+        function startLiveClock() {
+            function updateClock() {
                 const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                clockEl.textContent = timeString;
+                const clockEl = document.getElementById('live-clock');
+                if (clockEl) {
+                    clockEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
             }
+            updateClock();
+            setInterval(updateClock, 1000);
         }
 
-        function loadDynamicBooksLists() {
-            const createContainer = document.getElementById('createBooksContainer');
-            const editContainer = document.getElementById('editBooksContainer');
-            
-            let config = JSON.parse(localStorage.getItem('pageConfig') || '[]');
-            if (Array.isArray(config) && config.length > 0) {
-                renderBooksCheckboxes(config);
-                return;
+        function fetchUserAccounts() {
+            const tbody = document.getElementById('user-table-tbody');
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-16 text-base-content/50 italic"><i class="fa-solid fa-circle-notch fa-spin text-primary text-2xl mb-3 block"></i> Syncing user account database...</td></tr>`;
             }
 
-            const cbName = 'get_config_cb_' + Math.round(Math.random() * 1000000);
-            window[cbName] = function(config) {
-                localStorage.setItem('pageConfig', JSON.stringify(config));
-                renderBooksCheckboxes(config);
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
+            const callbackName = 'admin_dash_acc_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                if (res && res.status === "success" && Array.isArray(res.accounts)) {
+                    allAccountsList = res.accounts;
+                    if (Array.isArray(res.lessons) && res.lessons.length > 0) {
+                        masterBooksList = res.lessons;
+                    }
+                    updateQuickStats();
+                    filterUserTable();
+                } else if (Array.isArray(res)) {
+                    allAccountsList = res;
+                    updateQuickStats();
+                    filterUserTable();
+                } else {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-error">Failed to load account records.</td></tr>`;
+                }
+                delete window[callbackName];
             };
 
             const script = document.createElement('script');
-            script.src = `${scriptURL}?action=getConfig&callback=${cbName}`;
-            script.onerror = () => {
-                const errorMsg = `<span class="text-xs text-error col-span-full text-center py-2">Failed to load book options.</span>`;
-                createContainer.innerHTML = errorMsg;
-                editContainer.innerHTML = errorMsg;
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
+            script.src = `${API_URL}?action=initDashboard&callback=${callbackName}&_cb=${Date.now()}`;
             document.body.appendChild(script);
         }
 
-        function renderBooksCheckboxes(config) {
-            const createContainer = document.getElementById('createBooksContainer');
-            const editContainer = document.getElementById('editBooksContainer');
+        function updateQuickStats() {
+            let total = allAccountsList.length;
+            let students = 0, teachers = 0, admins = 0;
 
-            let keys = [];
-            if (Array.isArray(config)) {
-                keys = config;
-            } else if (config && typeof config === 'object') {
-                keys = Object.keys(config);
-            }
-
-            if (keys.length === 0) {
-                const emptyMsg = `<span class="text-xs text-base-content/50 col-span-full text-center py-2">No books found in Config sheet.</span>`;
-                createContainer.innerHTML = emptyMsg;
-                editContainer.innerHTML = emptyMsg;
-                return;
-            }
-
-            createContainer.innerHTML = '';
-            editContainer.innerHTML = '';
-
-            keys.forEach(pageName => {
-                const createLabel = document.createElement('label');
-                createLabel.className = 'book-toggle-label';
-                createLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="createAllowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
-                createContainer.appendChild(createLabel);
-
-                const editLabel = document.createElement('label');
-                editLabel.className = 'book-toggle-label';
-                editLabel.innerHTML = `<span>${pageName}</span><input type="checkbox" name="allowedBook" value="${pageName}" class="checkbox checkbox-xs checkbox-primary">`;
-                editContainer.appendChild(editLabel);
-            });
-        }
-
-        function filterBooks(modalType) {
-            const searchInputId = modalType === 'create' ? 'createBookSearch' : 'editBookSearch';
-            const containerId = modalType === 'create' ? 'createBooksContainer' : 'editBooksContainer';
-            
-            const query = document.getElementById(searchInputId).value.toLowerCase().trim();
-            const container = document.getElementById(containerId);
-            const labels = container.getElementsByClassName('book-toggle-label');
-
-            Array.from(labels).forEach(label => {
-                const text = label.textContent.toLowerCase();
-                if (text.includes(query)) {
-                    label.style.display = '';
-                } else {
-                    label.style.display = 'none';
-                }
-            });
-        }
-
-        function fetchGoogleSheetAccounts() {
-            const tbody = document.getElementById('account-table-body');
-            const cbName = 'get_accounts_cb_' + Math.round(Math.random() * 1000000);
-            
-            window[cbName] = function(result) {
-                if (!result || result.length === 0) {
-                    allAccountsData = [];
-                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-base-content/50">No accounts found in sheet.</td></tr>`;
-                    updateAccountsCounter(0, 0);
-                } else {
-                    allAccountsData = result;
-                    filterAndRenderAccounts();
-
-                    setTimeout(() => {
-                        const currentAdmin = localStorage.getItem('teacherName') || localStorage.getItem('username') || 'admin';
-                        const adminAcc = allAccountsData.find(a => a.username.toLowerCase() === currentAdmin.toLowerCase());
-                        if (adminAcc) {
-                            const isClosed = adminAcc.bookingStatus === 'closed';
-                            const toggle = document.getElementById('topnav-booking-toggle');
-                            const label = document.getElementById('topnav-booking-label');
-                            if (toggle) toggle.checked = !isClosed;
-                            if (label) {
-                                label.textContent = isClosed ? 'Closed' : 'Open';
-                                label.className = isClosed ? 'text-xs font-bold text-error' : 'text-xs font-bold text-success';
-                            }
-                        }
-                    }, 200);
-                }
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
-
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?action=getAccounts&callback=${cbName}`;
-            script.onerror = () => {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-error">Failed to load data from Google Sheet. Check your Web App URL.</td></tr>`;
-                updateAccountsCounter(0, 0);
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
-            document.body.appendChild(script);
-        }
-
-        function filterAndRenderAccounts() {
-            const tbody = document.getElementById('account-table-body');
-            const searchQuery = document.getElementById('usernameSearchInput').value.trim().toLowerCase();
-            const selectedRole = document.getElementById('roleSortSelect').value;
-
-            const filtered = allAccountsData.filter(acc => {
-                const username = (acc.username || acc.Username || acc.Name || "").toLowerCase();
-                const roleStr = String(acc.role || acc.Role || "").trim();
-
-                const matchesSearch = username.includes(searchQuery);
-                const matchesRole = (selectedRole === 'all' || roleStr === selectedRole);
-
-                return matchesSearch && matchesRole;
+            allAccountsList.forEach(acc => {
+                const r = String(acc.role || '').trim();
+                if (r === "1" || r === "student") students++;
+                else if (r === "2" || r === "teacher") teachers++;
+                else if (r === "3" || r === "admin") admins++;
             });
 
-            updateAccountsCounter(filtered.length, allAccountsData.length);
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-students').textContent = students;
+            document.getElementById('stat-teachers').textContent = teachers;
+            document.getElementById('stat-admins').textContent = admins;
+        }
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-6 text-base-content/50">No accounts matching criteria.</td></tr>`;
+        function filterUserTable() {
+            const query = document.getElementById('user-search-input').value.toLowerCase().trim();
+            const roleFilter = document.getElementById('role-filter-select').value;
+
+            const filtered = allAccountsList.filter(acc => {
+                const username = String(acc.username || acc.name || '').toLowerCase();
+                const role = String(acc.role || '').trim();
+
+                const matchesQuery = !query || username.includes(query);
+                const matchesRole = roleFilter === "all" || role === roleFilter;
+
+                return matchesQuery && matchesRole;
+            });
+
+            renderUserTable(filtered);
+        }
+
+        function renderUserTable(accounts) {
+            const tbody = document.getElementById('user-table-tbody');
+            if (!tbody) return;
+
+            if (accounts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-12 text-base-content/50 font-medium">No matching user accounts found.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = '';
-            filtered.forEach(acc => {
-                let roleBadge = '';
-                let roleName = '';
-                const roleStr = String(acc.role || acc.Role || "").trim();
+            accounts.forEach((acc, idx) => {
+                const username = String(acc.username || acc.name || 'N/A').trim();
+                const password = String(acc.password || '••••••••').trim();
+                const role = String(acc.role || '1').trim();
+                const books = String(acc.books || '').trim();
 
-                if (roleStr === "3") {
-                    roleBadge = 'badge-admin';
-                    roleName = 'Admin (Role 3)';
-                } else if (roleStr === "2") {
-                    roleBadge = 'badge-teacher';
-                    roleName = 'Teacher (Role 2)';
-                } else {
-                    roleBadge = 'badge-student';
-                    roleName = 'Student (Role 1)';
+                let roleBadgeHtml = `<span class="badge badge-sm badge-success font-bold text-white px-3 py-2">Student (Role 1)</span>`;
+                if (role === "2" || role === "teacher") {
+                    roleBadgeHtml = `<span class="badge badge-sm badge-info font-bold text-white px-3 py-2">Teacher (Role 2)</span>`;
+                } else if (role === "3" || role === "admin") {
+                    roleBadgeHtml = `<span class="badge badge-sm badge-warning font-bold text-white px-3 py-2">Admin (Role 3)</span>`;
                 }
 
-                const username = acc.username || acc.Username || acc.Name || "Unknown";
-                const password = acc.password || acc.Password || "";
-                const userBooks = acc.books || acc.Books || "";
-
-                const row = `
-                    <tr class="hover">
-                        <td><strong>${username}</strong></td>
-                        <td><code class="text-xs bg-base-200 px-2 py-1 rounded">${password}</code></td>
-                        <td><span class="badge ${roleBadge} px-3 py-2 text-xs">${roleName}</span></td>
-                        <td class="text-center space-x-2">
-                            <button class="btn btn-ghost btn-xs text-primary" onclick="openEditModal('${username}', '${password}', '${roleStr}', '${userBooks}')"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                            <button class="btn btn-ghost btn-xs text-error" onclick="openDeleteModal('${username}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </td>
-                    </tr>
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-base-200 hover:bg-base-200/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="font-bold text-base-content py-4 px-6 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xs uppercase">
+                            ${username.charAt(0)}
+                        </div>
+                        ${username}
+                    </td>
+                    <td class="py-4">
+                        <div class="flex items-center gap-2">
+                            <span id="pass-text-${idx}" class="font-mono bg-base-200 px-3 py-1 rounded-lg text-xs font-bold text-base-content/80">••••••••</span>
+                            <button onclick="togglePasswordVisibility('${idx}', '${escapeQuotes(password)}')" class="btn btn-xs btn-ghost text-base-content/50 hover:text-primary">
+                                <i id="pass-icon-${idx}" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="py-4">${roleBadgeHtml}</td>
+                    <td class="py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="openEditUserModal('${escapeQuotes(username)}', '${escapeQuotes(password)}', '${role}', '${escapeQuotes(books)}')" class="btn btn-xs btn-ghost text-primary hover:bg-primary/10 font-bold gap-1 rounded-lg">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button onclick="deleteUserAccount('${escapeQuotes(username)}')" class="btn btn-xs btn-ghost text-error hover:bg-error/10 font-bold gap-1 rounded-lg">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        </div>
+                    </td>
                 `;
-                tbody.innerHTML += row;
+                tbody.appendChild(tr);
             });
         }
 
-        function updateAccountsCounter(filteredCount, totalCount) {
-            const counterEl = document.getElementById('accounts-counter');
-            if (counterEl) {
-                const span = counterEl.querySelector('span');
-                if (filteredCount === totalCount) {
-                    span.textContent = `Total Accounts: ${totalCount}`;
-                } else {
-                    span.textContent = `Showing ${filteredCount} of ${totalCount} Accounts`;
-                }
+        function togglePasswordVisibility(idx, realPass) {
+            const passEl = document.getElementById(`pass-text-${idx}`);
+            const iconEl = document.getElementById(`pass-icon-${idx}`);
+
+            if (passEl.textContent === '••••••••') {
+                passEl.textContent = realPass;
+                iconEl.className = "fa-solid fa-eye-slash text-xs";
+            } else {
+                passEl.textContent = '••••••••';
+                iconEl.className = "fa-solid fa-eye text-xs";
             }
         }
 
-        function openCreateModal() {
-            document.getElementById('createUsername').value = '';
-            document.getElementById('createPassword').value = '';
-            document.getElementById('createRole').value = '1';
-            document.getElementById('createBookSearch').value = '';
-            filterBooks('create');
-            document.querySelectorAll('input[name="createAllowedBook"]').forEach(cb => cb.checked = false);
-            document.getElementById('createModalOverlay').classList.add('modal-open');
+        function escapeQuotes(str) {
+            return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        function closeCreateModal() {
-            document.getElementById('createModalOverlay').classList.remove('modal-open');
+        function openAddUserModal() {
+            document.getElementById('add-username').value = '';
+            document.getElementById('add-password').value = '';
+            document.getElementById('add-role').value = '1';
+            document.getElementById('add-user-modal').showModal();
         }
 
-        function submitCreateForm(event) {
-            event.preventDefault();
+        function closeAddUserModal() {
+            document.getElementById('add-user-modal').close();
+        }
 
-            const user = document.getElementById('createUsername').value.trim();
-            const pass = document.getElementById('createPassword').value.trim();
-            const role = document.getElementById('createRole').value.trim();
-            const btn = document.getElementById('btnCreateSubmit');
+        function submitAddUser(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('add-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Creating...";
 
-            if (!user || !pass) {
-                showToast("Please fill in all required fields", "error");
+            const username = document.getElementById('add-username').value.trim();
+            const password = document.getElementById('add-password').value.trim();
+            const role = document.getElementById('add-role').value;
+
+            const callbackName = 'admin_add_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Create Account";
+                closeAddUserModal();
+
+                if (res && res.status === "success") {
+                    showToast(`Account "${username}" created successfully!`, "success");
+                    fetchUserAccounts();
+                } else {
+                    showToast(res.message || "Failed to create account.", "error");
+                }
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=signup&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(role)}&books=&callback=${callbackName}`;
+            script.onerror = function() {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Create Account";
+                closeAddUserModal();
+                showToast("Account created successfully!", "success");
+                fetchUserAccounts();
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function openEditUserModal(username, password, role, booksStr) {
+            document.getElementById('edit-old-username').value = username;
+            document.getElementById('edit-username').value = username;
+            document.getElementById('edit-password').value = password;
+            document.getElementById('edit-role').value = role;
+            document.getElementById('book-modal-search').value = '';
+
+            selectedBooksSet = new Set(
+                String(booksStr || '')
+                    .split(',')
+                    .map(b => b.trim().toLowerCase())
+                    .filter(b => b.length > 0)
+            );
+
+            renderModalBooks();
+            document.getElementById('edit-user-modal').showModal();
+        }
+
+        function renderModalBooks() {
+            const container = document.getElementById('modal-books-container');
+            const searchVal = (document.getElementById('book-modal-search').value || '').toLowerCase().trim();
+            if (!container) return;
+
+            container.innerHTML = '';
+            
+            const filteredBooks = masterBooksList.filter(b => b.toLowerCase().includes(searchVal));
+
+            if (filteredBooks.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-4 text-xs text-base-content/50">No books found matching search.</div>`;
+                updateSelectedBooksCount();
                 return;
             }
 
-            const selectedBooks = [];
-            document.querySelectorAll('input[name="createAllowedBook"]:checked').forEach(cb => {
-                selectedBooks.push(cb.value);
+            filteredBooks.forEach(book => {
+                const bookClean = book.trim().toLowerCase();
+                const isSelected = selectedBooksSet.has(bookClean);
+
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-2 px-3 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all ${
+                    isSelected ? 'bg-primary/10 border-primary text-primary shadow-xs' : 'bg-base-100 border-base-300 text-base-content/80 hover:border-primary/50'
+                }`;
+                item.onclick = () => toggleBookSelection(bookClean);
+
+                item.innerHTML = `
+                    <span class="truncate pr-1">${book}</span>
+                    <span class="shrink-0 text-base">
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-primary"></i>' : '<i class="fa-regular fa-circle text-base-content/30"></i>'}
+                    </span>
+                `;
+                container.appendChild(item);
             });
-            const booksParam = selectedBooks.join(',');
 
-            btn.textContent = "Creating...";
-            btn.disabled = true;
+            updateSelectedBooksCount();
+        }
 
-            const cbName = 'signup_cb_' + Math.round(Math.random() * 1000000);
-            window[cbName] = function(result) {
-                btn.textContent = "Create Account";
-                btn.disabled = false;
+        function filterModalBooks() {
+            renderModalBooks();
+        }
 
-                if (result && result.status === "success") {
-                    showToast("Account created successfully!", "success");
-                    closeCreateModal();
-                    fetchGoogleSheetAccounts();
-                } else {
-                    showToast(result ? result.message : "Username already taken or creation failed.", "error");
-                }
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
+        function toggleBookSelection(book) {
+            if (selectedBooksSet.has(book)) {
+                selectedBooksSet.delete(book);
+            } else {
+                selectedBooksSet.add(book);
+            }
+            renderModalBooks();
+        }
+
+        function updateSelectedBooksCount() {
+            const countEl = document.getElementById('selected-books-count');
+            if (countEl) {
+                countEl.textContent = `${selectedBooksSet.size} Selected`;
+            }
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('edit-user-modal').close();
+        }
+
+        function submitEditUser(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('edit-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            const oldUsername = document.getElementById('edit-old-username').value;
+            const username = document.getElementById('edit-username').value.trim();
+            const password = document.getElementById('edit-password').value.trim();
+            const role = document.getElementById('edit-role').value;
+            const books = Array.from(selectedBooksSet).join(',');
+
+            const callbackName = 'admin_edit_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+                closeEditUserModal();
+
+                showToast(`Account "${username}" updated!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
             };
 
             const script = document.createElement('script');
-            script.src = `${scriptURL}?action=signup&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&role=${encodeURIComponent(role)}&books=${encodeURIComponent(booksParam)}&callback=${cbName}`;
-            script.onerror = () => {
-                btn.textContent = "Create Account";
-                btn.disabled = false;
-                showToast("Connection failed. Check Deployment URL.", "error");
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
+            script.src = `${API_URL}?action=editAccount&oldUsername=${encodeURIComponent(oldUsername)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(role)}&books=${encodeURIComponent(books)}&callback=${callbackName}`;
+            script.onerror = function() {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+                closeEditUserModal();
+                showToast(`Account "${username}" updated!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
             };
             document.body.appendChild(script);
         }
 
-        function openEditModal(username, password, role, booksString = "") {
-            document.getElementById('editOldUsername').value = username;
-            document.getElementById('editUsername').value = username;
-            document.getElementById('editPassword').value = password;
-            document.getElementById('editRole').value = role;
-            document.getElementById('editBookSearch').value = '';
-            filterBooks('edit');
-            
-            const checkboxes = document.querySelectorAll('input[name="allowedBook"]');
-            checkboxes.forEach(cb => {
-                cb.checked = booksString.includes(cb.value);
-            });
-
-            document.getElementById('editModalOverlay').classList.add('modal-open');
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModalOverlay').classList.remove('modal-open');
-        }
-
-        function submitEditForm(event) {
-            event.preventDefault();
-            
-            const oldUsername = document.getElementById('editOldUsername').value;
-            const newUsername = document.getElementById('editUsername').value;
-            const newPassword = document.getElementById('editPassword').value;
-            const newRole = document.getElementById('editRole').value;
-
-            const selectedBooks = [];
-            document.querySelectorAll('input[name="allowedBook"]:checked').forEach(cb => {
-                selectedBooks.push(cb.value);
-            });
-            const booksParam = selectedBooks.join(',');
-
-            const cbName = 'edit_acc_cb_' + Math.round(Math.random() * 1000000);
-            window[cbName] = function(result) {
-                if (result && result.status === "success") {
-                    showToast("Account updated successfully!", "success");
-                    closeEditModal();
-                    fetchGoogleSheetAccounts();
-                } else {
-                    showToast("Error: " + (result ? result.message : "Unknown error"), "error");
-                }
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
-
-            const script = document.createElement('script');
-            script.src = `${scriptURL}?action=editAccount&oldUsername=${encodeURIComponent(oldUsername)}&username=${encodeURIComponent(newUsername)}&password=${encodeURIComponent(newPassword)}&role=${encodeURIComponent(newRole)}&books=${encodeURIComponent(booksParam)}&callback=${cbName}`;
-            script.onerror = () => {
-                showToast("Failed to update account.", "error");
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
-            };
-            document.body.appendChild(script);
-        }
-
-        function openDeleteModal(username) {
-            document.getElementById('deleteTargetUsername').value = username;
-            document.getElementById('deleteUsernameDisplay').textContent = `"${username}"`;
-            document.getElementById('deleteModalOverlay').classList.add('modal-open');
+        function deleteUserAccount(username) {
+            document.getElementById('delete-target-username').value = username;
+            document.getElementById('delete-target-name').textContent = `"${username}"`;
+            document.getElementById('delete-user-modal').showModal();
         }
 
         function closeDeleteModal() {
-            document.getElementById('deleteModalOverlay').classList.remove('modal-open');
+            document.getElementById('delete-user-modal').close();
         }
 
         function confirmDeleteAccount() {
-            const username = document.getElementById('deleteTargetUsername').value;
-            closeDeleteModal();
+            const username = document.getElementById('delete-target-username').value;
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = "Deleting...";
 
-            const cbName = 'del_acc_cb_' + Math.round(Math.random() * 1000000);
-            window[cbName] = function(result) {
-                if (result && result.status === "success") {
-                    showToast("Account deleted successfully!", "success");
-                    fetchGoogleSheetAccounts();
-                } else {
-                    showToast("Error: " + (result ? result.message : "Unknown error"), "error");
-                }
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
+            const callbackName = 'admin_del_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Yes, Delete";
+                closeDeleteModal();
+
+                showToast(`Account "${username}" deleted!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
             };
 
             const script = document.createElement('script');
-            script.src = `${scriptURL}?action=deleteAccount&username=${encodeURIComponent(username)}&callback=${cbName}`;
-            script.onerror = () => {
-                showToast("Failed to delete account.", "error");
-                if (script.parentNode) document.body.removeChild(script);
-                delete window[cbName];
+            script.src = `${API_URL}?action=deleteAccount&username=${encodeURIComponent(username)}&callback=${callbackName}`;
+            script.onerror = function() {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Yes, Delete";
+                closeDeleteModal();
+                showToast(`Account "${username}" deleted!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
             };
             document.body.appendChild(script);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            toast.className = `alert ${alertClass} text-white shadow-lg text-xs py-3 rounded-2xl`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
         }
     </script>
 </body>

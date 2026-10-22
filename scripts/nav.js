@@ -103,12 +103,18 @@ function loadNavbar() {
                 </a>
             </div>
         `;
-    } else if (userRole === "3") {
+   } else if (userRole === "3") {
         navHTML += `
             <div class="tooltip tooltip-right w-full z-50" data-tip="Dashboard">
                 <a href="${pathToRoot}admin-dashboard.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="admin-dashboard.html">
                     <i class="fa-solid fa-house w-5 text-center text-base"></i>
                     <span class="inline lg:hidden">Dashboard</span>
+                </a>
+            </div>
+            <div class="tooltip tooltip-right w-full z-50" data-tip="Teachers">
+                <a href="${pathToRoot}pages/teachers-schedules.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="admin-schedules.html">
+                    <i class="fa-solid fa-calendar-check w-5 text-center text-base"></i>
+                    <span class="inline lg:hidden">Teachers</span>
                 </a>
             </div>
         `;

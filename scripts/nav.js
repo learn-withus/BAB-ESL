@@ -58,7 +58,6 @@ function loadNavbar() {
     let navHTML = '';
 
     navHTML += `
-        <div class="tooltip tooltip-right w-full z-50" data-tip="BAB ESL">
             <div class="flex items-center lg:justify-center gap-3 px-2 py-3 mb-2 w-full">
                 <a href="${dashboardUrl}" class="inline-block shrink-0">
                     <img src="${pathToRoot}images/bab.png" alt="Logo" class="w-8 h-8 object-contain">

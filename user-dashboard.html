@@ -551,7 +551,7 @@
                         </div>
                     </div>
 
-                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="self-introduction.html">
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="ambulance.html">
                         <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
                             <img src="https://drive.google.com/thumbnail?id=1trS7UXVmwzUw_S4m0LjH0E0UUWFhaDZj&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
                         </figure>
@@ -566,7 +566,7 @@
                         </div>
                     </div>
 
-                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="self-introduction.html">
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="parts-of-speech.html">
                         <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
                             <img src="https://drive.google.com/thumbnail?id=1W5eX4W9oU4oth8cFPX8zzEjCcznFpuYE&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
                         </figure>
@@ -630,7 +630,7 @@
             const allowedBooks = rawBooks
                 .toLowerCase()
                 .split(/[,|\n]+/)
-                .map(b => b.trim().replace(/['"]+/g, ''))
+                .map(b => b.trim().replace(/^["']+|["']+$/g, '').trim())
                 .filter(b => b.length > 0);
 
             const bookCards = document.querySelectorAll('.card[data-book]');

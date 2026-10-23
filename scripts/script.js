@@ -68,6 +68,8 @@ function getTargetUrl() {
         gid = "1665859797"; 
     }else if (pageName === "ambulance.html") { 
         gid = "80659976"; 
+    }else if (pageName === "parts-of-speech.html") { 
+        gid = "950660383"; 
     }
 
     return `${BASE_CSV_URL}&gid=${gid}`;

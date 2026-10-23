@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - ESL Dashboard</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="bg-base-200 min-h-screen font-['Inter']">
+
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+
+            <div class="p-6 lg:p-8 flex-1 flex flex-col gap-8 max-w-full px-6 lg:px-10 w-full">
+
+                <div class="w-full card bg-base-100 border border-base-300 shadow-sm">
+                    <div class="card-body p-6 sm:p-8">
+                        <div class="flex justify-between items-center pb-4 border-b border-base-200">
+                            <h3 class="font-bold text-lg sm:text-xl flex items-center gap-3">
+                                <span class="flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-xl text-lg shadow-sm">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </span>
+                                Class Schedules
+                            </h3>
+                            <span class="badge badge-success font-semibold text-xs text-white px-3.5 py-2.5 shadow-sm" id="scheduled-badge">Online</span>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto pr-1 mt-4 custom-scroll">
+                            <div id="scheduledClassesBody" class="flex flex-col gap-3">
+                                <div class="text-center py-10 text-base-content/60 text-sm font-medium">
+                                    Syncing database schedules...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-sm border border-base-300 p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-base-content flex items-center gap-2">
+                            Lesson Library <span class="text-xl">👋</span>
+                        </h1>
+                        <p class="text-sm text-base-content/70 mt-1.5 leading-relaxed">
+                            Browse and search through available study materials, interactive dialogues, and exercises assigned to your account.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-base-content/60 bg-base-200/60 px-4 py-3 rounded-xl border border-base-300 shrink-0">
+                        <i class="fa-solid fa-circle-info text-primary text-sm"></i> Select any lesson card below to start.
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="bookGrid">
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="customer-service.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=17ZGiOq-PRivPftXbquKzZhk3Ipuphq5z&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Customer Service</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Show reactions and encourage discussion</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/customer-service.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="work-life-balance.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1XU_SR_pLG6J86NvAfI-xlMVviz6L-50Q&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Free time</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about Work-Life Balance and Stress</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/work-life-balance.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="workplace-ethics.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1P6Mnzq5jvovr2V-EMQvDMqgx1EtG94an&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Professionalism</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about ethical principles</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/workplace-ethics.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="restaurant.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1NjeMv4O7mUCLWOFwFRvqsqu_fWonrfFn&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the restaurant</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about food and restaurants</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/restaurant.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="sports-lesson.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1g93VNplIn65yRGq1Q5kIHmLlBTt-pOWB&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Sports</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about discipline, strategy, agility and coordination</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/sports-lesson.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="library.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1S6LXFEo7q3qB1bkofPYzHQpIw4cHOzGZ&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the library</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about books and article</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/library.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="bus-stop.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1dND8DjpoRlnfcY4pviqpl0iQjad5z_E0&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the bus stop</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about bus stop</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/bus-stop.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="super-market.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1v2ihxqDJWnO9L9INxBICTutNdCznhqyD&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the super market</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about super market</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/super-market.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="kitchen-cooking.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1SUbsLyjyOcoOQRK1fHxMd2lfOfgUYtMl&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Kitchen and cooking</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about kitchen</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/kitchen-cooking.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="park.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1RjzQPnFjsM3FTOE6qz0qcFP6DosK1oz3&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the park</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about park</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/park.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="museums.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1sL_trs-o-3dhSxD_MqS82NVCPgeX1zJy&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the Museum</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about Museum</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/museums.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="school-life.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1kIrZXKhWxMLZehxtw1gzWUduvfhen6yV&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">School life and Education</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about School life and Education</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/school-life.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="hospital-healthcare.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1aWxCOUPQgAVlF6d1yxfDbcXdX8sBv_LA&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Hospitals and Healthcare</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about Hospitals and Healthcare</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/hospital-healthcare.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="hotels-airports.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1mP7qkkmrgP7cRZT_7U_QiSaEQfdm6QV9&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Hotels and Airports</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about Hotels and Airports</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/hotels-airports.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="commuting-directions.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1STT6xIdBgnEL47-9wURYCppQFrRLfa82&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Commuting and Directions</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about commuting and directions</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/commuting-directions.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="cafe.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1iHR_KPQRLsx1rD0DQRysv2gutZy6_noa&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the café</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about café</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/cafe.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="driving.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1GKPeWgkLvAIyYeXBoYs33uTxpdUlRvCL&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Behind the Wheel</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Driving and Road Safety</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/driving.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="managing-busy-schedule.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1F7dAeyA5-U_-9kY6LiteRUKaS5v5XowN&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Hectic schedule</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Managing busy schedule</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/managing-busy-schedule.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="zoo.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1dj_e1bvd9YL_NgM2PTXRa0GK48U8bnWs&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the Zoo</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about zoo</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/zoo.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="drugstore.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1Hq_rZPgbSTczCb21ZIkYSQFTRrtNU_kJ&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Drugstore and Pharmacy</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about Drugstore and Pharmacy</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/drugstore.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="workplace-ethics-v2.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=18yg6ojH9oIxUgATWV4JMVxBWD2HBAx09&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Workplace Ethics and Professional Responsibility</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking and listening</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/workplace-ethics-v2.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="music.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1-6W7wPjJZYlaLbKyndajrsGpaAQZZGN6&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Music</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Talking about Music</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/music.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="seminar-meeting.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1cayTPvP6JDNovzbM5pFj0NHcDUV1T85z&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Seminar and Meeting</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Encourage discussion and reactions</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/seminar-meeting.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="beach.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1CJhnVqWqsdLwo3-p5-gdBGX5GaVNqSnE&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Beach and Coastal Environment</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking, listening and Reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/beach.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="stationery.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1In0Gj0F8yW3Y69f4H72vB7aK4YgQ-FZB&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the stationery store</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking, listening and Reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/stationery.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="barber.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1UirtN-hThGJ4-3nU5E1Dezq0fNoviInD&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the Barbershop</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking, listening and Reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/barber.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="security.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1W2XFcmpSBg8b9Oe8ux6y6HpbI6i9Yok0&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Security</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking, listening and Reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/security.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="festival.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=13Xpdjsu9vYb2zq8EP5lhFxS9HGOtcl77&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Festival</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking, listening and Reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/festival.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="agriculture.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1GCNBjYO4h4due-lfl3y3xAS2G57aCZkm&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Agriculture</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Speaking, listening and Reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/agriculture.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="basic-conversation.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1KBy8KecsQ8Lvg1xjG3GppGZ5X9wIme6v&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">PRR</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Basic Conversation Skills</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/basic-conversation.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="dynamic-listening.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1GCNBjYO4h4due-lfl3y3xAS2G57aCZkm&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Dynamic Listening</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: listening and Speaking</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/dynamic-listening.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="ophthalmologist.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1_bNGWkQZpR4425mWlhZLAbO_CAga5P6_&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">At the Ophthalmologist</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Encourage discussion and reactions</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/ophthalmologist.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="self-introduction.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1dkro5_Hx8SD2wlhXWsjlRm0zaq7KZhgJ&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Self-Introduction</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Talk about yourself, your hobbies, and your name using simple words</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/self-introduction.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="ambulance.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1trS7UXVmwzUw_S4m0LjH0E0UUWFhaDZj&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Ambulance</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: listening, Speaking and reading</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/ambulance.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow flex flex-col overflow-hidden" data-book="parts-of-speech.html">
+                        <figure class="aspect-[4/3] bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1W5eX4W9oU4oth8cFPX8zzEjCcznFpuYE&sz=w1000" alt="Book Cover" class="object-cover w-full h-full">
+                        </figure>
+                        <div class="card-body p-4 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold">Parts of Speech</h3>
+                                <p class="text-xs text-base-content/70 mt-1">Lesson target: Talking about eight main parts of speech in English.</p>
+                            </div>
+                            <div class="card-actions justify-end mt-4">
+                                <a href="./pages/parts-of-speech.html" class="btn btn-primary btn-sm w-full">View Lesson</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer-side z-[999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/nav.js"></script>
+    <script src="./scripts/topnav.js"></script>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec"; 
+
+        function fetchJsonp(action) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_cb_' + Math.floor(Math.random() * 1000000);
+                const script = document.createElement('script');
+                script.id = 'jsonp-loader-' + action;
+
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.getElementById('jsonp-loader-' + action)?.remove();
+                    resolve(data);
+                };
+
+                script.onerror = function(err) {
+                    delete window[callbackName];
+                    document.getElementById('jsonp-loader-' + action)?.remove();
+                    reject(err);
+                };
+
+                script.src = `${SCRIPT_URL}?action=${action}&callback=${callbackName}&_cb=${Date.now()}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        function filterBooks() {
+            const searchInput = document.getElementById('global-book-search-input');
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const userRole = localStorage.getItem('role') || localStorage.getItem('userRole') || "1";
+            const rawBooks = localStorage.getItem('books') || "";
+            const isAdmin = userRole === "2" || userRole === "3" || String(userRole).toLowerCase() === "admin" || String(userRole).toLowerCase() === "teacher";
+
+            const allowedBooks = rawBooks
+                .toLowerCase()
+                .split(/[,|\n]+/)
+                .map(b => b.trim().replace(/^["']+|["']+$/g, '').trim())
+                .filter(b => b.length > 0);
+
+            const bookCards = document.querySelectorAll('.card[data-book]');
+            let visibleCount = 0;
+
+            bookCards.forEach(card => {
+                const bookFileName = card.getAttribute('data-book')?.toLowerCase().trim() || "";
+                const title = card.querySelector('.card-title')?.textContent.toLowerCase() || "";
+                const description = card.querySelector('p')?.textContent.toLowerCase() || "";
+                
+                const isAllowed = isAdmin || allowedBooks.includes(bookFileName);
+                const matchesSearch = title.includes(query) || description.includes(query) || bookFileName.includes(query);
+
+                if (isAllowed && matchesSearch) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            let fallbackMsg = document.getElementById('no-books-msg');
+            const grid = document.getElementById('bookGrid');
+
+            if (visibleCount === 0 && grid) {
+                if (!fallbackMsg) {
+                    fallbackMsg = document.createElement('div');
+                    fallbackMsg.id = 'no-books-msg';
+                    fallbackMsg.className = 'col-span-full text-center py-12 text-base-content/60';
+                    grid.appendChild(fallbackMsg);
+                }
+
+                if (allowedBooks.length === 0 && !isAdmin) {
+                    fallbackMsg.innerHTML = `
+                        <div class="flex flex-col items-center justify-center gap-3">
+                            <div class="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <h3 class="text-base font-semibold text-base-content m-0">No Lessons Available</h3>
+                            <p class="text-sm max-w-xs m-0 text-base-content/60">There are currently no lessons assigned to your account. Please contact your teacher or administrator for access.</p>
+                        </div>
+                    `;
+                } else {
+                    fallbackMsg.innerHTML = `
+                        <div class="flex flex-col items-center justify-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass text-2xl mb-1 opacity-60"></i>
+                            <p class="text-sm m-0">No lessons found matching "${searchInput ? searchInput.value : ''}".</p>
+                        </div>
+                    `;
+                }
+            } else if (fallbackMsg) {
+                fallbackMsg.remove();
+            }
+        }
+
+        function formatFriendlyTimeClean(timeStr) {
+            if (!timeStr) return '';
+            let trimmed = String(timeStr).replace(/^['"]/, '').trim();
+            const matchExisting = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+            if (matchExisting) {
+                let hours = parseInt(matchExisting[1], 10);
+                const minutes = matchExisting[2];
+                let ampm = (matchExisting[3] || '').toUpperCase();
+                
+                if (!ampm) {
+                    ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12 || 12;
+                }
+                return `${hours}:${minutes} ${ampm}`;
+            }
+            return trimmed;
+        }
+
+        async function fetchDashboardData() {
+            const scheduleBody = document.getElementById('scheduledClassesBody');
+            if (!scheduleBody) return;
+
+            try {
+                const dashData = await fetchJsonp('initDashboard');
+                
+                let currentUsername = (
+                    localStorage.getItem('username') || 
+                    localStorage.getItem('userName') || 
+                    localStorage.getItem('currentUser') || 
+                    localStorage.getItem('studentName') || 
+                    localStorage.getItem('teacherName') || 
+                    localStorage.getItem('name') || ""
+                ).toLowerCase().trim();
+
+                if (!currentUsername) {
+                    const uiUsernameEl = document.getElementById('global-username-display');
+                    if (uiUsernameEl && uiUsernameEl.textContent.trim() !== "") {
+                        currentUsername = uiUsernameEl.textContent.toLowerCase().trim();
+                        localStorage.setItem('username', currentUsername);
+                    }
+                }
+
+                if (dashData && dashData.accounts) {
+                    const myAccount = dashData.accounts.find(acc => acc && acc.username && String(acc.username).toLowerCase().trim() === currentUsername);
+                    if (myAccount) {
+                        if (myAccount.role !== undefined) localStorage.setItem('role', myAccount.role);
+                        if (myAccount.books !== undefined) {
+                            localStorage.setItem('books', String(myAccount.books));
+                        }
+                    }
+                }
+
+                filterBooks();
+
+                scheduleBody.innerHTML = '';
+                const sessions = Array.isArray(dashData.schedules) ? dashData.schedules : [];
+
+                if (!currentUsername) {
+                    scheduleBody.innerHTML = `
+                        <div class="text-center py-4 text-error text-xs">
+                            Please log in with a student account to view scheduled classes.
+                        </div>
+                    `;
+                    return;
+                }
+
+                const mySessions = sessions.filter(s => {
+                    const dbStudent = String(s.student || s.studentName || s.name || s.username || "").toLowerCase().trim();
+                    return dbStudent === currentUsername || dbStudent.includes(currentUsername);
+                });
+
+                if (mySessions.length > 0) {
+                    mySessions.forEach(session => {
+                        let formattedDate = session.sessionDate || session.date || '';
+                        if (formattedDate) {
+                            try {
+                                const d = new Date(formattedDate);
+                                if (!isNaN(d)) {
+                                    formattedDate = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                                }
+                            } catch(e) {}
+                        }
+
+                        const rawTime = session.sessionTime || session.time || '';
+                        const formattedTime = formatFriendlyTimeClean(rawTime);
+
+                        const lessonTitle = session.lessonPrebook || session.lesson || 'Class Session';
+                        const teacherName = session.teacher || 'Teacher';
+                        const meetLink = session.link || '#';
+
+                        const cardItem = document.createElement('div');
+                        cardItem.className = "bg-base-200/60 border border-base-300 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-all hover:bg-base-200";
+
+                        cardItem.innerHTML = `
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-sm sm:text-base font-bold text-base-content">${lessonTitle}</span>
+                                <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-base-content/70">
+                                    <span class="flex items-center gap-1.5 font-medium">
+                                        <i class="fa-solid fa-chalkboard-user text-primary"></i> ${teacherName}
+                                    </span>
+                                    <span class="flex items-center gap-1.5 font-medium">
+                                        <i class="fa-regular fa-calendar text-primary"></i> ${formattedDate}
+                                    </span>
+                                    <span class="flex items-center gap-1.5 font-medium">
+                                        <i class="fa-regular fa-clock text-primary"></i> ${formattedTime}
+                                    </span>
+                                </div>
+                            </div>
+                            <a href="${meetLink}" target="_blank" class="btn btn-success btn-sm sm:btn-md text-white gap-2 shadow-sm whitespace-nowrap self-end sm:self-auto">
+                                <i class="fa-solid fa-video"></i> Join Classroom
+                            </a>
+                        `;
+                        scheduleBody.appendChild(cardItem);
+                    });
+                } else {
+                    scheduleBody.innerHTML = `
+                        <div class="text-center py-10 text-base-content/60 text-xs sm:text-sm">
+                            <i class="fa-regular fa-calendar-xmark text-3xl mb-2 opacity-50 block"></i>
+                            <p>No classes scheduled for you right now.</p>
+                        </div>
+                    `;
+                }
+
+            } catch (err) {
+                console.error('Error fetching dashboard data:', err);
+                scheduleBody.innerHTML = `<div class="text-center py-4 text-error text-xs">Failed to load account database.</div>`;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            filterBooks();
+            fetchDashboardData();
+            setInterval(fetchDashboardData, 10000);
+
+            const searchInput = document.getElementById('global-book-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', filterBooks);
+            }
+        });
+    </script>
+</body>
+</html>

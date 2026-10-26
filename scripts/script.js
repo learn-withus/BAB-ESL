@@ -1416,7 +1416,7 @@ function deleteSession(sessionId, username) {
     const delCallback = 'del_session_cb_' + Math.round(Math.random() * 1000000);
     window[delCallback] = function(res) {
         if (res && res.status === "success") {
-            showToast("Class completed and removed from schedule!", "success");
+            showToast("Class completed!", "success");
             initDashboardData(username);
             fetchScheduledSessions();
         } else {
@@ -1672,6 +1672,7 @@ function fetchScheduledSessions() {
 
     window[callbackName] = function(sessions) {
         const tbody = document.getElementById('sessions-table-body');
+        const countBadge = document.getElementById('active-class-count-badge');
         if (!tbody) return;
         tbody.innerHTML = '';
 
@@ -1681,6 +1682,11 @@ function fetchScheduledSessions() {
             if (sheetTeacher.startsWith('teacher ')) sheetTeacher = sheetTeacher.substring(8).trim();
             return sheetTeacher === cleanStored || sheetTeacher.includes(cleanStored) || cleanStored.includes(sheetTeacher);
         }) : [];
+
+        if (countBadge) {
+            const count = teacherSessions.length;
+            countBadge.textContent = `${count} Active Class${count === 1 ? '' : 'es'}`;
+        }
 
         teacherSessions.sort((a, b) => {
             const dateA = a.sessionDate ? new Date(a.sessionDate) : new Date(0);
@@ -1752,3 +1758,109 @@ function fetchScheduledSessions() {
     script.src = `${API_URL}?action=getSessions&callback=${callbackName}`;
     document.body.appendChild(script);
 }
+
+let currentImageScale = 1;
+let imgTranslateX = 0;
+let imgTranslateY = 0;
+let isDraggingImg = false;
+let startDragX = 0;
+let startDragY = 0;
+
+window.zoomModalImage = function(delta) {
+    currentImageScale = Math.max(1, Math.min(5, currentImageScale + delta));
+    if (currentImageScale === 1) {
+        imgTranslateX = 0;
+        imgTranslateY = 0;
+    }
+    updateImageTransform();
+};
+
+window.resetModalImageZoom = function() {
+    currentImageScale = 1;
+    imgTranslateX = 0;
+    imgTranslateY = 0;
+    updateImageTransform();
+    const container = document.getElementById('modal-image-container');
+    if (container) container.style.cursor = 'default';
+};
+
+function updateImageTransform() {
+    const img = document.getElementById('modal-zoomable-img');
+    const container = document.getElementById('modal-image-container');
+    if (img) {
+        img.style.transform = `scale(${currentImageScale}) translate(${imgTranslateX}px, ${imgTranslateY}px)`;
+    }
+    if (container) {
+        container.style.cursor = currentImageScale > 1 ? 'grab' : 'default';
+    }
+}
+
+window.handleModalWheel = function(e) {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.2 : -0.2;
+    window.zoomModalImage(delta);
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('image-modal');
+    if (!modal) return;
+
+    const modalBox = modal.querySelector('.modal-box');
+    if (modalBox && !document.getElementById('modal-image-container')) {
+        const originalImg = modalBox.querySelector('img');
+        const imgSrc = originalImg ? originalImg.src : '';
+
+        modalBox.innerHTML = `
+            <div class="absolute right-4 top-4 z-10 flex items-center gap-1.5 bg-base-200/80 backdrop-blur-md p-1.5 rounded-2xl border border-base-300 shadow-sm">
+                <button type="button" onclick="zoomModalImage(0.25)" class="btn btn-sm btn-circle btn-ghost hover:bg-base-300 text-base-content tooltip tooltip-bottom" data-tip="Zoom In">
+                    <i class="fa-solid fa-magnifying-glass-plus text-sm"></i>
+                </button>
+                <button type="button" onclick="zoomModalImage(-0.25)" class="btn btn-sm btn-circle btn-ghost hover:bg-base-300 text-base-content tooltip tooltip-bottom" data-tip="Zoom Out">
+                    <i class="fa-solid fa-magnifying-glass-minus text-sm"></i>
+                </button>
+                <button type="button" onclick="resetModalImageZoom()" class="btn btn-sm btn-circle btn-ghost hover:bg-base-300 text-base-content tooltip tooltip-bottom" data-tip="Reset Zoom">
+                    <i class="fa-solid fa-rotate-right text-sm"></i>
+                </button>
+                <div class="w-[1px] h-4 bg-base-300 mx-0.5"></div>
+                <form method="dialog" class="inline-block">
+                    <button onclick="resetModalImageZoom()" class="btn btn-sm btn-circle btn-ghost hover:bg-error/20 hover:text-error text-base-content tooltip tooltip-bottom" data-tip="Close">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </form>
+            </div>
+            <div id="modal-image-container" class="w-full flex items-center justify-center overflow-hidden rounded-xl mt-12 cursor-default relative" style="height: 75vh;" onwheel="handleModalWheel(event)">
+                <img id="modal-zoomable-img" src="${imgSrc}" alt="Picture" class="max-h-full max-w-full object-contain rounded-xl shadow-md transition-transform duration-75 select-none" style="transform: scale(1) translate(0px, 0px);">
+            </div>
+        `;
+    }
+
+    modal.addEventListener('close', () => {
+        window.resetModalImageZoom();
+    });
+
+    const container = document.getElementById('modal-image-container');
+    const img = document.getElementById('modal-zoomable-img');
+
+    if (container && img) {
+        container.addEventListener('mousedown', (e) => {
+            if (currentImageScale > 1) {
+                isDraggingImg = true;
+                startDragX = e.clientX - imgTranslateX;
+                startDragY = e.clientY - imgTranslateY;
+                container.style.cursor = 'grabbing';
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDraggingImg) return;
+            imgTranslateX = e.clientX - startDragX;
+            imgTranslateY = e.clientY - startDragY;
+            updateImageTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDraggingImg = false;
+            if (container) container.style.cursor = currentImageScale > 1 ? 'grab' : 'default';
+        });
+    }
+});

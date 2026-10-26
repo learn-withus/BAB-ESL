@@ -87,7 +87,7 @@ function loadNavbar() {
                 </a>
             </div>
             <div class="tooltip tooltip-right w-full z-50" data-tip="My Schedule">
-                <a href="${pathToRoot}pages/teacher-schedule.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="teacher-schedule.html">
+                <a href="${pathToRoot}pages/my-schedule.html" class="flex items-center lg:justify-center gap-3 px-3 py-3 rounded-xl font-medium text-sm hover:bg-base-200 transition-colors side-link w-full" data-page="teacher-schedule.html">
                     <i class="fa-solid fa-calendar-days w-5 text-center text-base"></i>
                     <span class="inline lg:hidden">My Schedule</span>
                 </a>

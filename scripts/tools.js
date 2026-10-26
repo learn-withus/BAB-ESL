@@ -43,16 +43,16 @@ styleEl.innerHTML = `
         cursor: default;
     }
     .cursor-pencil-mode {
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%2394a3b8" stroke="%231e293b" stroke-width="1.5" stroke-linejoin="round" d="M5 27l3-9L22 4a2.8 2.8 0 0 1 4 4L12 22l-9 5z"/><path fill="%23cbd5e1" d="M19 7l6 6l-2 2l-6-6z"/><path fill="%23f43f5e" d="M22 4l6 6l-2 2l-6-6z"/><path fill="%23cbd5e1" d="M21.5 8.5l2-2"/><path fill="%23cbd5e1" d="M23.5 10.5l2-2"/><path fill="%23fde047" d="M5 27l2.2-3.8l1.6 1.6L5 27z"/><path fill="%231e293b" d="M5 27l1.5-2.5l1 1L5 27z"/></svg>') 2 30, auto;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="%2394a3b8" stroke="%231e293b" stroke-width="1.5" stroke-linejoin="round" d="M5 27l3-9L22 4a2.8 2.8 0 0 1 4 4L12 22l-9 5z"/><path fill="%23cbd5e1" d="M19 7l6 6l-2 2l-6-6z"/><path fill="%23f43f5e" d="M22 4l6 6l-2 2l-6-6z"/><path fill="%23cbd5e1" d="M21.5 8.5l2-2"/><path fill="%23cbd5e1" d="M23.5 10.5l2-2"/><path fill="%23fde047" d="M5 27l2.2-3.8l1.6 1.6L5 27z"/><path fill="%231e293b" d="M5 27l1.5-2.5l1 1L5 27z"/></svg>') 3 29, auto;
     }
     .cursor-pen-mode {
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="redpen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23ef4444"/><stop offset="100%" stop-color="%23991b1b"/></linearGradient></defs><path fill="url(%23redpen)" stroke="%23ffffff" stroke-width="1" d="M3 29l3.8-9.2L20.2 6.4a2.2 2.2 0 0 1 3.1 0l2.3 2.3a2.2 2.2 0 0 1 0 3.1L12.2 25.2L3 29z"/><path fill="%23f8fafc" d="M19 8l5 5l1.2-1.2a1 1 0 0 0 0-1.4l-3.6-3.6a1 1 0 0 0-1.4 0L19 8z"/><path fill="%230f172a" stroke="%23000000" stroke-width="0.5" d="M3 29l2.4-4.2l1.8 1.8L3 29z"/><path fill="none" stroke="%23ffffff" stroke-width="0.8" d="M7.5 22.5L21.5 8.5"/></svg>') 2 30, auto;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="redpen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23ef4444"/><stop offset="100%" stop-color="%23991b1b"/></linearGradient></defs><path fill="url(%23redpen)" stroke="%23ffffff" stroke-width="1" d="M3 29l3.8-9.2L20.2 6.4a2.2 2.2 0 0 1 3.1 0l2.3 2.3a2.2 2.2 0 0 1 0 3.1L12.2 25.2L3 29z"/><path fill="%23f8fafc" d="M19 8l5 5l1.2-1.2a1 1 0 0 0 0-1.4l-3.6-3.6a1 1 0 0 0-1.4 0L19 8z"/><path fill="%230f172a" stroke="%23000000" stroke-width="0.5" d="M3 29l2.4-4.2l1.8 1.8L3 29z"/><path fill="none" stroke="%23ffffff" stroke-width="0.8" d="M7.5 22.5L21.5 8.5"/></svg>') 3 29, auto;
     }
     .cursor-highlighter-mode {
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23facc15"/><stop offset="100%" stop-color="%23ca8a04"/></linearGradient></defs><path fill="url(%23hg)" stroke="%23ffffff" stroke-width="1" d="M3 29l4.5-12.5L21 3a2.2 2.2 0 0 1 3.1 0l3.9 3.9a2.2 2.2 0 0 1 0 3.1L14.5 24.5L3 29z"/><path fill="%23fef08a" d="M17.5 6.5l8 8l-2.1 2.1l-8-8l2.1-2.1z"/><path fill="%23713f12" d="M3 29l3.8-4.2l1.7 1.7L3 29z"/><path fill="none" stroke="%23ffffff" stroke-width="0.8" d="M8 22L20 10"/></svg>') 2 30, auto;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23facc15"/><stop offset="100%" stop-color="%23ca8a04"/></linearGradient></defs><path fill="url(%23hg)" stroke="%23ffffff" stroke-width="1" d="M3 29l4.5-12.5L21 3a2.2 2.2 0 0 1 3.1 0l3.9 3.9a2.2 2.2 0 0 1 0 3.1L14.5 24.5L3 29z"/><path fill="%23fef08a" d="M17.5 6.5l8 8l-2.1 2.1l-8-8l2.1-2.1z"/><path fill="%23713f12" d="M3 29l3.8-4.2l1.7 1.7L3 29z"/><path fill="none" stroke="%23ffffff" stroke-width="0.8" d="M8 22L20 10"/></svg>') 3 29, auto;
     }
     .cursor-eraser-mode {
-        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect x="11" y="4" width="10" height="20" rx="5" fill="%2338bdf8" stroke="%230f172a" stroke-width="1.5"/><path d="M11 14h10v10h-10z" fill="%23f43f5e"/><rect x="11" y="14" width="10" height="10" rx="0" fill="%23f43f5e"/><path d="M11 19a5 5 0 0 0 10 0v-5H11z" fill="%23f43f5e" stroke="%230f172a" stroke-width="1.5"/><circle cx="8" cy="8" r="1" fill="%23facc15"/><circle cx="24" cy="10" r="1" fill="%23a855f7"/><circle cx="7" cy="20" r="1" fill="%2334d399"/><circle cx="25" cy="22" r="1" fill="%23f43f5e"/></svg>') 16 30, auto;
+        cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect x="11" y="4" width="10" height="20" rx="5" fill="%2338bdf8" stroke="%230f172a" stroke-width="1.5"/><path d="M11 14h10v10h-10z" fill="%23f43f5e"/><rect x="11" y="14" width="10" height="10" rx="0" fill="%23f43f5e"/><path d="M11 19a5 5 0 0 0 10 0v-5H11z" fill="%23f43f5e" stroke="%230f172a" stroke-width="1.5"/><circle cx="8" cy="8" r="1" fill="%23facc15"/><circle cx="24" cy="10" r="1" fill="%23a855f7"/><circle cx="7" cy="20" r="1" fill="%2334d399"/><circle cx="25" cy="22" r="1" fill="%23f43f5e"/></svg>') 16 16, auto;
     }
 
    .draggable-text-box {
@@ -244,18 +244,13 @@ styleEl.innerHTML = `
 document.head.appendChild(styleEl);
 
 function getCanvasCoordinates(e) {
-    const rect = appCanvas.getBoundingClientRect();
-    let scale = 1;
-    const transform = window.getComputedStyle(appCanvas).transform;
-    if (transform && transform !== 'none') {
-        const matrix = transform.match(/^matrix\((.+)\)$/);
-        if (matrix) {
-            scale = parseFloat(matrix[1].split(', ')[0]);
-        }
-    }
-    const x = (e.clientX - rect.left) / scale;
-    const y = (e.clientY - rect.top) / scale;
-    return { x, y };
+    const rect = canvas.getBoundingClientRect();
+    let scaleX = canvas.width / rect.width;
+    let scaleY = canvas.height / rect.height;
+    return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+    };
 }
 
 function resizeCanvas() {

@@ -14,6 +14,10 @@
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 99px; }
+
+        .drawer, .drawer-side, .drawer-side > .menu, .drawer-content { overflow: visible !important; }
+        .tooltip { position: relative; overflow: visible !important; }
+        .tooltip:before, .tooltip:after { z-index: 999999 !important; pointer-events: none; }
     </style>
 </head>
 <body class="bg-base-200 min-h-screen font-sans">
@@ -23,14 +27,12 @@
 
         <div class="drawer-content flex flex-col min-h-screen w-full">
             
-            <!-- Dynamic Sticky Top Header Navbar -->
             <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-base-100/85 border-b border-base-300/80 transition-all duration-300 shadow-xs">
                 <div id="topnav-placeholder" class="w-full"></div>
             </header>
 
             <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 max-w-full w-full">
                 
-                <!-- Header Banner -->
                 <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -130,7 +132,6 @@
             </div>
         </div>
 
-        <!-- Sidebar Drawer with maximum z-index and overflow visible for tooltips -->
         <div class="drawer-side z-[9999] overflow-visible">
             <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
             <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
@@ -279,7 +280,6 @@
                 return;
             }
             
-            // Highlight the correct active icon in nav.js for Teachers Schedule page
             if (typeof window.setActiveNavItem === 'function') {
                 window.setActiveNavItem('teachers-schedules.html');
             }

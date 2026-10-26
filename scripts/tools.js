@@ -1,6 +1,22 @@
 const canvas = document.getElementById('annotation-canvas');
 const ctx = canvas.getContext('2d');
-const textLayer = document.getElementById('text-layer');
+
+const appCanvas = document.getElementById('app-canvas') || document.body;
+appCanvas.style.position = 'relative';
+
+let textLayer = document.getElementById('text-layer');
+if (!textLayer) {
+    textLayer = document.createElement('div');
+    textLayer.id = 'text-layer';
+    appCanvas.appendChild(textLayer);
+} else if (textLayer.parentElement !== appCanvas) {
+    appCanvas.appendChild(textLayer);
+}
+
+if (canvas.parentElement !== appCanvas) {
+    appCanvas.appendChild(canvas);
+}
+
 let currentTool = 'pointer';
 let isDrawing = false;
 let lastX = 0;
@@ -8,7 +24,18 @@ let lastY = 0;
 let isToolbarExpanded = false;
 
 canvas.style.zIndex = '1010';
+canvas.style.position = 'absolute';
+canvas.style.top = '0';
+canvas.style.left = '0';
+canvas.style.pointerEvents = 'none';
+
 textLayer.style.zIndex = '1001';
+textLayer.style.position = 'absolute';
+textLayer.style.top = '0';
+textLayer.style.left = '0';
+textLayer.style.width = '100%';
+textLayer.style.height = '100%';
+textLayer.style.pointerEvents = 'none';
 
 const styleEl = document.createElement('style');
 styleEl.innerHTML = `
@@ -42,25 +69,17 @@ styleEl.innerHTML = `
         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
-    /* Active text tool states */
     body.text-tool-active .draggable-text-box {
         pointer-events: auto;
         backdrop-filter: blur(2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border:solid .1px;
-        resize: both; 
-    }
-
-    body.text-tool-active .draggable-text-box:hover,
-    body.text-tool-active .draggable-text-box:focus-within {
-        border-color: rgba(59, 130, 246, 0.5);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: solid 1px rgba(59, 130, 246, 0.4);
+        background: rgba(255, 255, 255, 0.9);
+        resize: both;
     }
 
     .draggable-text-box .text-header {
-        display: flex;
-        visibility: hidden;
-        opacity: 0;
+        display: none;
         justify-content: space-between;
         align-items: center;
         cursor: move;
@@ -69,18 +88,11 @@ styleEl.innerHTML = `
         margin-bottom: 4px;
         border-bottom: 1px solid #e2e8f0;
         padding-bottom: 2px;
-        transition: opacity 0.2s;
         flex-shrink: 0;
-        overflow: visible !important;
     }
 
     body.text-tool-active .draggable-text-box .text-header {
-        visibility: visible;
-    }
-
-    body.text-tool-active .draggable-text-box:hover .text-header,
-    body.text-tool-active .draggable-text-box:focus-within .text-header {
-        opacity: 1;
+        display: flex;
     }
 
     .draggable-text-box textarea {
@@ -104,6 +116,58 @@ styleEl.innerHTML = `
 
     body.text-tool-active .draggable-text-box textarea {
         pointer-events: auto;
+    }
+
+    .draggable-image-box {
+        position: absolute;
+        z-index: 1002;
+        display: flex;
+        flex-direction: column;
+        pointer-events: none;
+        border-radius: 8px;
+        border: 2px dashed transparent;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        overflow: hidden !important;
+        min-width: 120px;
+        min-height: 120px;
+        max-width: 90vw;
+        max-height: 90vh;
+    }
+
+    body.image-tool-active .draggable-image-box {
+        pointer-events: auto;
+        border-color: rgba(16, 185, 129, 0.8);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.95);
+        resize: both;
+    }
+
+    .draggable-image-box .img-header {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        font-size: 11px;
+        font-weight: 600;
+        color: #065f46;
+        background: rgba(209, 250, 229, 0.95);
+        padding: 6px 10px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        flex-shrink: 0;
+    }
+
+    body.image-tool-active .draggable-image-box .img-header {
+        display: flex;
+    }
+
+    .draggable-image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        pointer-events: none;
+        flex: 1;
     }
 
     .format-btn {
@@ -176,97 +240,29 @@ styleEl.innerHTML = `
         transform: scale(1.1);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
-    .advanced-picker-container {
-        border-top: 1px solid #f1f5f9;
-        padding-top: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .custom-gradient-box {
-        position: relative;
-        width: 100%;
-        height: 85px;
-        border-radius: 6px;
-        overflow: hidden;
-        cursor: crosshair;
-        background: linear-gradient(to right, #fff, hsl(215, 100%, 50%));
-    }
-    .custom-gradient-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, #000, transparent);
-    }
-    .gradient-cursor {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border: 2px solid #ffffff;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-        box-shadow: 0 0 3px rgba(0,0,0,0.5);
-    }
-    .hue-slider-container {
-        display: flex;
-        align-items: center;
-    }
-    .hue-slider {
-        flex: 1;
-        -webkit-appearance: none;
-        appearance: none;
-        height: 8px;
-        border-radius: 4px;
-        background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
-        outline: none;
-        cursor: pointer;
-    }
-    .hue-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: #ffffff;
-        border: 1.5px solid #94a3b8;
-        cursor: pointer;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-    }
-    .rgb-inputs {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-    }
-    .rgb-field {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 9px;
-        color: #94a3b8;
-        font-weight: 500;
-    }
-    .rgb-field input {
-        width: 100%;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 4px;
-        text-align: center;
-        font-size: 11px;
-        font-weight: 500;
-        color: #334155;
-        padding: 2px 0;
-        outline: none;
-    }
-    .rgb-field input:focus {
-        border-color: #3b82f6;
-        background: #ffffff;
-    }
 `;
 document.head.appendChild(styleEl);
 
+function getCanvasCoordinates(e) {
+    const rect = appCanvas.getBoundingClientRect();
+    let scale = 1;
+    const transform = window.getComputedStyle(appCanvas).transform;
+    if (transform && transform !== 'none') {
+        const matrix = transform.match(/^matrix\((.+)\)$/);
+        if (matrix) {
+            scale = parseFloat(matrix[1].split(', ')[0]);
+        }
+    }
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+    return { x, y };
+}
+
 function resizeCanvas() {
-    canvas.width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
-    canvas.height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+    canvas.width = Math.max(appCanvas.scrollWidth, appCanvas.clientWidth, window.innerWidth);
+    canvas.height = Math.max(appCanvas.scrollHeight, appCanvas.clientHeight, window.innerHeight);
+    canvas.style.width = `${canvas.width}px`;
+    canvas.style.height = `${canvas.height}px`;
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -299,6 +295,27 @@ function setToolbarExpanded(expanded) {
     }
 }
 
+function showToolIndicator(message, type = "success") {
+    let toastContainer = document.getElementById('teacher-toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'teacher-toast-container';
+        toastContainer.style.cssText = "position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none;";
+        document.body.appendChild(toastContainer);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} shadow-lg text-white font-semibold py-2 px-4 rounded-xl flex items-center gap-3 pointer-events-auto transition-all`;
+    toast.style.cssText = "background-color: #0f172a; border: 1px solid rgba(255,255,255,0.2); font-size: 14px;";
+    toast.innerHTML = `<i class="fa-solid fa-circle-info text-primary text-base"></i> <span>${message}</span>`;
+    
+    toastContainer.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
 function setTool(tool) {
     currentTool = tool;
     
@@ -317,22 +334,29 @@ function setTool(tool) {
 
     if (tool === 'text') {
         document.body.classList.add('text-tool-active');
-    } else {
+        document.body.classList.remove('image-tool-active');
+        showToolIndicator("Text Tool Active: Click and drag anywhere to create a note box.", "info");
+    } else if (tool === 'image') {
+        document.body.classList.add('image-tool-active');
         document.body.classList.remove('text-tool-active');
+        showToolIndicator("🖼️ Image Tool Active! Press Ctrl+V to paste your image anywhere.", "success");
+    } else {
+        document.body.classList.remove('text-tool-active', 'image-tool-active');
         document.querySelectorAll('.color-dropdown').forEach(d => d.classList.remove('show'));
     }
 
-    canvas.className = "absolute top-0 left-0 z-[1010] touch-none";
     if (tool === 'pointer') {
         canvas.style.pointerEvents = 'none';
         textLayer.style.pointerEvents = 'none';
-        canvas.classList.add('cursor-pointer-mode');
-    } else if (tool === 'text') {
+        canvas.className = "cursor-pointer-mode";
+    } else if (tool === 'text' || tool === 'image') {
         canvas.style.pointerEvents = 'none';
         textLayer.style.pointerEvents = 'auto';
+        canvas.className = "";
     } else {
         canvas.style.pointerEvents = 'auto';
         textLayer.style.pointerEvents = 'none';
+        canvas.className = "";
         if (tool === 'pencil') {
             canvas.classList.add('cursor-pencil-mode');
         } else if (tool === 'pen') {
@@ -345,18 +369,6 @@ function setTool(tool) {
     }
 }
 
-function hexToRgb(hex) {
-    let bigint = parseInt(hex.replace('#', ''), 16);
-    let r = (bigint >> 16) & 255;
-    let g = (bigint >> 8) & 255;
-    let b = bigint & 255;
-    return { r, g, b };
-}
-
-function rgbToHex(r, g, b) {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-}
-
 let isCreatingBox = false;
 let startBoxX = 0;
 let startBoxY = 0;
@@ -364,11 +376,12 @@ let activeBoxPreview = null;
 
 textLayer.addEventListener('pointerdown', (e) => {
     if (currentTool !== 'text') return;
-    if (e.target.closest('.draggable-text-box')) return;
+    if (e.target.closest('.draggable-text-box') || e.target.closest('.draggable-image-box')) return;
 
+    const coords = getCanvasCoordinates(e);
     isCreatingBox = true;
-    startBoxX = e.clientX + window.scrollX;
-    startBoxY = e.clientY + window.scrollY;
+    startBoxX = coords.x;
+    startBoxY = coords.y;
 
     activeBoxPreview = document.createElement('div');
     activeBoxPreview.className = 'draggable-text-box';
@@ -385,11 +398,10 @@ textLayer.addEventListener('pointerdown', (e) => {
 
 textLayer.addEventListener('pointermove', (e) => {
     if (!isCreatingBox || !activeBoxPreview) return;
-    const currentX = e.clientX + window.scrollX;
-    const currentY = e.clientY + window.scrollY;
+    const coords = getCanvasCoordinates(e);
 
-    const width = Math.max(120, currentX - startBoxX);
-    const height = Math.max(50, currentY - startBoxY);
+    const width = Math.max(120, coords.x - startBoxX);
+    const height = Math.max(50, coords.y - startBoxY);
 
     activeBoxPreview.style.width = `${width}px`;
     activeBoxPreview.style.height = `${height}px`;
@@ -405,7 +417,7 @@ const finalizeTextBox = (e) => {
 
         box.innerHTML = `
             <div class="text-header" style="z-index: 1003; touch-action: none;">
-                <span class="drag-handle" style="pointer-events: auto;"><i class="fa-solid fa-arrows-up-down-left-right"></i> Move</span>
+                <span class="drag-handle" style="pointer-events: auto;"><i class="fa-solid fa-arrows-up-down-left-right"></i> Move Note</span>
                 <div class="flex items-center gap-1.5" style="pointer-events: auto; overflow: visible;">
                     <select class="text-size-select text-[11px] font-semibold bg-slate-100 rounded px-1.5 py-0.5 border border-slate-200 outline-none cursor-pointer" style="pointer-events: auto;" title="Preset Size">
                         <option value="14px">Sm</option>
@@ -440,29 +452,6 @@ const finalizeTextBox = (e) => {
                                 <div class="color-option" style="background-color: #db2777;" data-color="#db2777"></div>
                                 <div class="color-option" style="background-color: #e11d48;" data-color="#e11d48"></div>
                             </div>
-                            <div class="advanced-picker-container">
-                                <div class="custom-gradient-box" style="background: linear-gradient(to right, #fff, hsl(215, 100%, 50%));">
-                                    <div class="custom-gradient-overlay"></div>
-                                    <div class="gradient-cursor" style="top: 50%; left: 50%;"></div>
-                                </div>
-                                <div class="hue-slider-container">
-                                    <input type="range" min="0" max="360" value="215" class="hue-slider">
-                                </div>
-                                <div class="rgb-inputs">
-                                    <div class="rgb-field">
-                                        <input type="number" class="rgb-r" value="30" min="0" max="255">
-                                        <span>R</span>
-                                    </div>
-                                    <div class="rgb-field">
-                                        <input type="number" class="rgb-g" value="41" min="0" max="255">
-                                        <span>G</span>
-                                    </div>
-                                    <div class="rgb-field">
-                                        <input type="number" class="rgb-b" value="59" min="0" max="255">
-                                        <span>B</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -475,12 +464,6 @@ const finalizeTextBox = (e) => {
         const textarea = box.querySelector('textarea');
         const colorBtn = box.querySelector('.color-picker-btn');
         const colorDropdown = box.querySelector('.color-dropdown');
-        const gradientBox = box.querySelector('.custom-gradient-box');
-        const gradientCursor = box.querySelector('.gradient-cursor');
-        const hueSlider = box.querySelector('.hue-slider');
-        const rgbR = box.querySelector('.rgb-r');
-        const rgbG = box.querySelector('.rgb-g');
-        const rgbB = box.querySelector('.rgb-b');
         const sizeSelect = box.querySelector('.text-size-select');
         const sizeInput = box.querySelector('.text-size-input');
         const boldBtn = box.querySelector('.bold-btn');
@@ -489,15 +472,9 @@ const finalizeTextBox = (e) => {
         const deleteBtn = box.querySelector('.delete-box');
         const dragHandle = box.querySelector('.text-header');
 
-        let currentHue = 215;
-
-        function applyColor(r, g, b) {
-            const hex = rgbToHex(r, g, b);
+        function applyColor(hex) {
             textarea.style.color = hex;
             colorBtn.style.backgroundColor = hex;
-            rgbR.value = r;
-            rgbG.value = g;
-            rgbB.value = b;
         }
 
         colorBtn.addEventListener('pointerdown', (event) => {
@@ -515,81 +492,9 @@ const finalizeTextBox = (e) => {
                 event.stopPropagation();
                 if (currentTool !== 'text') return;
                 const hex = event.target.getAttribute('data-color');
-                const rgb = hexToRgb(hex);
-                applyColor(rgb.r, rgb.g, rgb.b);
+                applyColor(hex);
                 colorDropdown.classList.remove('show');
             });
-        });
-
-        hueSlider.addEventListener('input', (e) => {
-            if (currentTool !== 'text') return;
-            currentHue = e.target.value;
-            gradientBox.style.background = `linear-gradient(to right, #fff, hsl(${currentHue}, 100%, 50%))`;
-        });
-        hueSlider.addEventListener('pointerdown', (e) => e.stopPropagation());
-
-        [rgbR, rgbG, rgbB].forEach(input => {
-            input.addEventListener('input', () => {
-                if (currentTool !== 'text') return;
-                applyColor(
-                    Math.min(255, Math.max(0, parseInt(rgbR.value) || 0)),
-                    Math.min(255, Math.max(0, parseInt(rgbG.value) || 0)),
-                    Math.min(255, Math.max(0, parseInt(rgbB.value) || 0))
-                );
-            });
-            input.addEventListener('pointerdown', (e) => e.stopPropagation());
-        });
-
-        function updateColorFromGradient(e) {
-            if (currentTool !== 'text') return;
-            const rect = gradientBox.getBoundingClientRect();
-            const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-            const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
-
-            gradientCursor.style.left = `${x}px`;
-            gradientCursor.style.top = `${y}px`;
-
-            const sat = x / rect.width;
-            const val = 1 - (y / rect.height);
-
-            let c = val * sat;
-            let hPrime = currentHue / 60;
-            let xVal = c * (1 - Math.abs((hPrime % 2) - 1));
-            let m = val - c;
-
-            let r = 0, g = 0, b = 0;
-            if (0 <= hPrime && hPrime < 1) { r = c; g = xVal; b = 0; }
-            else if (1 <= hPrime && hPrime < 2) { r = xVal; g = c; b = 0; }
-            else if (2 <= hPrime && hPrime < 3) { r = 0; g = c; b = xVal; }
-            else if (3 <= hPrime && hPrime < 4) { r = 0; g = xVal; b = c; }
-            else if (4 <= hPrime && hPrime < 5) { r = xVal; g = 0; b = c; }
-            else if (5 <= hPrime && hPrime <= 6) { r = c; g = 0; b = xVal; }
-
-            applyColor(
-                Math.round((r + m) * 255),
-                Math.round((g + m) * 255),
-                Math.round((b + m) * 255)
-            );
-        }
-
-        let isPickingGradient = false;
-        gradientBox.addEventListener('pointerdown', (e) => {
-            if (currentTool !== 'text') return;
-            isPickingGradient = true;
-            gradientBox.setPointerCapture(e.pointerId);
-            updateColorFromGradient(e);
-            e.stopPropagation();
-        });
-
-        gradientBox.addEventListener('pointermove', (e) => {
-            if (!isPickingGradient || currentTool !== 'text') return;
-            updateColorFromGradient(e);
-        });
-
-        gradientBox.addEventListener('pointerup', (e) => {
-            if (!isPickingGradient) return;
-            isPickingGradient = false;
-            try { gradientBox.releasePointerCapture(e.pointerId); } catch (err) {}
         });
 
         document.addEventListener('pointerdown', (event) => {
@@ -649,21 +554,20 @@ const finalizeTextBox = (e) => {
         dragHandle.addEventListener('pointerdown', (ev) => {
             if (currentTool !== 'text') return;
             isDragging = true;
-            const boxRect = box.getBoundingClientRect();
-            startX = ev.clientX - boxRect.left;
-            startY = ev.clientY - boxRect.top;
+            const coords = getCanvasCoordinates(ev);
+            const boxLeft = parseFloat(box.style.left) || 0;
+            const boxTop = parseFloat(box.style.top) || 0;
+            startX = coords.x - boxLeft;
+            startY = coords.y - boxTop;
             dragHandle.setPointerCapture(ev.pointerId);
             ev.stopPropagation();
         });
 
         dragHandle.addEventListener('pointermove', (ev) => {
             if (!isDragging || currentTool !== 'text') return;
-            
-            const newX = ev.clientX - startX + window.scrollX;
-            const newY = ev.clientY - startY + window.scrollY;
-            
-            box.style.left = `${newX}px`;
-            box.style.top = `${newY}px`;
+            const coords = getCanvasCoordinates(ev);
+            box.style.left = `${coords.x - startX}px`;
+            box.style.top = `${coords.y - startY}px`;
         });
 
         const stopDrag = (ev) => {
@@ -682,22 +586,122 @@ const finalizeTextBox = (e) => {
 textLayer.addEventListener('pointerup', finalizeTextBox);
 textLayer.addEventListener('pointercancel', finalizeTextBox);
 
+window.addEventListener('paste', (e) => {
+    if (currentTool !== 'image') return;
+    
+    const items = e.clipboardData || e.originalEvent.clipboardData;
+    if (!items) return;
+
+    for (let i = 0; i < items.items.length; i++) {
+        if (items.items[i].type.indexOf('image') !== -1) {
+            const blob = items.items[i].getAsFile();
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                createDraggableImage(event.target.result);
+            };
+            reader.readAsDataURL(blob);
+            e.preventDefault();
+            break;
+        }
+    }
+});
+
+function createDraggableImage(dataSrc) {
+    const box = document.createElement('div');
+    box.className = 'draggable-image-box';
+    
+    const coords = getCanvasCoordinates({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
+    const posX = coords.x - 160;
+    const posY = coords.y - 120;
+
+    box.style.left = `${Math.max(20, posX)}px`;
+    box.style.top = `${Math.max(20, posY)}px`;
+    box.style.width = '320px';
+    box.style.height = '240px';
+
+    box.innerHTML = `
+        <div class="img-header">
+            <span class="drag-handle"><i class="fa-solid fa-arrows-up-down-left-right"></i> Drag & Resize Image</span>
+            <div class="flex items-center gap-1">
+                <button type="button" class="reset-img-size bg-white/80 hover:bg-white text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold" title="Reset Size">Reset</button>
+                <button type="button" class="delete-img text-error hover:opacity-75 font-bold px-1.5" title="Remove Image"><i class="fa-solid fa-xmark text-sm"></i></button>
+            </div>
+        </div>
+        <img src="${dataSrc}" alt="Pasted Explanation Image" />
+    `;
+
+    textLayer.appendChild(box);
+
+    const dragHandle = box.querySelector('.img-header');
+    const deleteBtn = box.querySelector('.delete-img');
+    const resetSizeBtn = box.querySelector('.reset-img-size');
+
+    deleteBtn.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        box.remove();
+    });
+
+    resetSizeBtn.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        box.style.width = '320px';
+        box.style.height = '240px';
+    });
+
+    let isDraggingImg = false;
+    let startX, startY;
+
+    dragHandle.addEventListener('pointerdown', (ev) => {
+        if (currentTool !== 'image') return;
+        isDraggingImg = true;
+        const coords = getCanvasCoordinates(ev);
+        const boxLeft = parseFloat(box.style.left) || 0;
+        const boxTop = parseFloat(box.style.top) || 0;
+        startX = coords.x - boxLeft;
+        startY = coords.y - boxTop;
+        dragHandle.setPointerCapture(ev.pointerId);
+        ev.stopPropagation();
+    });
+
+    dragHandle.addEventListener('pointermove', (ev) => {
+        if (!isDraggingImg || currentTool !== 'image') return;
+        const coords = getCanvasCoordinates(ev);
+        box.style.left = `${coords.x - startX}px`;
+        box.style.top = `${coords.y - startY}px`;
+    });
+
+    const stopImgDrag = (ev) => {
+        if (!isDraggingImg) return;
+        isDraggingImg = false;
+        try { dragHandle.releasePointerCapture(ev.pointerId); } catch (err) {}
+    };
+
+    dragHandle.addEventListener('pointerup', stopImgDrag);
+    dragHandle.addEventListener('pointercancel', stopImgDrag);
+
+    showToolIndicator("Image pasted! Resize it from the bottom-right corner or drag by the header.", "success");
+}
+
 canvas.addEventListener('pointerdown', (e) => {
-    if (currentTool === 'pointer' || currentTool === 'text') return;
+    if (currentTool === 'pointer' || currentTool === 'text' || currentTool === 'image') return;
     isDrawing = true;
-    [lastX, lastY] = [e.pageX, e.pageY];
+    const coords = getCanvasCoordinates(e);
+    lastX = coords.x;
+    lastY = coords.y;
     if (canvas.setPointerCapture) {
         canvas.setPointerCapture(e.pointerId);
     }
 });
 
 canvas.addEventListener('pointermove', (e) => {
-    if (!isDrawing || currentTool === 'pointer' || currentTool === 'text') return;
+    if (!isDrawing || currentTool === 'pointer' || currentTool === 'text' || currentTool === 'image') return;
     e.preventDefault();
+
+    const coords = getCanvasCoordinates(e);
 
     ctx.beginPath();
     ctx.moveTo(lastX, lastY);
-    ctx.lineTo(e.pageX, e.pageY);
+    ctx.lineTo(coords.x, coords.y);
     
     if (currentTool === 'pencil') {
         ctx.strokeStyle = '#64748b';
@@ -724,7 +728,8 @@ canvas.addEventListener('pointermove', (e) => {
     }
 
     ctx.stroke();
-    [lastX, lastY] = [e.pageX, e.pageY];
+    lastX = coords.x;
+    lastY = coords.y;
 });
 
 const stopDrawing = (e) => {
@@ -804,10 +809,7 @@ window.addEventListener('load', scaleAppCanvas);
 setTimeout(scaleAppCanvas, 500);
 setTimeout(scaleAppCanvas, 1500);
 
-
 function downloadLessonPDF() {
-    const pageName = window.location.pathname.split("/").pop().replace('.html', '') || 'lesson-content';
-    
     if (typeof showToast === 'function') {
         showToast("Opening print dialog to save as PDF...", "success");
     }

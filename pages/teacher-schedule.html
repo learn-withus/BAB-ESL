@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - ESL | My Teaching Schedule</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 99px; }
+        .drawer, .drawer-side, .drawer-side > .menu, .drawer-content { overflow: visible !important; }
+        .tooltip { position: relative; overflow: visible !important; }
+        .tooltip:before, .tooltip:after { z-index: 999999 !important; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-base-200 min-h-screen font-sans">
+
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+
+        <div class="drawer-content flex flex-col min-h-screen w-full">
+            <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-base-100/85 border-b border-base-300/80 shadow-xs">
+                <div id="topnav-placeholder" class="w-full"></div>
+            </header>
+
+            <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 max-w-full w-full">
+                
+                <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <span class="flex items-center justify-center w-14 h-14 bg-primary/10 text-primary rounded-2xl text-2xl shadow-xs border border-primary/20">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">Teacher Dashboard</span>
+                            </div>
+                            <h1 id="page-title" class="text-2xl sm:text-3xl font-extrabold text-base-content tracking-tight mt-1">My Teaching Schedule</h1>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <div class="join shadow-xs">
+                            <button onclick="changeView('day')" id="btn-view-day" class="btn btn-sm join-item btn-ghost border border-base-300 font-semibold">Day</button>
+                            <button onclick="changeView('week')" id="btn-view-week" class="btn btn-sm join-item btn-primary font-bold">Week</button>
+                            <button onclick="changeView('month')" id="btn-view-month" class="btn btn-sm join-item btn-ghost border border-base-300 font-semibold">Month</button>
+                        </div>
+                        
+                        <div class="flex items-center gap-1 bg-base-200 p-1 rounded-xl border border-base-300 shadow-xs">
+                            <button onclick="navigateCalendar(-1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="navigateCalendar(0)" class="btn btn-sm btn-ghost font-bold text-xs">Today</button>
+                            <button onclick="navigateCalendar(1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden flex-1 p-4 sm:p-6">
+                    <div id="subtitle-info" class="text-xs sm:text-sm text-base-content/60 font-medium mb-4">Syncing calendar...</div>
+                    <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl bg-base-100 shadow-inner">
+                        <div id="grid-container" class="min-w-[900px]"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="drawer-side z-[9999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/topnav.js"></script>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        let sessionsData = [];
+        let currentView = 'week';
+        let currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = String(localStorage.getItem('userRole') || localStorage.getItem('role') || "").trim();
+            if (role !== "2") {
+                window.location.replace("../user-dashboard.html");
+                return;
+            }
+
+            if (typeof window.setActiveNavItem === 'function') {
+                window.setActiveNavItem('teacher-schedule.html');
+            }
+
+            fetchSessionsSilent();
+            setInterval(fetchSessionsSilent, 8000);
+        });
+
+        function fetchSessionsSilent() {
+            const callbackName = 'silent_sync_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(data) {
+                sessionsData = Array.isArray(data) ? data : [];
+                renderCalendarMatrix();
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=getSessions&callback=${callbackName}&_cb=${Date.now()}`;
+            document.body.appendChild(script);
+        }
+
+        function changeView(viewType) {
+            currentView = viewType;
+            document.querySelectorAll('#btn-view-day, #btn-view-week, #btn-view-month').forEach(b => b.classList.replace('btn-primary', 'btn-ghost'));
+            document.getElementById(`btn-view-${viewType}`).classList.replace('btn-ghost', 'btn-primary');
+            renderCalendarMatrix();
+        }
+
+        function navigateCalendar(direction) {
+            if (direction === 0) {
+                currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+            } else {
+                if (currentView === 'day') currentDate.setDate(currentDate.getDate() + direction);
+                else if (currentView === 'week') currentDate.setDate(currentDate.getDate() + (direction * 7));
+                else if (currentView === 'month') currentDate.setMonth(currentDate.getMonth() + direction);
+            }
+            renderCalendarMatrix();
+        }
+
+        function parseLocalDateKey(dateInput) {
+            if (!dateInput) return "";
+            let str = String(dateInput).trim();
+            if (str.includes('T')) str = str.split('T')[0];
+            const parts = str.split(/[-/]/);
+            if (parts.length === 3) {
+                if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                else return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+            }
+            const d = new Date(str);
+            if (!isNaN(d.getTime())) return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+            return str;
+        }
+
+        function getTeacherSessionsForSlot(dateKey, hourStr) {
+            let myName = (localStorage.getItem('teacherName') || localStorage.getItem('username') || "Teacher").toLowerCase().trim();
+            if (myName.startsWith('teacher ')) myName = myName.substring(8).trim();
+
+            return sessionsData.filter(s => {
+                let tName = String(s.Teacher || s.teacher || "").toLowerCase().trim();
+                if (tName.startsWith('teacher ')) tName = tName.substring(8).trim();
+                
+                const sDate = parseLocalDateKey(String(s.Date || s.date || s.sessionDate || ""));
+                let sTimeRaw = String(s.Time || s.time || s.sessionTime || "").toLowerCase().trim();
+
+                const isMatch = tName === myName || myName.includes(tName) || tName.includes(myName);
+                if (!isMatch || sDate !== dateKey) return false;
+
+                if (/^\d{2}:\d{2}$/.test(sTimeRaw)) {
+                    let [h, m] = sTimeRaw.split(':');
+                    let hourNum = parseInt(h, 10);
+                    let ampm = hourNum >= 12 ? 'pm' : 'am';
+                    hourNum = hourNum % 12 || 12;
+                    sTimeRaw = `${hourNum}:${m} ${ampm}`;
+                }
+
+                try {
+                    const slotHour = hourStr.match(/^(\d+):/)[1];
+                    const sessionHour = sTimeRaw.match(/^(\d+):/)[1];
+                    const slotAmPm = hourStr.toLowerCase().includes('pm') ? 'pm' : 'am';
+                    const sessionAmPm = sTimeRaw.includes('pm') ? 'pm' : 'am';
+                    return parseInt(slotHour, 10) === parseInt(sessionHour, 10) && slotAmPm === sessionAmPm;
+                } catch(e) {}
+
+                return sTimeRaw === hourStr.toLowerCase();
+            });
+        }
+
+        function renderCalendarMatrix() {
+            const container = document.getElementById('grid-container');
+            const subtitleEl = document.getElementById('subtitle-info');
+            if (!container) return;
+
+            if (currentView === 'week') renderWeekView(container, subtitleEl);
+            else if (currentView === 'day') renderDayView(container, subtitleEl);
+            else if (currentView === 'month') renderMonthView(container, subtitleEl);
+        }
+
+        function renderWeekView(container, subtitleEl) {
+            const startOfWeek = new Date(currentDate);
+            const dayOfWeek = startOfWeek.getDay();
+            const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+            startOfWeek.setDate(diff);
+
+            let weekDays = [];
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(startOfWeek);
+                d.setDate(startOfWeek.getDate() + i);
+                weekDays.push(d);
+            }
+
+            const startStr = weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const endStr = weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            
+            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+
+            let totalBookings = 0;
+            weekDays.forEach(d => {
+                const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                hours.forEach(h => {
+                    totalBookings += getTeacherSessionsForSlot(dateKey, h).length;
+                });
+            });
+
+            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${startStr} - ${endStr}</span> • <span class="text-primary font-bold">${totalBookings} total bookings</span> this week.`;
+
+            let html = `
+                <table class="table table-pin-rows table-zebra text-center w-full border-collapse">
+                    <thead>
+                        <tr class="bg-base-200 text-base-content text-xs uppercase font-extrabold">
+                            <th class="w-28 border-r border-base-300 py-3">Time</th>
+                            ${weekDays.map(d => {
+                                const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                                const isToday = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) === dateKey;
+                                return `<th class="border-r border-base-300 py-3 ${isToday ? 'bg-primary/15 text-primary font-black' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-80">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
+                            }).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            hours.forEach(hour => {
+                html += `<tr><th class="bg-base-200/50 text-xs border-r border-base-300 font-bold py-3">${hour}</th>`;
+                weekDays.forEach(d => {
+                    const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                    const matches = getTeacherSessionsForSlot(dateKey, hour);
+
+                    if (matches.length > 0) {
+                        html += `<td class="border-r border-base-300 p-2 bg-primary/10 space-y-1.5 align-middle">`;
+                        matches.forEach(m => {
+                            const student = m.Student || m.student || 'Student';
+                            const lesson = m.Lesson || m.lesson || 'Class';
+                            const timeStr = m.Time || m.time || m.sessionTime || '';
+                            const link = m.Link || m.link || '#';
+                            html += `
+                                <div class="bg-base-100 p-2.5 rounded-xl border border-primary/30 shadow-sm text-left">
+                                    <div class="flex justify-between items-center">
+                                        <span class="badge badge-primary badge-xs font-bold text-white px-2">Booked</span>
+                                        <span class="text-[10px] font-semibold opacity-70">${timeStr}</span>
+                                    </div>
+                                    <div class="text-xs font-bold mt-1 text-primary truncate"><i class="fa-solid fa-user-graduate text-[10px]"></i> ${student}</div>
+                                    <div class="text-[11px] font-medium text-base-content/80 truncate mt-0.5"><i class="fa-solid fa-book text-[10px] opacity-70"></i> ${lesson}</div>
+                                    ${link && link !== '#' ? `<a href="${link}" target="_blank" class="btn btn-xs btn-success text-white w-full mt-2 font-bold"><i class="fa-solid fa-video"></i> Join Meet</a>` : ''}
+                                </div>
+                            `;
+                        });
+                        html += `</td>`;
+                    } else {
+                        html += `<td class="border-r border-base-300 p-2"><span class="text-[11px] text-base-content/40 font-medium">Available</span></td>`;
+                    }
+                });
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function renderDayView(container, subtitleEl) {
+            const dateFormatted = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
+            const dateKey = currentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${dateFormatted}</span>`;
+
+            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+
+            let todaySessions = [];
+            hours.forEach(h => {
+                getTeacherSessionsForSlot(dateKey, h).forEach(m => {
+                    if (!todaySessions.includes(m)) todaySessions.push(m);
+                });
+            });
+
+            let html = `<div class="p-6 space-y-3 max-w-3xl mx-auto w-full">`;
+            if (todaySessions.length > 0) {
+                todaySessions.forEach(m => {
+                    const student = m.Student || m.student || 'Student';
+                    const lesson = m.Lesson || m.lesson || 'Class';
+                    const timeStr = m.Time || m.time || m.sessionTime || '';
+                    const link = m.Link || m.link || '';
+                    html += `
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-base-100 p-4 rounded-2xl border border-primary/30 shadow-sm gap-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="badge badge-primary font-bold text-xs px-2.5 py-1">${timeStr}</span>
+                                    <span class="font-bold text-base text-base-content">${lesson}</span>
+                                </div>
+                                <p class="text-xs font-medium text-base-content/70 pl-1">Student: <strong class="text-primary font-bold">${student}</strong></p>
+                            </div>
+                            ${link ? `<a href="${link}" target="_blank" class="btn btn-primary btn-sm font-bold gap-2 rounded-xl px-4"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-sm font-semibold">No Link Yet</span>'}
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<div class="text-center py-12"><p class="text-sm text-base-content/50 italic">No classes booked for this day.</p></div>`;
+            }
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function renderMonthView(container, subtitleEl) {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' })}</span>`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+
+            let html = `
+                <table class="table text-center w-full border-collapse h-full">
+                    <thead>
+                        <tr class="bg-base-200 text-xs uppercase font-extrabold">
+                            <th class="border border-base-300 py-3">Sun</th><th class="border border-base-300 py-3">Mon</th><th class="border border-base-300 py-3">Tue</th>
+                            <th class="border border-base-300 py-3">Wed</th><th class="border border-base-300 py-3">Thu</th><th class="border border-base-300 py-3">Fri</th><th class="border border-base-300 py-3">Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody><tr>
+            `;
+
+            let dayCount = 1;
+            for (let i = 0; i < 42; i++) {
+                if (i >= firstDay && dayCount <= daysInMonth) {
+                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayCount).padStart(2, '0')}`;
+                    let daySessions = [];
+                    hours.forEach(h => {
+                        getTeacherSessionsForSlot(dateKey, h).forEach(m => {
+                            if (!daySessions.includes(m)) daySessions.push(m);
+                        });
+                    });
+
+                    html += `
+                        <td class="border border-base-300 h-24 align-top p-2 hover:bg-primary/5 cursor-pointer transition-all" onclick="currentDate = new Date('${dateKey}T00:00:00'); changeView('day');">
+                            <div class="font-bold text-xs text-base-content">${dayCount}</div>
+                            ${daySessions.length > 0 ? `<div class="mt-2 badge badge-primary badge-xs font-bold p-2">${daySessions.length} class(es)</div>` : ''}
+                        </td>`;
+                    dayCount++;
+                } else {
+                    html += `<td class="border border-base-300 bg-base-200/20 h-24"></td>`;
+                }
+                if ((i + 1) % 7 === 0 && i < 41) html += `</tr><tr>`;
+            }
+            html += `</tr></tbody></table>`;
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -74,6 +74,10 @@ function getTargetUrl() {
         gid = "417717862"; 
     }else if (pageName === "shopping.html") { 
         gid = "1286332758"; 
+    }else if (pageName === "school-parenting.html") { 
+        gid = "931512612"; 
+    }else if (pageName === "bathroom.html") { 
+        gid = "1669556193"; 
     }
 
 

@@ -22,6 +22,8 @@
 </head>
 <body class="bg-base-200 min-h-screen font-sans">
 
+    <div id="toast-container" class="toast toast-top toast-end z-50"></div>
+
     <div class="drawer lg:drawer-open">
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
@@ -62,7 +64,7 @@
 
                 <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden flex-1 p-4 sm:p-6">
                     <div id="subtitle-info" class="text-xs sm:text-sm text-base-content/60 font-medium mb-4">Syncing calendar...</div>
-                    <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl bg-base-100 shadow-inner">
+                    <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl bg-base-100 shadow-inner max-h-[70vh]">
                         <div id="grid-container" class="min-w-[900px]"></div>
                     </div>
                 </div>
@@ -82,6 +84,7 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
         let sessionsData = [];
+        let cachedClosedSlotsArray = [];
         let currentView = 'week';
         let currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
 
@@ -96,9 +99,61 @@
                 window.setActiveNavItem('teacher-schedule.html');
             }
 
-            fetchSessionsSilent();
-            setInterval(fetchSessionsSilent, 8000);
+            fetchDashboardData();
+            setInterval(fetchDashboardData, 10000);
         });
+
+        function fetchJsonp(action, extraParams = "") {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_cb_' + Math.floor(Math.random() * 1000000);
+                const script = document.createElement('script');
+                script.id = 'jsonp-loader-' + action;
+
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.getElementById('jsonp-loader-' + action)?.remove();
+                    resolve(data);
+                };
+
+                script.onerror = function(err) {
+                    delete window[callbackName];
+                    document.getElementById('jsonp-loader-' + action)?.remove();
+                    reject(err);
+                };
+
+                script.src = `${API_URL}?action=${action}&callback=${callbackName}${extraParams}&_cb=${Date.now()}`;
+                document.body.appendChild(script);
+            });
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const data = await fetchJsonp('initDashboard');
+                if (data && data.status === "success") {
+                    sessionsData = Array.isArray(data.schedules) ? data.schedules : [];
+                    
+                    // Extract closed slots directly from the logged-in teacher's account row in Column L
+                    let myName = getActiveTeacherName();
+                    let teacherAcc = (data.accounts || []).find(acc => {
+                        let accName = String(acc.username || "").toLowerCase().trim();
+                        if (accName.startsWith('teacher ')) accName = accName.substring(8).trim();
+                        return accName === myName || myName.includes(accName) || accName.includes(myName);
+                    });
+
+                    if (teacherAcc && teacherAcc.closedSlots) {
+                        cachedClosedSlotsArray = teacherAcc.closedSlots.split(",").map(s => s.trim()).filter(s => s.length > 0);
+                    } else {
+                        cachedClosedSlotsArray = [];
+                    }
+
+                    renderCalendarMatrix();
+                } else {
+                    fetchSessionsSilent();
+                }
+            } catch (err) {
+                fetchSessionsSilent();
+            }
+        }
 
         function fetchSessionsSilent() {
             const callbackName = 'silent_sync_' + Math.round(Math.random() * 1000000);
@@ -145,38 +200,76 @@
             return str;
         }
 
-        function getTeacherSessionsForSlot(dateKey, hourStr) {
+        function getActiveTeacherName() {
             let myName = (localStorage.getItem('teacherName') || localStorage.getItem('username') || "Teacher").toLowerCase().trim();
             if (myName.startsWith('teacher ')) myName = myName.substring(8).trim();
+            return myName;
+        }
+
+        function normalizeTime(timeStr) {
+            if (!timeStr) return "";
+            let raw = String(timeStr).toUpperCase().trim();
+            if (/^\d{2}:\d{2}/.test(raw) && !raw.includes('AM') && !raw.includes('PM')) {
+                let parts = raw.split(':');
+                let h = parseInt(parts[0], 10);
+                let m = parts[1];
+                let ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                return `${String(h).padStart(2, '0')}:${m} ${ampm}`;
+            }
+            const match = raw.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+            if (match) {
+                return `${match[1].padStart(2, '0')}:${match[2]} ${match[3]}`;
+            }
+            return raw;
+        }
+
+        function getTeacherSessionsForSlot(dateKey, hourStr) {
+            let myName = getActiveTeacherName();
+            const targetTime = normalizeTime(hourStr);
 
             return sessionsData.filter(s => {
                 let tName = String(s.Teacher || s.teacher || "").toLowerCase().trim();
                 if (tName.startsWith('teacher ')) tName = tName.substring(8).trim();
                 
                 const sDate = parseLocalDateKey(String(s.Date || s.date || s.sessionDate || ""));
-                let sTimeRaw = String(s.Time || s.time || s.sessionTime || "").toLowerCase().trim();
+                const sTime = normalizeTime(String(s.Time || s.time || s.sessionTime || ""));
 
                 const isMatch = tName === myName || myName.includes(tName) || tName.includes(myName);
-                if (!isMatch || sDate !== dateKey) return false;
-
-                if (/^\d{2}:\d{2}$/.test(sTimeRaw)) {
-                    let [h, m] = sTimeRaw.split(':');
-                    let hourNum = parseInt(h, 10);
-                    let ampm = hourNum >= 12 ? 'pm' : 'am';
-                    hourNum = hourNum % 12 || 12;
-                    sTimeRaw = `${hourNum}:${m} ${ampm}`;
-                }
-
-                try {
-                    const slotHour = hourStr.match(/^(\d+):/)[1];
-                    const sessionHour = sTimeRaw.match(/^(\d+):/)[1];
-                    const slotAmPm = hourStr.toLowerCase().includes('pm') ? 'pm' : 'am';
-                    const sessionAmPm = sTimeRaw.includes('pm') ? 'pm' : 'am';
-                    return parseInt(slotHour, 10) === parseInt(sessionHour, 10) && slotAmPm === sessionAmPm;
-                } catch(e) {}
-
-                return sTimeRaw === hourStr.toLowerCase();
+                return isMatch && sDate === dateKey && sTime === targetTime;
             });
+        }
+
+        function isSlotClosed(dateKey, hourStr) {
+            const targetTime = normalizeTime(hourStr);
+            const slotKey = `${dateKey}_${targetTime}`;
+            return cachedClosedSlotsArray.includes(slotKey);
+        }
+
+        async function toggleHourClosure(dateKey, hourStr) {
+            let myName = getActiveTeacherName();
+            const normHour = normalizeTime(hourStr);
+            const slotKey = `${dateKey}_${normHour}`;
+
+            try {
+                showToast("Updating hour availability...", "success");
+                const res = await fetchJsonp('toggleClosedHour', `&teacher=${encodeURIComponent(myName)}&date=${encodeURIComponent(dateKey)}&hour=${encodeURIComponent(normHour)}`);
+                
+                if (res && res.status === "success") {
+                    if (res.actionStatus === "closed") {
+                        if (!cachedClosedSlotsArray.includes(slotKey)) cachedClosedSlotsArray.push(slotKey);
+                        showToast(`Hour ${hourStr} on ${dateKey} CLOSED for bookings.`, "success");
+                    } else {
+                        cachedClosedSlotsArray = cachedClosedSlotsArray.filter(k => k !== slotKey);
+                        showToast(`Hour ${hourStr} on ${dateKey} OPENED for bookings.`, "success");
+                    }
+                    renderCalendarMatrix();
+                } else {
+                    showToast("Failed to update hour status.", "error");
+                }
+            } catch(err) {
+                showToast("Network error updating hour status.", "error");
+            }
         }
 
         function renderCalendarMatrix() {
@@ -220,12 +313,12 @@
             let html = `
                 <table class="table table-pin-rows table-zebra text-center w-full border-collapse">
                     <thead>
-                        <tr class="bg-base-200 text-base-content text-xs uppercase font-extrabold">
-                            <th class="w-28 border-r border-base-300 py-3">Time</th>
+                        <tr class="text-base-content text-xs uppercase font-extrabold">
+                            <th class="w-28 border-r border-base-300 py-3 bg-base-200 sticky top-0 z-20 shadow-xs">Time</th>
                             ${weekDays.map(d => {
                                 const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
                                 const isToday = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) === dateKey;
-                                return `<th class="border-r border-base-300 py-3 ${isToday ? 'bg-primary/15 text-primary font-black' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-80">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
+                                return `<th class="border-r border-base-300 py-3 bg-base-200 sticky top-0 z-20 shadow-xs ${isToday ? '!bg-primary/20 text-primary font-black' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-80">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
                             }).join('')}
                         </tr>
                     </thead>
@@ -237,6 +330,7 @@
                 weekDays.forEach(d => {
                     const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
                     const matches = getTeacherSessionsForSlot(dateKey, hour);
+                    const closed = isSlotClosed(dateKey, hour);
 
                     if (matches.length > 0) {
                         html += `<td class="border-r border-base-300 p-2 bg-primary/10 space-y-1.5 align-middle">`;
@@ -258,8 +352,22 @@
                             `;
                         });
                         html += `</td>`;
+                    } else if (closed) {
+                        html += `
+                            <td class="border-r border-base-300 p-2 bg-warning/30 hover:bg-warning/40 cursor-pointer transition-all align-middle" onclick="toggleHourClosure('${dateKey}', '${hour}')" title="Click to Open Hour">
+                                <div class="badge badge-warning font-black text-white px-3 py-2 shadow-xs border border-warning/50 rounded-lg">
+                                    <i class="fa-solid fa-ban mr-1"></i> CLOSED
+                                </div>
+                                <div class="text-[10px] text-warning-content font-bold mt-1 underline">Click to Re-open</div>
+                            </td>`;
                     } else {
-                        html += `<td class="border-r border-base-300 p-2"><span class="text-[11px] text-base-content/40 font-medium">Available</span></td>`;
+                        html += `
+                            <td class="border-r border-base-300 p-2 bg-success/5 hover:bg-success/15 transition-all align-middle">
+                                <span class="text-[11px] text-success font-bold block mb-1">Available</span>
+                                <button onclick="toggleHourClosure('${dateKey}', '${hour}')" class="btn btn-xs btn-warning btn-outline font-bold text-[10px] rounded-lg px-2 shadow-xs">
+                                    <i class="fa-solid fa-lock text-[9px]"></i> Close Hour
+                                </button>
+                            </td>`;
                     }
                 });
                 html += `</tr>`;
@@ -276,36 +384,50 @@
 
             const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
 
-            let todaySessions = [];
-            hours.forEach(h => {
-                getTeacherSessionsForSlot(dateKey, h).forEach(m => {
-                    if (!todaySessions.includes(m)) todaySessions.push(m);
-                });
-            });
-
             let html = `<div class="p-6 space-y-3 max-w-3xl mx-auto w-full">`;
-            if (todaySessions.length > 0) {
-                todaySessions.forEach(m => {
-                    const student = m.Student || m.student || 'Student';
-                    const lesson = m.Lesson || m.lesson || 'Class';
-                    const timeStr = m.Time || m.time || m.sessionTime || '';
-                    const link = m.Link || m.link || '';
-                    html += `
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-base-100 p-4 rounded-2xl border border-primary/30 shadow-sm gap-4">
-                            <div class="space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <span class="badge badge-primary font-bold text-xs px-2.5 py-1">${timeStr}</span>
-                                    <span class="font-bold text-base text-base-content">${lesson}</span>
+            hours.forEach(hour => {
+                const matches = getTeacherSessionsForSlot(dateKey, hour);
+                const closed = isSlotClosed(dateKey, hour);
+
+                if (matches.length > 0) {
+                    matches.forEach(m => {
+                        const student = m.Student || m.student || 'Student';
+                        const lesson = m.Lesson || m.lesson || 'Class';
+                        const timeStr = m.Time || m.time || m.sessionTime || hour;
+                        const link = m.Link || m.link || '';
+                        html += `
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-base-100 p-4 rounded-2xl border border-primary/30 shadow-sm gap-4">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="badge badge-primary font-bold text-xs px-2.5 py-1">${timeStr}</span>
+                                        <span class="font-bold text-base text-base-content">${lesson}</span>
+                                    </div>
+                                    <p class="text-xs font-medium text-base-content/70 pl-1">Student: <strong class="text-primary font-bold">${student}</strong></p>
                                 </div>
-                                <p class="text-xs font-medium text-base-content/70 pl-1">Student: <strong class="text-primary font-bold">${student}</strong></p>
+                                ${link ? `<a href="${link}" target="_blank" class="btn btn-primary btn-sm font-bold gap-2 rounded-xl px-4"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-sm font-semibold">No Link Yet</span>'}
                             </div>
-                            ${link ? `<a href="${link}" target="_blank" class="btn btn-primary btn-sm font-bold gap-2 rounded-xl px-4"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-sm font-semibold">No Link Yet</span>'}
-                        </div>
-                    `;
-                });
-            } else {
-                html += `<div class="text-center py-12"><p class="text-sm text-base-content/50 italic">No classes booked for this day.</p></div>`;
-            }
+                        `;
+                    });
+                } else if (closed) {
+                    html += `
+                        <div class="flex justify-between items-center bg-warning/20 p-4 rounded-2xl border border-warning/40 shadow-xs">
+                            <div>
+                                <span class="badge badge-warning font-black text-white px-3 py-1.5 rounded-lg"><i class="fa-solid fa-ban mr-1"></i> CLOSED (${hour})</span>
+                                <span class="font-bold text-sm text-base-content ml-2">Unavailable for bookings</span>
+                            </div>
+                            <button onclick="toggleHourClosure('${dateKey}', '${hour}')" class="btn btn-sm btn-warning font-bold shadow-xs">Re-open Hour</button>
+                        </div>`;
+                } else {
+                    html += `
+                        <div class="flex justify-between items-center bg-base-100 p-4 rounded-2xl border border-base-300 shadow-xs">
+                            <div>
+                                <span class="badge badge-success font-bold text-white px-2.5 py-1 rounded-lg">${hour}</span>
+                                <span class="text-xs font-bold text-success ml-2">Open & Available</span>
+                            </div>
+                            <button onclick="toggleHourClosure('${dateKey}', '${hour}')" class="btn btn-sm btn-outline btn-warning font-bold shadow-xs">Close Hour</button>
+                        </div>`;
+                }
+            });
             html += `</div>`;
             container.innerHTML = html;
         }
@@ -354,6 +476,16 @@
             }
             html += `</tr></tbody></table>`;
             container.innerHTML = html;
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `alert ${type === 'success' ? 'alert-success' : 'alert-error'} text-white shadow-lg text-xs py-3 rounded-xl`;
+            toast.innerHTML = `<span><i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'} mr-2"></i>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
         }
     </script>
 </body>

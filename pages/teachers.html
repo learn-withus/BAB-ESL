@@ -666,6 +666,15 @@
         }
 
         function selectSlotAndBook(date, time) {
+            const t = allTeachers[activeTeacherIndex];
+            if (t) {
+                const bookingStatusVal = String(t.bookingStatus || "").toLowerCase();
+                const isBookingOpen = bookingStatusVal === "open" || bookingStatusVal === "accepted" || (!bookingStatusVal.includes("closed") && !bookingStatusVal.includes("disable"));
+                if (!isBookingOpen) {
+                    showToast("Booking is currently closed by this teacher.", "error");
+                    return;
+                }
+            }
             document.getElementById('booking-date').value = date;
             document.getElementById('booking-time').value = convertTo24HourTime(time);
             showBookingViewFromTimetable();
@@ -728,7 +737,9 @@
                     ? `<div class="badge badge-success gap-2 py-3.5 px-5 w-full justify-center text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs"><i class="fa-solid fa-circle-check text-base"></i> Booking Status: Open & Accepting Sessions</div>`
                     : `<div class="badge badge-error gap-2 py-3.5 px-5 w-full justify-center text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs"><i class="fa-solid fa-circle-xmark text-base"></i> Booking Status: Booking is closed by teacher</div>`;
 
-                let timetableBtn = `<button onclick="showTimetableGridView()" class="btn btn-primary btn-lg flex-1 gap-2.5 font-bold text-white rounded-2xl shadow-md text-sm sm:text-base"><i class="fa-solid fa-calendar-days text-lg"></i>Book a schedule</button>`;
+                let timetableBtn = isBookingOpen 
+                    ? `<button onclick="showTimetableGridView()" class="btn btn-primary btn-lg flex-1 gap-2.5 font-bold text-white rounded-2xl shadow-md text-sm sm:text-base"><i class="fa-solid fa-calendar-days text-lg"></i>Book a schedule</button>`
+                    : `<button disabled class="btn btn-disabled btn-lg flex-1 gap-2.5 font-bold rounded-2xl shadow-none text-sm sm:text-base cursor-not-allowed opacity-60"><i class="fa-solid fa-ban text-lg"></i>Booking Closed</button>`;
 
                 modalActionContainer.innerHTML = `
                     ${bookingBadge}
@@ -849,6 +860,15 @@
         }
 
         function showTimetableGridView() {
+            const t = allTeachers[activeTeacherIndex];
+            if (t) {
+                const bookingStatusVal = String(t.bookingStatus || "").toLowerCase();
+                const isBookingOpen = bookingStatusVal === "open" || bookingStatusVal === "accepted" || (!bookingStatusVal.includes("closed") && !bookingStatusVal.includes("disable"));
+                if (!isBookingOpen) {
+                    showToast("Booking is currently closed by this teacher.", "error");
+                    return;
+                }
+            }
             document.getElementById('modal-profile-view').classList.add('hidden');
             document.getElementById('modal-gallery-view').classList.add('hidden');
             document.getElementById('modal-payment-view').classList.add('hidden');

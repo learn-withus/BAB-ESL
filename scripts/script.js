@@ -78,6 +78,10 @@ function getTargetUrl() {
         gid = "931512612"; 
     }else if (pageName === "bathroom.html") { 
         gid = "1669556193"; 
+    }else if (pageName === "mountain-climbing.html") { 
+        gid = "1631515039"; 
+    }else if (pageName === "school-parenting-shopping-survival-english.html") { 
+        gid = "488262510"; 
     }
 
 

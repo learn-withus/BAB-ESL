@@ -240,6 +240,49 @@ styleEl.innerHTML = `
         transform: scale(1.1);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     }
+
+    /* Print & PDF Export Settings: Guarantees complete top-to-bottom capture without bottom clipping */
+    @media print {
+        @page {
+            margin: 10mm;
+        }
+        ::-webkit-scrollbar {
+            display: none !important;
+        }
+        * {
+            scrollbar-width: none !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        html, body {
+            height: auto !important;
+            overflow: visible !important;
+            background: #ffffff !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        #app-scaler-wrapper {
+            transform: none !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+        #app-canvas {
+            transform: none !important;
+            width: 100% !important;
+            height: auto !important;
+            position: relative !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            left: 0 !important;
+            top: 0 !important;
+            padding-bottom: 100px !important; /* Safety buffer so bottom content is never cut off */
+        }
+        .draggable-text-box, .draggable-image-box, .card, p, li, tr, .row, section {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+    }
 `;
 document.head.appendChild(styleEl);
 

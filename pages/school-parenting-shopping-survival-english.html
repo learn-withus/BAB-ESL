@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAB - ESL Core Skills: School and Parenting</title>
+    <title>BAB - ESL Core Skills: SURVIVAL ENGLISH Level 1</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -33,7 +33,7 @@
                                      alt="Picture"
                                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-transparent"></div>
-                                <span class="absolute top-4 left-4 badge font-semibold shadow-md text-sm badge-accent">
+                                <span class="absolute top-4 left-4 badge font-semibold shadow-md text-sm badge-primary">
                                     Core Skills
                                 </span>
                                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-sm gap-2">
@@ -42,16 +42,16 @@
                             </div>
 
                             <div class="card-body px-2 py-8">
-                                <h1 class="text-4xl font-extrabold tracking-tight mb-2">School and Parenting</h1>
+                                <h1 class="text-4xl font-extrabold tracking-tight mb-2">Survival English Level 1</h1>
                                 <p class="text-lg text-base-content/75 leading-relaxed mb-4">
-                                    Lesson target: Encourage discussion and reactions
+                                    Lesson target: Develop confidence in speaking, expressing ideas, asking questions, and responding naturally in everyday conversations.
                                 </p>
                             </div>
                         </div>
 
-                        <div class="border-b border-base-200 pb-4">
+                          <div class="border-b border-base-200 pb-4">
                             <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
-                                <i class="fa-solid fa-fire text-2xl"></i> I. WARM-UP
+                             
                             </h2>
                         </div>
                         <div id="warmup-container" class="space-y-4 text-xl leading-relaxed"></div>
@@ -73,93 +73,7 @@
                         <form method="dialog" class="modal-backdrop"><button>close</button></form>
                     </dialog>
 
-                    <section id="vocab-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
-                        <div class="border-b border-base-200 pb-4">
-                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
-                                <i class="fa-solid fa-book text-2xl"></i> II. VOCABULARY
-                            </h2>
-                        </div>
-                        <div id="vocab-container" class="space-y-4 text-xl leading-relaxed"></div>
-                    </section>
-
-                    <section id="reading-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
-                        <div class="border-b border-base-200 pb-4">
-                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
-                                <i class="fa-solid fa-book-open text-2xl"></i> III. READING ACTIVITY
-                            </h2>
-                        </div>
-                        <div id="reading-container" class="space-y-4 text-xl leading-relaxed"></div>
-                    </section>
-
-                    <section id="speaking-section" class="card bg-base-100 p-10 space-y-6 shadow-none border-0 scroll-mt-24">
-                        <div class="border-b border-base-200 pb-4">
-                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
-                                <i class="fa-solid fa-comments text-2xl"></i> IV. SPEAKING PRACTICE
-                            </h2>
-                        </div>
-                        <div id="speaking-container" class="space-y-4 text-xl leading-relaxed"></div>
-                    </section>
-
-                    <div class="card bg-base-100 p-10 space-y-8 shadow-none border-0 scroll-mt-24" id="listening-section">
-                        <div class="border-b border-base-200 pb-4">
-                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
-                                <i class="fa-solid fa-headphones text-2xl"></i> V. LISTENING ACTIVITY
-                            </h2>
-                            <p class="text-lg font-medium text-base-content/75 mt-2">Dialogue Practice 🎭</p>
-                        </div>
-
-                        <div class="video-container relative w-full aspect-video rounded-2xl overflow-hidden shadow-sm bg-base-300 border border-base-200">
-                            <iframe class="absolute inset-0 w-full h-full"
-                                    src="https://www.youtube.com/embed/nQsiRN7WQlo"
-                                    title="YouTube video player"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowfullscreen>
-                            </iframe>
-                        </div>
-
-                        <div class="bg-gradient-to-br from-base-200/60 to-base-200/30 p-8 rounded-2xl border border-base-200 shadow-sm space-y-6">
-                            <div class="flex items-center gap-2 text-base-content/80 font-semibold text-sm tracking-wider uppercase">
-                                <i class="fa-solid fa-sliders text-primary"></i> Voice Settings &amp; Controls
-                            </div>
-                            <div id="voice-controls-container" class="flex flex-row flex-wrap items-center justify-between gap-6">
-                                <p class="text-lg text-base-content/70 italic col-span-full">Loading speakers...</p>
-                            </div>
-                            <div class="flex items-center justify-between gap-4 pt-4 border-t border-base-300/60">
-                                <div class="flex items-center gap-3">
-                                    <button class="btn custom-primary-bg btn-md gap-2 px-6 shadow-md" onclick="playDialogue()">
-                                        <i class="fa-solid fa-play"></i> Play All
-                                    </button>
-                                    <button class="btn btn-outline btn-error btn-md gap-2 px-6" onclick="stopDialogue()">
-                                        <i class="fa-solid fa-stop"></i> Stop
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="fullDialogue" class="bg-base-200/30 p-6 rounded-2xl text-xl leading-relaxed border border-base-200 space-y-6"></div>
-                    </div>
-
-                    <div class="card bg-base-100 p-10 space-y-8 shadow-none border-0 scroll-mt-24" id="quiz-container">
-                        <div class="border-b border-base-200 pb-4">
-                            <h2 class="text-3xl font-extrabold custom-primary-text flex items-center gap-3">
-                                <i class="fa-solid fa-pen-to-square text-2xl"></i> Quiz Practice
-                            </h2>
-                        </div>
-                        
-                        <div class="w-full overflow-x-auto pb-2">
-                            <div id="quiz-list" class="space-y-8 text-xl leading-relaxed min-w-[500px] md:min-w-0"></div>
-                        </div>
-
-                        <div class="flex justify-center gap-4 pt-6 border-t border-base-200">
-                            <button class="btn custom-primary-bg btn-lg px-10 shadow-sm" id="submit-btn" onclick="submitQuiz()" style="display:none;">
-                                Submit All Answers
-                            </button>
-                            <button class="btn btn-outline btn-lg px-8" id="reset-btn" onclick="resetQuiz()" style="display:none;">
-                                Reset Quiz
-                            </button>
-                        </div>
-                        <div id="quiz-result" class="mt-4 font-bold text-center text-xl"></div>
-                    </div>
+        
 
                 </div>
 
@@ -174,6 +88,7 @@
     </div>
 
     <div class="fixed right-3 bottom-3 z-[1050] flex flex-col items-center gap-2 pointer-events-auto">
+
 
         <div id="teacher-toolbar" class="flex flex-col items-center gap-2 transition-all duration-300">
             <button onclick="toggleToolbarMenu()" id="toolbar-master-btn" class="btn btn-sm btn-square btn-primary shadow-md tooltip tooltip-left text-xs transition-transform hover:scale-105 relative group flex items-center justify-center p-0" data-tip="Tools">

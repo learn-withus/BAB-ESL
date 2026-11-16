@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - ESL Login</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        @keyframes slideBackground {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 120px 120px;
+            }
+        }
+
+        .animated-bg-watermark {
+            position: absolute;
+            inset: 0;
+            background-image: url('images/bab.png');
+            background-repeat: repeat;
+            background-size: 320px 320px;
+            opacity: 0.05;
+            animation: slideBackground 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .login-card-container {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-base-200 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div class="animated-bg-watermark"></div>
+
+    <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-300 p-8 login-card-container">
+        <div class="flex justify-center mb-6">
+            <img src="images/bab.png" alt="BAB ESL Pro Logo" class="w-16 h-16 object-contain">
+        </div>
+        
+        <form id="login-form" onsubmit="handleLogin(event)" class="flex flex-col gap-4">
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Username</span></label>
+                <input type="text" id="username" placeholder="Enter your username" class="input input-bordered w-full text-sm" autocomplete="off" />
+            </div>
+            
+            <div class="form-control">
+                <label class="label"><span class="label-text font-semibold">Password</span></label>
+                <div class="relative">
+                    <input type="password" id="password" placeholder="Enter your password" class="input input-bordered w-full text-sm pr-10" />
+                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/60" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility">
+                        <i id="eye-icon" class="fa-solid fa-eye"></i>
+                        <i id="eye-off-icon" class="fa-solid fa-eye-slash hidden"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full mt-2">Sign In</button>
+        </form>
+        
+        <p id="error-msg" class="text-error text-xs text-center mt-3 hidden">Invalid username or password</p>
+    </div>
+
+    <script src="./scripts/script.js"></script>
+    <script>
+        const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+</html>

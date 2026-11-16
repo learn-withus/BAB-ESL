@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - ESL | Admin Management Center</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 99px; }
+        
+        .drawer, .drawer-side, .drawer-side > .menu, .drawer-content { overflow: visible !important; }
+        .tooltip { position: relative; overflow: visible !important; }
+        .tooltip:before, .tooltip:after { z-index: 999999 !important; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-base-200 min-h-screen font-sans">
+
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        
+        <div class="drawer-content flex flex-col min-h-screen w-full">
+            
+            <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-base-100/85 border-b border-base-300/80 transition-all duration-300 shadow-xs">
+                <div id="topnav-placeholder" class="w-full"></div>
+            </header>
+
+            <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 max-w-full w-full">
+                
+                <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex items-center gap-4 z-10">
+                        <span class="flex items-center justify-center w-14 h-14 bg-primary/10 text-primary rounded-2xl text-2xl shadow-xs border border-primary/20">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">Admin Panel</span>
+                            </div>
+                            <h1 class="text-2xl sm:text-3xl font-extrabold text-base-content tracking-tight mt-1">Accounts</h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-base-200/80 p-3 px-5 rounded-2xl border border-base-300 text-base-content shrink-0 z-10 shadow-xs">
+                        <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-sm">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                            <div id="live-clock" class="text-sm font-extrabold tracking-wide text-primary">00:00:00 AM</div>
+                            <div class="text-[10px] font-bold text-base-content/50 uppercase tracking-wider">System Time</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">Total Accounts</span>
+                            <h3 id="stat-total" class="text-2xl font-black text-base-content mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">Students</span>
+                            <h3 id="stat-students" class="text-2xl font-black text-success mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-success/10 text-success flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">Teachers</span>
+                            <h3 id="stat-teachers" class="text-2xl font-black text-info mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-info/10 text-info flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 p-5 rounded-3xl border border-base-300 shadow-xs flex flex-row items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-base-content/50 uppercase tracking-wider">System Admins</span>
+                            <h3 id="stat-admins" class="text-2xl font-black text-warning mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-warning/10 text-warning flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden w-full">
+                    
+                    <div class="p-6 border-b border-base-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-primary"></span>
+                            <div>
+                                <p class="text-xs text-base-content/60 font-medium">Search, filter, edit credentials, or append new accounts.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <div class="relative flex-1 md:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-base-content/40"></i>
+                                <input type="text" id="user-search-input" oninput="filterUserTable()" placeholder="Search username..." class="input input-bordered input-sm w-full pl-9 bg-base-200/50 rounded-xl text-xs focus:outline-none focus:border-primary shadow-xs">
+                            </div>
+
+                            <select id="role-filter-select" onchange="filterUserTable()" class="select select-bordered select-sm rounded-xl text-xs bg-base-200/50 font-semibold focus:outline-none focus:border-primary">
+                                <option value="all">All Roles</option>
+                                <option value="1">Students (Role 1)</option>
+                                <option value="2">Teachers (Role 2)</option>
+                                <option value="3">Admins (Role 3)</option>
+                            </select>
+
+                            <button onclick="openAddUserModal()" class="btn btn-sm btn-primary rounded-xl px-4 text-xs font-bold text-white gap-2 shadow-xs hover:opacity-90">
+                                <i class="fa-solid fa-user-plus"></i> Add Account
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto w-full">
+                        <table class="table w-full text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-base-200/60 text-base-content/70 text-[11px] uppercase font-extrabold tracking-wider border-b border-base-200">
+                                    <th class="py-4 px-6">User Name</th>
+                                    <th class="py-4">Password</th>
+                                    <th class="py-4">Role & Access</th>
+                                    <th class="py-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-table-tbody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-16 text-base-content/50 italic">
+                                        <i class="fa-solid fa-circle-notch fa-spin text-primary text-2xl mb-3 block"></i> Syncing user account database...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="drawer-side z-[9999] overflow-visible">
+            <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <dialog id="add-user-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-md">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-base-200">
+                <h3 class="font-extrabold text-base flex items-center gap-2 text-base-content">
+                    <i class="fa-solid fa-user-plus text-primary"></i> Create New Account
+                </h3>
+                <button onclick="closeAddUserModal()" class="btn btn-xs btn-circle btn-ghost text-error">✕</button>
+            </div>
+
+            <form id="add-user-form" onsubmit="submitAddUser(event)" class="space-y-4 text-xs font-semibold">
+                <div>
+                    <label class="block mb-1 text-base-content/70">Username</label>
+                    <input type="text" id="add-username" placeholder="e.g. john_doe" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70">Password</label>
+                    <input type="text" id="add-password" placeholder="Enter secure password" class="input input-bordered input-sm w-full rounded-xl bg-base-200/50 focus:border-primary" required>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70">Role</label>
+                    <select id="add-role" class="select select-bordered select-sm w-full rounded-xl bg-base-200/50 text-xs font-semibold focus:border-primary" required>
+                        <option value="1">1 - Student</option>
+                        <option value="2">2 - Teacher</option>
+                        <option value="3">3 - Admin</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                    <button type="button" onclick="closeAddUserModal()" class="btn btn-sm btn-ghost rounded-xl">Cancel</button>
+                    <button type="submit" id="add-save-btn" class="btn btn-sm btn-primary rounded-xl px-6 font-bold text-white shadow-xs">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="edit-user-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-0 rounded-3xl border border-base-300 shadow-2xl max-w-lg overflow-hidden bg-base-100">
+            <div class="bg-primary text-white p-5 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen"></i> Edit Account Details
+                </h3>
+                <button onclick="closeEditUserModal()" class="btn btn-xs btn-circle btn-ghost text-white hover:bg-white/20">✕</button>
+            </div>
+
+            <form id="edit-user-form" onsubmit="submitEditUser(event)" class="p-6 space-y-4 text-xs font-semibold">
+                <input type="hidden" id="edit-old-username">
+
+                <div>
+                    <label class="block mb-1 text-base-content/70 font-bold">Username</label>
+                    <input type="text" id="edit-username" class="input input-bordered input-sm w-full rounded-xl bg-base-100 font-bold text-base-content focus:border-primary" required>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70 font-bold">Password</label>
+                    <input type="text" id="edit-password" class="input input-bordered input-sm w-full rounded-xl bg-base-100 font-bold text-base-content focus:border-primary" required>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-base-content/70 font-bold">Account Role</label>
+                    <select id="edit-role" class="select select-bordered select-sm w-full rounded-xl bg-base-100 text-xs font-bold text-base-content focus:border-primary" required>
+                        <option value="1">1 - Student</option>
+                        <option value="2">2 - Teacher</option>
+                        <option value="3">3 - Admin</option>
+                    </select>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-base-content/70 font-bold">Allowed Books Access</label>
+                        <span id="selected-books-count" class="text-[11px] font-bold text-primary">0 Selected</span>
+                    </div>
+
+                    <div class="relative mb-2">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-base-content/40"></i>
+                        <input type="text" id="book-modal-search" oninput="filterModalBooks()" placeholder="Search lessons/books..." class="input input-bordered input-sm w-full pl-9 rounded-xl bg-base-100 text-xs focus:border-primary">
+                    </div>
+
+                    <div class="bg-base-200/60 p-4 rounded-2xl border border-base-300 max-h-52 overflow-y-auto custom-scroll">
+                        <div id="modal-books-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-base-200">
+                    <button type="button" onclick="closeEditUserModal()" class="btn btn-sm btn-ghost rounded-xl px-5 font-bold">Cancel</button>
+                    <button type="submit" id="edit-save-btn" class="btn btn-sm btn-primary rounded-xl px-6 font-extrabold text-white shadow-xs">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="delete-user-modal" class="modal backdrop-blur-xs z-[999]">
+        <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-sm text-center bg-base-100">
+            <div class="w-16 h-16 bg-error/10 text-error rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-error/20">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-extrabold text-lg text-base-content mb-1">Delete Account</h3>
+            <p class="text-xs text-base-content/60 font-medium mb-6">Are you sure you want to permanently delete the account <span id="delete-target-name" class="font-bold text-base-content"></span>?</p>
+            
+            <input type="hidden" id="delete-target-username">
+
+            <div class="flex items-center justify-center gap-2">
+                <button type="button" onclick="closeDeleteModal()" class="btn btn-sm btn-ghost rounded-xl flex-1 font-bold">Cancel</button>
+                <button type="button" id="confirm-delete-btn" onclick="confirmDeleteAccount()" class="btn btn-sm btn-error text-white rounded-xl flex-1 font-bold shadow-xs">Yes, Delete</button>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
+
+    <div id="toast-container" class="toast toast-end toast-bottom z-[9999]"></div>
+
+    <script src="scripts/nav.js"></script>
+    <script src="scripts/topnav.js"></script>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        let allAccountsList = [];
+        let masterBooksList = [
+            "work-life-balance.html", "workplace-ethics.html", "restaurant.html",
+            "sports-lesson.html", "library.html", "bus-stop.html", "super-market.html",
+            "kitchen-cooking.html", "park.html", "museums.html", "school-life.html",
+            "hospital-healthcare.html", "hotels-airports.html", "commuting-directions.html",
+            "cafe.html", "driving.html", "managing-busy-schedule.html", "zoo.html", 
+            "customer-service.html", "drugstore.html", "workplace-ethics-v2.html", "music.html",
+            "beach.html", "seminar-meeting.html", "stationery.html", "security.html", "barber.html",
+            "festival.html", "agriculture.html", "ophthalmologist.html", "basic-conversation.html",
+            "self-introduction.html", "dynamic-listening.html", "ambulance.html", "parts-of-speech.html",
+            "bedroom.html", "shopping.html", "school-parenting.html", "bathroom.html", "mountain-climbing.html",
+            "school-parenting-shopping-survival-english.html"
+        ];
+        let selectedBooksSet = new Set();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = String(localStorage.getItem('userRole') || localStorage.getItem('role') || "").trim();
+            if (role !== "3") {
+                window.location.replace("user-dashboard.html");
+                return;
+            }
+            startLiveClock();
+            fetchUserAccounts();
+        });
+
+        function parseDriveLink(url) {
+            if (!url) return '';
+            const cleanUrl = url.trim();
+            if (cleanUrl.includes('drive.google.com')) {
+                const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+                }
+            }
+            return cleanUrl;
+        }
+
+        function startLiveClock() {
+            function updateClock() {
+                const now = new Date();
+                const clockEl = document.getElementById('live-clock');
+                if (clockEl) {
+                    clockEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function fetchUserAccounts() {
+            const tbody = document.getElementById('user-table-tbody');
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-16 text-base-content/50 italic"><i class="fa-solid fa-circle-notch fa-spin text-primary text-2xl mb-3 block"></i> Syncing user account database...</td></tr>`;
+            }
+
+            const callbackName = 'admin_dash_acc_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                if (res && res.status === "success" && Array.isArray(res.accounts)) {
+                    allAccountsList = res.accounts;
+                    if (Array.isArray(res.lessons) && res.lessons.length > 0) {
+                        masterBooksList = res.lessons;
+                    }
+                    updateQuickStats();
+                    filterUserTable();
+                } else if (Array.isArray(res)) {
+                    allAccountsList = res;
+                    updateQuickStats();
+                    filterUserTable();
+                } else {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-error">Failed to load account records.</td></tr>`;
+                }
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=initDashboard&callback=${callbackName}&_cb=${Date.now()}`;
+            document.body.appendChild(script);
+        }
+
+        function updateQuickStats() {
+            let total = allAccountsList.length;
+            let students = 0, teachers = 0, admins = 0;
+
+            allAccountsList.forEach(acc => {
+                const r = String(acc.role || '').trim();
+                if (r === "1" || r === "student") students++;
+                else if (r === "2" || r === "teacher") teachers++;
+                else if (r === "3" || r === "admin") admins++;
+            });
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-students').textContent = students;
+            document.getElementById('stat-teachers').textContent = teachers;
+            document.getElementById('stat-admins').textContent = admins;
+        }
+
+        function filterUserTable() {
+            const query = document.getElementById('user-search-input').value.toLowerCase().trim();
+            const roleFilter = document.getElementById('role-filter-select').value;
+
+            const filtered = allAccountsList.filter(acc => {
+                const username = String(acc.username || acc.name || '').toLowerCase();
+                const role = String(acc.role || '').trim();
+
+                const matchesQuery = !query || username.includes(query);
+                const matchesRole = roleFilter === "all" || role === roleFilter;
+
+                return matchesQuery && matchesRole;
+            });
+
+            renderUserTable(filtered);
+        }
+
+        function renderUserTable(accounts) {
+            const tbody = document.getElementById('user-table-tbody');
+            if (!tbody) return;
+
+            if (accounts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-12 text-base-content/50 font-medium">No matching user accounts found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            accounts.forEach((acc, idx) => {
+                const username = String(acc.username || acc.name || 'N/A').trim();
+                const password = String(acc.password || '••••••••').trim();
+                const role = String(acc.role || '1').trim();
+                const books = String(acc.books || '').trim();
+                const profilePic = parseDriveLink(acc.profilePic || acc.userProfilePic || '');
+
+                let roleBadgeHtml = `<span class="badge badge-sm badge-success font-bold text-white px-3 py-2">Student (Role 1)</span>`;
+                if (role === "2" || role === "teacher") {
+                    roleBadgeHtml = `<span class="badge badge-sm badge-info font-bold text-white px-3 py-2">Teacher (Role 2)</span>`;
+                } else if (role === "3" || role === "admin") {
+                    roleBadgeHtml = `<span class="badge badge-sm badge-warning font-bold text-white px-3 py-2">Admin (Role 3)</span>`;
+                }
+
+                const avatarHtml = profilePic 
+                    ? `<img src="${profilePic}" alt="${username}" class="w-full h-full object-cover">`
+                    : `<span>${username.charAt(0).toUpperCase()}</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-base-200 hover:bg-base-200/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="font-bold text-base-content py-4 px-6 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xs uppercase overflow-hidden ring-1 ring-primary/20 shadow-xs">
+                            ${avatarHtml}
+                        </div>
+                        ${username}
+                    </td>
+                    <td class="py-4">
+                        <div class="flex items-center gap-2">
+                            <span id="pass-text-${idx}" class="font-mono bg-base-200 px-3 py-1 rounded-lg text-xs font-bold text-base-content/80">••••••••</span>
+                            <button onclick="togglePasswordVisibility('${idx}', '${escapeQuotes(password)}')" class="btn btn-xs btn-ghost text-base-content/50 hover:text-primary">
+                                <i id="pass-icon-${idx}" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="py-4">${roleBadgeHtml}</td>
+                    <td class="py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="openEditUserModal('${escapeQuotes(username)}', '${escapeQuotes(password)}', '${role}', '${escapeQuotes(books)}')" class="btn btn-xs btn-ghost text-primary hover:bg-primary/10 font-bold gap-1 rounded-lg">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button onclick="deleteUserAccount('${escapeQuotes(username)}')" class="btn btn-xs btn-ghost text-error hover:bg-error/10 font-bold gap-1 rounded-lg">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function togglePasswordVisibility(idx, realPass) {
+            const passEl = document.getElementById(`pass-text-${idx}`);
+            const iconEl = document.getElementById(`pass-icon-${idx}`);
+
+            if (passEl.textContent === '••••••••') {
+                passEl.textContent = realPass;
+                iconEl.className = "fa-solid fa-eye-slash text-xs";
+            } else {
+                passEl.textContent = '••••••••';
+                iconEl.className = "fa-solid fa-eye text-xs";
+            }
+        }
+
+        function escapeQuotes(str) {
+            return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function openAddUserModal() {
+            document.getElementById('add-username').value = '';
+            document.getElementById('add-password').value = '';
+            document.getElementById('add-role').value = '1';
+            document.getElementById('add-user-modal').showModal();
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('add-user-modal').close();
+        }
+
+        function submitAddUser(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('add-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Creating...";
+
+            const username = document.getElementById('add-username').value.trim();
+            const password = document.getElementById('add-password').value.trim();
+            const role = document.getElementById('add-role').value;
+
+            const callbackName = 'admin_add_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Create Account";
+                closeAddUserModal();
+
+                if (res && res.status === "success") {
+                    showToast(`Account "${username}" created successfully!`, "success");
+                    fetchUserAccounts();
+                } else {
+                    showToast(res.message || "Failed to create account.", "error");
+                }
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=signup&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(role)}&books=&callback=${callbackName}`;
+            script.onerror = function() {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Create Account";
+                closeAddUserModal();
+                showToast("Account created successfully!", "success");
+                fetchUserAccounts();
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function openEditUserModal(username, password, role, booksStr) {
+            document.getElementById('edit-old-username').value = username;
+            document.getElementById('edit-username').value = username;
+            document.getElementById('edit-password').value = password;
+            document.getElementById('edit-role').value = role;
+            document.getElementById('book-modal-search').value = '';
+
+            selectedBooksSet = new Set(
+                String(booksStr || '')
+                    .split(',')
+                    .map(b => b.trim().toLowerCase())
+                    .filter(b => b.length > 0)
+            );
+
+            renderModalBooks();
+            document.getElementById('edit-user-modal').showModal();
+        }
+
+        function renderModalBooks() {
+            const container = document.getElementById('modal-books-container');
+            const searchVal = (document.getElementById('book-modal-search').value || '').toLowerCase().trim();
+            if (!container) return;
+
+            container.innerHTML = '';
+            
+            const filteredBooks = masterBooksList.filter(b => b.toLowerCase().includes(searchVal));
+
+            if (filteredBooks.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-4 text-xs text-base-content/50">No books found matching search.</div>`;
+                updateSelectedBooksCount();
+                return;
+            }
+
+            filteredBooks.forEach(book => {
+                const bookClean = book.trim().toLowerCase();
+                const isSelected = selectedBooksSet.has(bookClean);
+
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-2 px-3 rounded-xl border text-xs font-semibold cursor-pointer select-none transition-all ${
+                    isSelected ? 'bg-primary/10 border-primary text-primary shadow-xs' : 'bg-base-100 border-base-300 text-base-content/80 hover:border-primary/50'
+                }`;
+                item.onclick = () => toggleBookSelection(bookClean);
+
+                item.innerHTML = `
+                    <span class="truncate pr-1">${book}</span>
+                    <span class="shrink-0 text-base">
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-primary"></i>' : '<i class="fa-regular fa-circle text-base-content/30"></i>'}
+                    </span>
+                `;
+                container.appendChild(item);
+            });
+
+            updateSelectedBooksCount();
+        }
+
+        function filterModalBooks() {
+            renderModalBooks();
+        }
+
+        function toggleBookSelection(book) {
+            if (selectedBooksSet.has(book)) {
+                selectedBooksSet.delete(book);
+            } else {
+                selectedBooksSet.add(book);
+            }
+            renderModalBooks();
+        }
+
+        function updateSelectedBooksCount() {
+            const countEl = document.getElementById('selected-books-count');
+            if (countEl) {
+                countEl.textContent = `${selectedBooksSet.size} Selected`;
+            }
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('edit-user-modal').close();
+        }
+
+        function submitEditUser(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('edit-save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            const oldUsername = document.getElementById('edit-old-username').value;
+            const username = document.getElementById('edit-username').value.trim();
+            const password = document.getElementById('edit-password').value.trim();
+            const role = document.getElementById('edit-role').value;
+            const books = Array.from(selectedBooksSet).join(',');
+
+            const callbackName = 'admin_edit_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+                closeEditUserModal();
+
+                showToast(`Account "${username}" updated!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=editAccount&oldUsername=${encodeURIComponent(oldUsername)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&role=${encodeURIComponent(role)}&books=${encodeURIComponent(books)}&callback=${callbackName}`;
+            script.onerror = function() {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+                closeEditUserModal();
+                showToast(`Account "${username}" updated!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function deleteUserAccount(username) {
+            document.getElementById('delete-target-username').value = username;
+            document.getElementById('delete-target-name').textContent = `"${username}"`;
+            document.getElementById('delete-user-modal').showModal();
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-user-modal').close();
+        }
+
+        function confirmDeleteAccount() {
+            const username = document.getElementById('delete-target-username').value;
+            const confirmBtn = document.getElementById('confirm-delete-btn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = "Deleting...";
+
+            const callbackName = 'admin_del_cb_' + Math.round(Math.random() * 1000000);
+            window[callbackName] = function(res) {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Yes, Delete";
+                closeDeleteModal();
+
+                showToast(`Account "${username}" deleted!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=deleteAccount&username=${encodeURIComponent(username)}&callback=${callbackName}`;
+            script.onerror = function() {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Yes, Delete";
+                closeDeleteModal();
+                showToast(`Account "${username}" deleted!`, "success");
+                fetchUserAccounts();
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            toast.className = `alert ${alertClass} text-white shadow-lg text-xs py-3 rounded-2xl`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+</body>
+</html>

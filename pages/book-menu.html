@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB - ESL Books</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="bg-base-200 min-h-screen font-sans">
+
+    <div class="drawer lg:drawer-open">
+        <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col min-h-screen">
+
+            <div class="p-6 flex-1 max-w-7xl w-full mx-auto">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-2xl font-bold">Lesson Library</h1>
+                        <p class="text-xs sm:text-sm text-base-content/70 mt-1">Explore interactive teaching materials and student books.</p>
+                    </div>
+                </div>
+
+                <div class="book-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="book-grid">
+
+                    <div class="book-card card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col" data-title="Communication Strategy" data-desc="Master the art of listening and reacting in real-time conversations.">
+                        <figure class="relative h-48 bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1SneT_XO128dkhF4noiYRD0wB2mUrYBQ5&sz=w1000" alt="Communication Strategy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 badge badge-neutral badge-sm font-semibold shadow">Foundation Skills</span>
+                        </figure>
+                        <div class="card-body p-5 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold mb-1">Little Voices, Big Words</h3>
+                                <p class="description text-xs text-base-content/70 line-clamp-2">Learn new words, make new friends, and let your voice shine!</p>
+                            </div>
+                            <div class="card-actions mt-4">
+                                <a href="./books/foundation-skills.html" class="view-btn btn btn-neutral btn-sm w-full gap-2">
+                                    <i class="fa-solid fa-book-open"></i> View Lesson
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="book-card card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col" data-title="Communication Strategy" data-desc="Master the art of listening and reacting in real-time conversations.">
+                        <figure class="relative h-48 bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1I7D9s-tPR1JQWBdau_ca3fLDfxbJBtej&sz=w1000" alt="Communication Strategy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 badge badge-primary badge-sm font-semibold shadow">Core Skill</span>
+                        </figure>
+                        <div class="card-body p-5 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold mb-1">The Art of Active Listening</h3>
+                                <p class="description text-xs text-base-content/70 line-clamp-2">Master the art of listening, understanding, and responding with purpose.</p>
+                            </div>
+                            <div class="card-actions mt-4">
+                                <a href="./books/core-skills.html" class="view-btn btn btn-primary btn-sm w-full gap-2">
+                                    <i class="fa-solid fa-book-open"></i> View Lesson
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col" data-title="Communication Strategy" data-desc="Master the art of listening and reacting in real-time conversations.">
+                        <figure class="relative h-48 bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1oCqm-p5x5CuyhMHI0PvvpmAaADNJr7-Q&sz=w1000" alt="Communication Strategy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 badge badge-secondary badge-sm font-semibold shadow">Communication Skills</span>
+                        </figure>
+                        <div class="card-body p-5 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold mb-1">Speak with Impact</h3>
+                                <p class="description text-xs text-base-content/70 line-clamp-2">Express your ideas with confidence, clarity, and influence.</p>
+                            </div>
+                            <div class="card-actions mt-4">
+                                <a href="./books/communication-skills.html" class="view-btn btn btn-secondary btn-sm w-full gap-2">
+                                    <i class="fa-solid fa-book-open"></i> View Lesson
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col" data-title="Speaking Skills" data-desc="Learn essential phrases for customer service and restaurant environments.">
+                        <figure class="relative h-48 bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1mGgl4Fwzj0y7r4XnhCN0DG0wZJCF10aD&sz=w1000" alt="Speaking Skills" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 badge badge-accent badge-sm font-semibold shadow">Advanced Speaking</span>
+                        </figure>
+                        <div class="card-body p-5 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold mb-1">Communication Strategy</h3>
+                                <p class="description text-xs text-base-content/70 line-clamp-2">Build confidence in presentations, discussions, persuasive speaking, and expressing complex ideas.</p>
+                            </div>
+                            <div class="card-actions mt-4">
+                                <a href="./books/advanced-speaking.html" class="view-btn btn btn-accent btn-sm w-full gap-2">
+                                    <i class="fa-solid fa-book-open"></i> View Lesson
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col" data-title="Communication Strategy" data-desc="Master the art of listening and reacting in real-time conversations.">
+                        <figure class="relative h-48 bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=11ZrviK4ojBZ1lkRyMPQih5lBIWPdyz2j&sz=w1000" alt="Communication Strategy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 badge badge-warning badge-sm font-semibold shadow">Mastery and Integration</span>
+                        </figure>
+                        <div class="card-body p-5 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold mb-1">Integrated Learning</h3>
+                                <p class="description text-xs text-base-content/70 line-clamp-2">Combine listening, speaking, reading, and writing in real-world, academic, and professional situations.</p>
+                            </div>
+                            <div class="card-actions mt-4">
+                                <a href="./books/mastery-integration.html" class="view-btn btn btn-warning btn-sm w-full gap-2">
+                                    <i class="fa-solid fa-book-open"></i> View Lesson
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col" data-title="Communication Strategy" data-desc="Master the art of listening and reacting in real-time conversations.">
+                        <figure class="relative h-48 bg-base-200 overflow-hidden">
+                            <img src="https://drive.google.com/thumbnail?id=1WneHLCkNb_iNrGiUI0xJyoUOketg-Ueu&sz=w1000" alt="Communication Strategy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-3 left-3 badge badge-error badge-sm font-semibold shadow">Speaking and expression</span>
+                        </figure>
+                        <div class="card-body p-5 flex flex-col justify-between flex-1">
+                            <div>
+                                <h3 class="card-title text-base font-bold mb-1">Speaking Master</h3>
+                                <p class="description text-xs text-base-content/70 line-clamp-2">Build confidence in expressing ideas clearly and speaking with purpose.</p>
+                            </div>
+                            <div class="card-actions mt-4">
+                                <a href="./books/speaking-expression.html" class="view-btn btn btn-error btn-sm w-full gap-2">
+                                    <i class="fa-solid fa-book-open"></i> View Lesson
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="no-results hidden col-span-full text-center py-16 text-base-content/50" id="no-results-msg">
+                        <i class="fa-regular fa-folder-open fa-3x mb-3 block opacity-40"></i>
+                        <span class="text-sm font-semibold">No lessons found matching your search.</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="drawer-side z-[999] overflow-visible">
+    <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+    <div id="navbar-placeholder" class="menu p-4 w-64 lg:w-20 min-h-full bg-base-100 text-base-content border-r border-base-300 flex flex-col gap-2 overflow-visible">
+    </div>
+
+    </div>
+
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/script.js"></script>
+    <script src="../scripts/topnav.js"></script>
+</body>
+</html>

@@ -575,7 +575,7 @@
 
             const startStr = weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const endStr = weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            titleEl.textContent = `${activeTeacherForModal}'s Timetable (${startStr} - ${endStr})`;
+            titleEl.textContent = `${activeTeacherForModal}'s Weekly Schedule (${startStr} - ${endStr})`;
 
             const hours = SCHEDULE_HOURS;
 
@@ -647,7 +647,7 @@
 
         function renderModalDayView(container, titleEl, subtitleEl, sessionsList) {
             const formattedDay = modalCurrentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
-            titleEl.textContent = `${activeTeacherForModal}'s Day View (${formattedDay})`;
+            titleEl.textContent = `${activeTeacherForModal}'s Today's Schedule (${formattedDay})`;
             const dateKey = modalCurrentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
             const hours = SCHEDULE_HOURS;
@@ -702,7 +702,7 @@
             const year = modalCurrentDate.getFullYear();
             const month = modalCurrentDate.getMonth();
             const monthLabel = modalCurrentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' });
-            titleEl.textContent = `${activeTeacherForModal}'s Monthly Overview (${monthLabel})`;
+            titleEl.textContent = `${activeTeacherForModal}'s Monthly Schedule (${monthLabel})`;
             subtitleEl.innerHTML = `<span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">${monthLabel}</span> <span class="ml-1">Click any date to view and book daily slots.</span>`;
 
             const firstDay = new Date(year, month, 1).getDay();

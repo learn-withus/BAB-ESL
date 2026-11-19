@@ -71,62 +71,101 @@
         </div>
     </div>
 
-    <!-- Expanded Modal Box -->
     <dialog id="teacher-detail-modal" class="modal modal-bottom sm:modal-middle backdrop-blur-xs">
-        <div class="modal-box p-6 sm:p-10 w-11/12 max-w-7xl bg-base-100 border border-base-300 shadow-2xl rounded-3xl relative min-h-[75vh] flex flex-col justify-between">
+        <div class="modal-box p-6 sm:p-10 w-11/12 max-w-[96rem] bg-base-100 border border-base-300 shadow-2xl rounded-3xl relative min-h-[82vh] flex flex-col justify-between">
             
             <button onclick="closeTeacherModal()" class="btn btn-sm btn-circle bg-error hover:bg-error/80 text-white border-none shadow-md absolute top-5 right-5 z-30 transition-transform hover:scale-105" title="Close Modal">
                 <i class="fa-solid fa-xmark text-base"></i>
             </button>
             
             <div class="flex-1 flex flex-col">
-                <!-- VIEW 1: PROFILE OVERVIEW -->
                 <div id="modal-profile-view" class="flex-1 flex flex-col justify-center">
-                    <div class="flex flex-col md:flex-row gap-10 items-center md:items-start">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
                         
-                        <div class="w-full md:w-80 shrink-0 flex flex-col items-center bg-base-200/50 p-6 rounded-3xl border border-base-300/60 shadow-xs">
+                        <div class="lg:col-span-4 flex flex-col items-center justify-between bg-base-200/50 p-6 sm:p-7 rounded-3xl border border-base-300/70 shadow-xs">
                             <div class="w-full flex flex-col items-center">
-                                <div class="w-56 h-56 sm:w-64 sm:h-64 rounded-2xl overflow-hidden shadow-lg border-2 border-base-100 bg-base-100 relative group cursor-pointer" onclick="openImageLightbox(document.getElementById('modal-teacher-img').src, document.getElementById('modal-teacher-name').textContent)">
+                                <div class="w-60 h-60 sm:w-68 sm:h-68 rounded-2xl overflow-hidden shadow-lg border-2 border-base-100 bg-base-100 relative group cursor-pointer" onclick="openImageLightbox(document.getElementById('modal-teacher-img').src, document.getElementById('modal-teacher-name').textContent)">
                                     <img id="modal-teacher-img" src="" alt="Teacher Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-xs gap-1.5">
+                                    <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-xs gap-1.5">
                                         <i class="fa-solid fa-expand"></i> Click to Zoom
                                     </div>
                                 </div>
                                 <span id="modal-teacher-badge" class="badge badge-primary font-bold text-xs mt-5 px-5 py-3.5 shadow-sm rounded-xl uppercase tracking-wider"></span>
                             </div>
-                            <div class="text-center mt-4 text-xs text-base-content/60 font-medium">
-                                <i class="fa-solid fa-award text-primary mr-1"></i> Verified BAB ESL Staff
+
+                            <div class="w-full mt-6 pt-4 border-t border-base-300/70 space-y-2.5 text-xs">
+                                <div class="flex items-center justify-between bg-base-100 px-3.5 py-2.5 rounded-xl border border-base-200">
+                                    <span class="text-base-content/60 font-semibold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-award text-primary"></i> Status
+                                    </span>
+                                    <span class="font-bold text-base-content">Verified BAB ESL Staff</span>
+                                </div>
+                                <div class="flex items-center justify-between bg-base-100 px-3.5 py-2.5 rounded-xl border border-base-200">
+                                    <span class="text-base-content/60 font-semibold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-clock text-primary"></i> Schedule Timezone
+                                    </span>
+                                    <span class="font-bold text-base-content">PST (Asia/Manila)</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="flex-1 min-w-0 flex flex-col justify-between w-full self-stretch py-2">
-                            <div class="space-y-5">
-                                <div class="pr-10">
-                                    <h3 id="modal-teacher-name" class="font-extrabold text-3xl sm:text-4xl text-base-content tracking-tight capitalize"></h3>
-                                    <p class="text-xs sm:text-sm font-semibold text-primary/90 mt-2 flex items-center gap-2">
-                                        <i class="fa-solid fa-graduation-cap text-base"></i> BAB ESL Certified Instructor
-                                    </p>
+                        <div class="lg:col-span-8 flex flex-col justify-between bg-base-100 rounded-3xl p-2 sm:p-4">
+                            <div class="space-y-6">
+                                <div class="pr-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                    <div>
+                                        <h3 id="modal-teacher-name" class="font-extrabold text-3xl sm:text-4xl text-base-content tracking-tight capitalize"></h3>
+                                        <p class="text-xs sm:text-sm font-semibold text-primary/90 mt-1.5 flex items-center gap-2">
+                                            <i class="fa-solid fa-graduation-cap text-base"></i> BAB ESL Certified Instructor
+                                        </p>
+                                    </div>
                                 </div>
-                                
+
                                 <div class="h-px bg-base-200 w-full"></div>
 
-                                <div class="space-y-2">
+                                <div class="space-y-2.5 flex-1">
                                     <h4 class="text-xs font-bold text-base-content/80 uppercase tracking-wider flex items-center gap-2">
                                         <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
                                         Biography & Background
                                     </h4>
-                                    <div class="bg-base-200/30 p-5 rounded-2xl border border-base-200">
-                                        <p id="modal-teacher-bio" class="text-xs sm:text-sm text-base-content/80 leading-relaxed max-h-56 overflow-y-auto custom-scroll pr-2 whitespace-pre-line"></p>
+                                    <div class="bg-base-200/35 p-5 sm:p-6 rounded-2xl border border-base-200 min-h-[180px]">
+                                        <p id="modal-teacher-bio" class="text-sm text-base-content/85 leading-relaxed max-h-64 overflow-y-auto custom-scroll pr-2 whitespace-pre-line"></p>
                                     </div>
                                 </div>
                             </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div class="bg-base-200/40 border border-base-200 rounded-2xl p-4 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="w-10 h-10 rounded-xl bg-success/15 text-success flex items-center justify-center shrink-0">
+                                                <i class="fa-solid fa-calendar-day text-sm"></i>
+                                            </span>
+                                            <div>
+                                                <div class="text-[11px] font-semibold text-base-content/60">Open Slots Today</div>
+                                                <div id="modal-today-slots-count" class="text-sm font-extrabold text-base-content">Checking...</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-base-content/50">PST</span>
+                                    </div>
+
+                                    <div class="bg-base-200/40 border border-base-200 rounded-2xl p-4 flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <span class="w-10 h-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                                                <i class="fa-solid fa-calendar-week text-sm"></i>
+                                            </span>
+                                            <div>
+                                                <div class="text-[11px] font-semibold text-base-content/60">Open Slots This Week</div>
+                                                <div id="modal-week-slots-count" class="text-sm font-extrabold text-base-content">Checking...</div>
+                                            </div>
+                                        </div>
+                                        <span class="text-[11px] font-semibold text-base-content/50">Mon–Sun</span>
+                                    </div>
+                                </div>
 
                             <div id="modal-action-buttons" class="mt-8 pt-5 border-t border-base-200 flex flex-col gap-3"></div>
                         </div>
                     </div>
                 </div>
-
-                <!-- VIEW 2: GALLERY VIEW -->
+                
                 <div id="modal-gallery-view" class="hidden space-y-6 flex-1">
                     <div class="flex items-center gap-3 pr-10">
                         <button onclick="showProfileView()" class="btn btn-sm sm:btn-md btn-circle btn-ghost bg-base-200 border border-base-300">
@@ -174,7 +213,6 @@
                     </div>
                 </div>
 
-                <!-- VIEW 3: PAYMENT METHOD DEDICATED VIEW -->
                 <div id="modal-payment-view" class="hidden space-y-6 flex-1">
                     <div class="flex items-center gap-3 pr-10">
                         <button onclick="showProfileView()" class="btn btn-sm sm:btn-md btn-circle btn-ghost bg-base-200 border border-base-300">
@@ -221,12 +259,11 @@
 
                     <div class="h-px bg-base-200"></div>
 
-                    <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl flex-1 max-h-[620px] bg-base-100 shadow-inner">
+                    <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl flex-1 max-h-[72vh] bg-base-100 shadow-inner">
                         <div id="modal-calendar-grid-container" class="min-w-[950px]"></div>
                     </div>
                 </div>
 
-                <!-- VIEW 5: BOOKING VIEW -->
                 <div id="modal-booking-view" class="hidden flex-1">
                     <div class="flex items-center gap-3 mb-4 pr-10">
                         <button onclick="backToTimetableOrProfile()" class="btn btn-sm sm:btn-md btn-circle btn-ghost bg-base-200 border border-base-300">
@@ -276,7 +313,6 @@
                 </div>
             </div>
 
-            <!-- Footer Navigation Action (Only in Gallery, Payment & Timetable Views) -->
             <div id="modal-footer-actions" class="modal-action pt-6 border-t border-base-200 flex justify-center items-center mt-6">
                 <button onclick="showProfileView()" id="modal-back-btn" class="btn btn-primary btn-md px-10 font-bold rounded-xl hidden">Back to Overview</button>
             </div>
@@ -299,6 +335,7 @@
     <script src="../scripts/topnav.js"></script>
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        const SCHEDULE_HOURS = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
         let allTeachers = [];
         let cachedSessions = [];
         let cachedTeacherClosedSlots = {};
@@ -421,6 +458,50 @@
             return false;
         }
 
+        function updateTeacherAvailabilitySnapshot(teacherName) {
+            const todayEl = document.getElementById('modal-today-slots-count');
+            const weekEl = document.getElementById('modal-week-slots-count');
+            if (!todayEl || !weekEl) return;
+
+            const teacherSessions = cachedSessions.filter(s => {
+                let tName = String(s.Teacher || s.teacher || "").toLowerCase().trim();
+                if (tName.startsWith('teacher ')) tName = tName.substring(8).trim();
+                const targetClean = teacherName.toLowerCase().trim();
+                return tName === targetClean || tName.includes(targetClean) || targetClean.includes(tName);
+            });
+
+            const nowPst = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+            const todayKey = nowPst.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+
+            let todayOpen = 0;
+            SCHEDULE_HOURS.forEach(hour => {
+                if (!isSlotBooked(teacherSessions, todayKey, hour) && !isSlotClosed(teacherName, todayKey, hour)) {
+                    todayOpen++;
+                }
+            });
+
+            const startOfWeek = new Date(nowPst);
+            const dayOfWeek = startOfWeek.getDay();
+            const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+            startOfWeek.setDate(diff);
+
+            let weekOpen = 0;
+            let weekTotal = SCHEDULE_HOURS.length * 7;
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(startOfWeek);
+                d.setDate(startOfWeek.getDate() + i);
+                const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                SCHEDULE_HOURS.forEach(hour => {
+                    if (!isSlotBooked(teacherSessions, dateKey, hour) && !isSlotClosed(teacherName, dateKey, hour)) {
+                        weekOpen++;
+                    }
+                });
+            }
+
+            todayEl.textContent = `${todayOpen} of ${SCHEDULE_HOURS.length} slots open`;
+            weekEl.textContent = `${weekOpen} of ${weekTotal} slots open`;
+        }
+
         function openImageLightbox(imgSrc, caption = "") {
             if (!imgSrc) return;
             const lightbox = document.getElementById('image-lightbox-modal');
@@ -496,7 +577,7 @@
             const endStr = weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
             titleEl.textContent = `${activeTeacherForModal}'s Timetable (${startStr} - ${endStr})`;
 
-            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+            const hours = SCHEDULE_HOURS;
 
             let totalSlots = hours.length * weekDays.length;
             let unavailableCount = 0;
@@ -509,7 +590,7 @@
             });
 
             let remainingSlots = totalSlots - unavailableCount;
-            subtitleEl.innerHTML = `<span class="text-success font-semibold">${remainingSlots} slots remaining</span> out of ${totalSlots} total weekly slots.`;
+            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${startStr} - ${endStr}</span> • <span class="text-success font-semibold">${remainingSlots} slots remaining</span> out of ${totalSlots} total weekly slots.`;
 
             let html = `
                 <table class="table table-pin-rows table-zebra text-center w-full border-collapse">
@@ -565,10 +646,11 @@
         }
 
         function renderModalDayView(container, titleEl, subtitleEl, sessionsList) {
-            titleEl.textContent = `${activeTeacherForModal}'s Day View (${modalCurrentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' })})`;
+            const formattedDay = modalCurrentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
+            titleEl.textContent = `${activeTeacherForModal}'s Day View (${formattedDay})`;
             const dateKey = modalCurrentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
-            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+            const hours = SCHEDULE_HOURS;
 
             let unavailableCount = 0;
             hours.forEach(hour => {
@@ -576,7 +658,7 @@
             });
 
             let remainingToday = hours.length - unavailableCount;
-            subtitleEl.innerHTML = `<span class="text-success font-semibold">${remainingToday} remaining slots</span> available today.`;
+            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${formattedDay}</span> • <span class="text-success font-semibold">${remainingToday} remaining slots</span> available today.`;
 
             let html = `<div class="p-4 space-y-3 max-w-4xl mx-auto w-full">`;
             hours.forEach(hour => {
@@ -619,12 +701,13 @@
         function renderModalMonthView(container, titleEl, subtitleEl, sessionsList) {
             const year = modalCurrentDate.getFullYear();
             const month = modalCurrentDate.getMonth();
-            titleEl.textContent = `${activeTeacherForModal}'s Monthly Overview`;
-            subtitleEl.textContent = `Click any date to view and book daily slots.`;
+            const monthLabel = modalCurrentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' });
+            titleEl.textContent = `${activeTeacherForModal}'s Monthly Overview (${monthLabel})`;
+            subtitleEl.innerHTML = `<span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">${monthLabel}</span> <span class="ml-1">Click any date to view and book daily slots.</span>`;
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+            const hours = SCHEDULE_HOURS;
 
             let html = `
                 <table class="table text-center w-full border-collapse h-full">
@@ -730,6 +813,7 @@
             document.getElementById('modal-teacher-name').textContent = name;
             document.getElementById('modal-teacher-badge').textContent = roleTitle;
             document.getElementById('modal-teacher-bio').textContent = bio;
+            updateTeacherAvailabilitySnapshot(name);
 
             const modalActionContainer = document.getElementById('modal-action-buttons');
             if (modalActionContainer) {

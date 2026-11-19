@@ -30,7 +30,6 @@
 
             <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 max-w-full w-full">
                 
-                <!-- TOP HEADER CARD -->
                 <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -47,7 +46,6 @@
                     </div>
                 </div>
 
-                <!-- VIEW 1: TEACHERS DIRECTORY GRID -->
                 <div id="teachers-directory-view" class="space-y-6">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <p class="text-xs text-base-content/70 font-semibold">Select any instructor below to manage their interactive weekly/monthly timetable and close/open slots.</p>
@@ -69,7 +67,6 @@
                     </div>
                 </div>
 
-                <!-- VIEW 2: TEACHER TIMETABLE MATRIX -->
                 <div id="teacher-schedule-view" class="space-y-6 hidden">
                     <div class="card bg-base-100 p-6 rounded-3xl border border-base-300 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                         <div class="flex items-center gap-4">
@@ -92,7 +89,6 @@
                             </div>
                         </div>
 
-                        <!-- TIMETABLE CONTROLS -->
                         <div class="flex flex-wrap items-center gap-3">
                             <div class="join shadow-xs">
                                 <button onclick="changeCalendarView('day')" id="view-btn-day" class="btn btn-sm join-item btn-ghost border border-base-300 font-bold">Day</button>
@@ -112,10 +108,12 @@
                         </div>
                     </div>
 
-                    <!-- TIMETABLE MATRIX CONTAINER -->
                     <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden w-full p-4">
-                        <div class="mb-3 px-2 flex justify-between items-center">
-                            <h3 id="timetable-subtitle" class="font-bold text-xs text-base-content/70">Loading bookings & availability...</h3>
+                        <div class="mb-3 px-2 flex flex-wrap justify-between items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <h3 id="timetable-subtitle" class="font-bold text-xs sm:text-sm text-base-content/80">Loading bookings & availability...</h3>
+                                <div id="view-scope-close-actions" class="flex items-center gap-2"></div>
+                            </div>
                             <span class="text-[11px] text-base-content/50 italic"><i class="fa-solid fa-circle-info text-primary mr-1"></i> Click "Close Hour" or "Cancel Class" to manage slots.</span>
                         </div>
                         <div class="overflow-x-auto custom-scroll max-h-[620px] rounded-2xl border border-base-300">
@@ -134,7 +132,6 @@
         </div>
     </div>
 
-    <!-- PHOTO MODAL -->
     <dialog id="teacher-photo-modal" class="modal backdrop-blur-md z-[999]">
         <div class="modal-box p-6 bg-base-100 rounded-3xl border border-base-300 shadow-2xl max-w-lg flex flex-col items-center relative">
             <form method="dialog" class="absolute right-4 top-4 z-10">
@@ -148,7 +145,6 @@
         <form method="dialog" class="modal-backdrop"><button>close</button></form>
     </dialog>
 
-    <!-- MANUAL BOOKING MODAL -->
     <dialog id="admin-book-modal" class="modal backdrop-blur-xs z-[999]">
         <div class="modal-box p-6 rounded-3xl border border-base-300 shadow-2xl max-w-lg">
             <div class="flex justify-between items-center mb-4 pb-3 border-b border-base-200">
@@ -199,6 +195,8 @@
     <script src="../scripts/topnav.js"></script>
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        const SCHEDULE_HOURS = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+
         let allAdminSessions = [];
         let allRegisteredAccounts = [];
         let teacherAccountsMap = {};
@@ -411,10 +409,143 @@
             renderCalendarMatrix();
         }
 
+        function getDateKeysForViewScope(viewType) {
+            const keys = [];
+            if (viewType === 'day') {
+                keys.push(calendarCurrentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }));
+            } else if (viewType === 'week') {
+                const startOfWeek = new Date(calendarCurrentDate);
+                const dayOfWeek = startOfWeek.getDay();
+                const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                startOfWeek.setDate(diff);
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(startOfWeek);
+                    d.setDate(startOfWeek.getDate() + i);
+                    keys.push(d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }));
+                }
+            } else if (viewType === 'month') {
+                const year = calendarCurrentDate.getFullYear();
+                const month = calendarCurrentDate.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    keys.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+                }
+            }
+            return keys;
+        }
+
+        function isViewScopeFullyClosed(viewType) {
+            const dateKeys = getDateKeysForViewScope(viewType);
+            if (dateKeys.length === 0) return false;
+            return dateKeys.every(dateKey =>
+                SCHEDULE_HOURS.every(hour => currentTeacherClosedSlots.includes(`${dateKey}_${normalizeTime(hour)}`))
+            );
+        }
+
+        function renderViewScopeCloseButton() {
+            const actionContainer = document.getElementById('view-scope-close-actions');
+            const badge = document.getElementById('selected-teacher-booking-badge');
+            if (!actionContainer) return;
+
+            const labels = {
+                day: 'This Day',
+                week: 'This Week',
+                month: 'This Month'
+            };
+            const scopeLabel = labels[currentCalendarView] || 'This Period';
+            const allClosed = isViewScopeFullyClosed(currentCalendarView);
+
+            if (badge) {
+                if (allClosed) {
+                    badge.className = "badge badge-error badge-sm font-bold text-white";
+                    badge.textContent = `Closed ${scopeLabel}`;
+                } else {
+                    badge.className = "badge badge-success badge-sm font-bold text-white";
+                    badge.textContent = "Open";
+                }
+            }
+
+            if (allClosed) {
+                actionContainer.innerHTML = `
+                    <button onclick="toggleCurrentViewBookings('open')" class="btn btn-xs btn-success text-white font-bold rounded-lg gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-lock-open"></i> Re-open Booking ${scopeLabel}
+                    </button>
+                `;
+            } else {
+                actionContainer.innerHTML = `
+                    <button onclick="toggleCurrentViewBookings('close')" class="btn btn-xs btn-warning text-white font-bold rounded-lg gap-1.5 shadow-xs">
+                        <i class="fa-solid fa-ban"></i> Closed Booking ${scopeLabel}
+                    </button>
+                `;
+            }
+        }
+
+        function toggleCurrentViewBookings(actionType) {
+            if (!currentActiveTeacher) return;
+
+            const labels = {
+                day: 'this day',
+                week: 'this week',
+                month: 'this month'
+            };
+            const scopeText = labels[currentCalendarView] || 'this period';
+            const dateKeys = getDateKeysForViewScope(currentCalendarView);
+
+            if (actionType === 'close') {
+                const slotSet = new Set(currentTeacherClosedSlots);
+                dateKeys.forEach(dateKey => {
+                    SCHEDULE_HOURS.forEach(hour => {
+                        slotSet.add(`${dateKey}_${normalizeTime(hour)}`);
+                    });
+                });
+                currentTeacherClosedSlots = Array.from(slotSet);
+            } else {
+                const removeSet = new Set();
+                dateKeys.forEach(dateKey => {
+                    SCHEDULE_HOURS.forEach(hour => {
+                        removeSet.add(`${dateKey}_${normalizeTime(hour)}`);
+                    });
+                });
+                currentTeacherClosedSlots = currentTeacherClosedSlots.filter(slot => !removeSet.has(slot));
+            }
+
+            let cleanKey = currentActiveTeacher.toLowerCase().trim();
+            if (cleanKey.startsWith('teacher ')) cleanKey = cleanKey.substring(8).trim();
+            const acc = teacherAccountsMap[cleanKey] || Object.values(teacherAccountsMap).find(a => a.rawName.toLowerCase().includes(cleanKey));
+            if (acc) {
+                acc.closedSlots = [...currentTeacherClosedSlots];
+            }
+
+            showToast(`${actionType === 'close' ? 'Closing' : 'Re-opening'} bookings for ${scopeText}...`, "success");
+
+            const closedSlotsStr = currentTeacherClosedSlots.join(",");
+            const callbackName = 'admin_slot_cb_' + Math.round(Math.random() * 1000000);
+
+            window[callbackName] = function(res) {
+                if (res && res.status === "success") {
+                    showToast(`Bookings ${actionType === 'close' ? 'closed' : 're-opened'} for ${scopeText}.`, "success");
+                    renderCalendarMatrix();
+                } else {
+                    showToast("Failed to update slot status.", "error");
+                }
+                delete window[callbackName];
+            };
+
+            const script = document.createElement('script');
+            script.src = `${API_URL}?action=updateTeacherClosedSlots&teacher=${encodeURIComponent(currentActiveTeacher)}&closedSlots=${encodeURIComponent(closedSlotsStr)}&callback=${callbackName}&_cb=${Date.now()}`;
+            script.onerror = function() {
+                showToast("Network error updating slot.", "error");
+                delete window[callbackName];
+            };
+            document.body.appendChild(script);
+        }
+
         function renderCalendarMatrix() {
             const container = document.getElementById('calendar-grid-container');
             const subtitleEl = document.getElementById('timetable-subtitle');
             if (!container) return;
+
+            renderViewScopeCloseButton();
 
             const teacherSessions = allAdminSessions.filter(s => {
                 let t = String(s.teacher || s.Teacher || "").toLowerCase().trim();

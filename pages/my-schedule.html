@@ -34,20 +34,24 @@
 
             <div class="p-4 sm:p-6 lg:p-8 flex-1 flex flex-col gap-6 max-w-full w-full">
                 
-                <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="card bg-base-100 p-6 shadow-sm border border-base-300 rounded-3xl flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
                     <div class="flex items-center gap-4">
                         <span class="flex items-center justify-center w-14 h-14 bg-primary/10 text-primary rounded-2xl text-2xl shadow-xs border border-primary/20">
                             <i class="fa-solid fa-calendar-days"></i>
                         </span>
                         <div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="badge badge-primary badge-sm font-bold text-white px-2.5 py-1">Teacher Dashboard</span>
+                                <span id="live-pst-indicator" class="badge badge-outline badge-sm font-bold px-2.5 py-1 gap-1.5">
+                                    <i class="fa-regular fa-clock text-primary"></i>
+                                    <span id="live-pst-text">Loading PST Date & Time...</span>
+                                </span>
                             </div>
                             <h1 id="page-title" class="text-2xl sm:text-3xl font-extrabold text-base-content tracking-tight mt-1">My Teaching Schedule</h1>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
                         <div class="join shadow-xs">
                             <button onclick="changeView('day')" id="btn-view-day" class="btn btn-sm join-item btn-ghost border border-base-300 font-semibold">Day</button>
                             <button onclick="changeView('week')" id="btn-view-week" class="btn btn-sm join-item btn-primary font-bold">Week</button>
@@ -55,15 +59,25 @@
                         </div>
                         
                         <div class="flex items-center gap-1 bg-base-200 p-1 rounded-xl border border-base-300 shadow-xs">
-                            <button onclick="navigateCalendar(-1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="navigateCalendar(-1)" class="btn btn-sm btn-circle btn-ghost" title="Previous"><i class="fa-solid fa-chevron-left"></i></button>
                             <button onclick="navigateCalendar(0)" class="btn btn-sm btn-ghost font-bold text-xs">Today</button>
-                            <button onclick="navigateCalendar(1)" class="btn btn-sm btn-circle btn-ghost"><i class="fa-solid fa-chevron-right"></i></button>
+                            <button onclick="navigateCalendar(1)" class="btn btn-sm btn-circle btn-ghost" title="Next"><i class="fa-solid fa-chevron-right"></i></button>
                         </div>
+
+                        <button onclick="openBulkActionModal('close')" id="btn-close-all-bookings" class="btn btn-sm btn-warning text-white font-extrabold gap-2 rounded-xl shadow-xs border-none px-4">
+                            <i class="fa-solid fa-ban"></i>
+                            <span id="btn-close-all-label">Close All This Week</span>
+                        </button>
+
+                        <button onclick="openBulkActionModal('reopen')" id="btn-reopen-all-bookings" class="btn btn-sm btn-success text-white font-extrabold gap-2 rounded-xl shadow-xs border-none px-4">
+                            <i class="fa-solid fa-lock-open"></i>
+                            <span id="btn-reopen-all-label">Re-Open All This Week</span>
+                        </button>
                     </div>
                 </div>
 
                 <div class="card bg-base-100 shadow-xs border border-base-300 rounded-3xl overflow-hidden flex-1 p-4 sm:p-6">
-                    <div id="subtitle-info" class="text-xs sm:text-sm text-base-content/60 font-medium mb-4">Syncing calendar...</div>
+                    <div id="subtitle-info" class="text-xs sm:text-sm text-base-content/70 font-medium mb-4 flex flex-wrap items-center gap-2">Syncing calendar...</div>
                     <div class="overflow-x-auto custom-scroll border border-base-300 rounded-2xl bg-base-100 shadow-inner max-h-[70vh]">
                         <div id="grid-container" class="min-w-[900px]"></div>
                     </div>
@@ -79,14 +93,48 @@
         </div>
     </div>
 
+    <dialog id="bulk-action-confirm-modal" class="modal modal-bottom sm:modal-middle backdrop-blur-xs">
+        <div class="modal-box p-6 sm:p-7 max-w-md bg-base-100 border border-base-300 shadow-2xl rounded-3xl">
+            <div class="flex items-start gap-4">
+                <span id="bulk-modal-icon-wrap" class="w-12 h-12 rounded-2xl bg-warning/15 text-warning flex items-center justify-center text-xl shrink-0 border border-warning/30">
+                    <i id="bulk-modal-icon" class="fa-solid fa-ban"></i>
+                </span>
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span id="bulk-modal-scope-badge" class="badge badge-warning badge-sm font-extrabold text-white px-2.5 py-1">Period</span>
+                    </div>
+                    <h3 id="bulk-modal-title" class="font-extrabold text-xl text-base-content tracking-tight">Close Available Bookings?</h3>
+                    <p id="bulk-modal-period-text" class="text-sm font-bold text-base-content/90"></p>
+                    <p id="bulk-modal-desc" class="text-xs text-base-content/70 leading-relaxed pt-1">
+                        All open slots in this period will be marked as closed for new student bookings. Already booked student sessions will remain intact.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-action mt-6 pt-4 border-t border-base-200 flex justify-end gap-2.5">
+                <button type="button" onclick="closeBulkConfirmModal()" class="btn btn-ghost btn-sm sm:btn-md rounded-xl font-bold px-4">Cancel</button>
+                <button type="button" onclick="confirmBulkSlotAction()" id="btn-confirm-bulk-action" class="btn btn-warning btn-sm sm:btn-md text-white rounded-xl font-extrabold gap-2 px-5 border-none shadow-sm">
+                    <i id="btn-confirm-bulk-icon" class="fa-solid fa-ban"></i>
+                    <span id="btn-confirm-bulk-label">Close Bookings</span>
+                </button>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button onclick="closeBulkConfirmModal()">close</button>
+        </form>
+    </dialog>
+
     <script src="../scripts/nav.js"></script>
     <script src="../scripts/topnav.js"></script>
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwhI1B0aGzDzwthu23R-F_c_Zqb1GEFSUHRMXrP1JFX03D7fxIntTB5-g5cpf__pHtW/exec";
+        const SCHEDULE_HOURS = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+
         let sessionsData = [];
         let cachedClosedSlotsArray = [];
         let currentView = 'week';
         let currentDate = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        let pendingBulkAction = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             const role = String(localStorage.getItem('userRole') || localStorage.getItem('role') || "").trim();
@@ -99,9 +147,184 @@
                 window.setActiveNavItem('teacher-schedule.html');
             }
 
+            updateLiveDateTimeIndicator();
+            setInterval(updateLiveDateTimeIndicator, 1000);
+            updateBulkActionButtonLabels();
+
             fetchDashboardData();
             setInterval(fetchDashboardData, 10000);
         });
+
+        function updateLiveDateTimeIndicator() {
+            const el = document.getElementById('live-pst-text');
+            if (!el) return;
+            const now = new Date();
+            const datePart = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
+            const timePart = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: 'Asia/Manila' });
+            el.textContent = `PST: ${datePart} • ${timePart}`;
+        }
+
+        function updateBulkActionButtonLabels() {
+            const closeLabelEl = document.getElementById('btn-close-all-label');
+            const reopenLabelEl = document.getElementById('btn-reopen-all-label');
+            if (!closeLabelEl || !reopenLabelEl) return;
+
+            if (currentView === 'day') {
+                const isToday = currentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) === new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+                closeLabelEl.textContent = isToday ? 'Close All Today' : 'Close All This Day';
+                reopenLabelEl.textContent = isToday ? 'Re-Open All Today' : 'Re-Open All This Day';
+            } else if (currentView === 'month') {
+                closeLabelEl.textContent = 'Close All This Month';
+                reopenLabelEl.textContent = 'Re-Open All This Month';
+            } else {
+                closeLabelEl.textContent = 'Close All This Week';
+                reopenLabelEl.textContent = 'Re-Open All This Week';
+            }
+        }
+
+        function getTargetDateKeysForActiveView() {
+            const keys = [];
+            if (currentView === 'day') {
+                keys.push(currentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }));
+            } else if (currentView === 'week') {
+                const startOfWeek = new Date(currentDate);
+                const dayOfWeek = startOfWeek.getDay();
+                const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+                startOfWeek.setDate(diff);
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(startOfWeek);
+                    d.setDate(startOfWeek.getDate() + i);
+                    keys.push(d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }));
+                }
+            } else if (currentView === 'month') {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    keys.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+                }
+            }
+            return keys;
+        }
+
+        function openBulkActionModal(mode) {
+            const targetDates = getTargetDateKeysForActiveView();
+            if (targetDates.length === 0) return;
+
+            const scopeLabel = currentView === 'day'
+                ? (targetDates[0] === new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) ? 'Today' : 'Day View')
+                : currentView === 'month'
+                    ? 'Month View'
+                    : 'Week View';
+
+            const periodText = currentView === 'day'
+                ? targetDates[0]
+                : currentView === 'week'
+                    ? `${targetDates[0]} to ${targetDates[targetDates.length - 1]}`
+                    : currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' });
+
+            pendingBulkAction = { mode, targetDates, periodText, scopeLabel };
+
+            const isReopen = mode === 'reopen';
+            const badgeEl = document.getElementById('bulk-modal-scope-badge');
+            const titleEl = document.getElementById('bulk-modal-title');
+            const periodEl = document.getElementById('bulk-modal-period-text');
+            const descEl = document.getElementById('bulk-modal-desc');
+            const iconWrapEl = document.getElementById('bulk-modal-icon-wrap');
+            const iconEl = document.getElementById('bulk-modal-icon');
+            const confirmBtnEl = document.getElementById('btn-confirm-bulk-action');
+            const confirmIconEl = document.getElementById('btn-confirm-bulk-icon');
+            const confirmLabelEl = document.getElementById('btn-confirm-bulk-label');
+
+            if (badgeEl) {
+                badgeEl.textContent = scopeLabel;
+                badgeEl.className = `badge ${isReopen ? 'badge-success' : 'badge-warning'} badge-sm font-extrabold text-white px-2.5 py-1`;
+            }
+            if (titleEl) titleEl.textContent = isReopen ? 'Re-Open Closed Slots?' : 'Close Available Bookings?';
+            if (periodEl) periodEl.textContent = `Period: ${periodText}`;
+            if (descEl) {
+                descEl.textContent = isReopen
+                    ? 'All closed slots in this period will be re-opened so students can book them again.'
+                    : 'All open slots in this period will be marked as closed for new student bookings. Already booked student sessions will remain intact.';
+            }
+            if (iconWrapEl) {
+                iconWrapEl.className = isReopen
+                    ? 'w-12 h-12 rounded-2xl bg-success/15 text-success flex items-center justify-center text-xl shrink-0 border border-success/30'
+                    : 'w-12 h-12 rounded-2xl bg-warning/15 text-warning flex items-center justify-center text-xl shrink-0 border border-warning/30';
+            }
+            if (iconEl) iconEl.className = isReopen ? 'fa-solid fa-lock-open' : 'fa-solid fa-ban';
+            if (confirmBtnEl) {
+                confirmBtnEl.className = `btn ${isReopen ? 'btn-success' : 'btn-warning'} btn-sm sm:btn-md text-white rounded-xl font-extrabold gap-2 px-5 border-none shadow-sm`;
+            }
+            if (confirmIconEl) confirmIconEl.className = isReopen ? 'fa-solid fa-lock-open' : 'fa-solid fa-ban';
+            if (confirmLabelEl) confirmLabelEl.textContent = isReopen ? 'Re-Open Slots' : 'Close Bookings';
+
+            const modal = document.getElementById('bulk-action-confirm-modal');
+            if (modal) modal.showModal();
+        }
+
+        function closeBulkConfirmModal() {
+            pendingBulkAction = null;
+            const modal = document.getElementById('bulk-action-confirm-modal');
+            if (modal) modal.close();
+        }
+
+        async function confirmBulkSlotAction() {
+            if (!pendingBulkAction) return;
+            const { mode, targetDates, periodText } = pendingBulkAction;
+            closeBulkConfirmModal();
+
+            const closeBtn = document.getElementById('btn-close-all-bookings');
+            const reopenBtn = document.getElementById('btn-reopen-all-bookings');
+            if (closeBtn) closeBtn.disabled = true;
+            if (reopenBtn) reopenBtn.disabled = true;
+
+            const updatedSet = new Set(cachedClosedSlotsArray);
+            let affectedCount = 0;
+
+            targetDates.forEach(dateKey => {
+                SCHEDULE_HOURS.forEach(hour => {
+                    const slotKey = `${dateKey}_${normalizeTime(hour)}`;
+                    if (mode === 'reopen') {
+                        if (updatedSet.has(slotKey)) {
+                            updatedSet.delete(slotKey);
+                            affectedCount++;
+                        }
+                    } else {
+                        const booked = getTeacherSessionsForSlot(dateKey, hour).length > 0;
+                        if (!booked && !updatedSet.has(slotKey)) {
+                            updatedSet.add(slotKey);
+                            affectedCount++;
+                        }
+                    }
+                });
+            });
+
+            const newClosedStr = Array.from(updatedSet).join(",");
+            const myName = getActiveTeacherName();
+
+            try {
+                showToast(mode === 'reopen' ? `Re-opening slots for ${periodText}...` : `Closing bookings for ${periodText}...`, "success");
+                const res = await fetchJsonp('updateTeacherClosedSlots', `&teacher=${encodeURIComponent(myName)}&closedSlots=${encodeURIComponent(newClosedStr)}`);
+                if (res && res.status === "success") {
+                    cachedClosedSlotsArray = Array.from(updatedSet);
+                    renderCalendarMatrix();
+                    showToast(
+                        mode === 'reopen'
+                            ? `Re-opened ${affectedCount} slot${affectedCount === 1 ? '' : 's'} for ${periodText}.`
+                            : `Closed ${affectedCount} slot${affectedCount === 1 ? '' : 's'} for ${periodText}.`,
+                        "success"
+                    );
+                } else {
+                    showToast("Failed to save slot changes.", "error");
+                }
+            } catch (err) {
+                showToast("Network error while updating slots.", "error");
+            } finally {
+                if (closeBtn) closeBtn.disabled = false;
+                if (reopenBtn) reopenBtn.disabled = false;
+            }
+        }
 
         function fetchJsonp(action, extraParams = "") {
             return new Promise((resolve, reject) => {
@@ -132,7 +355,6 @@
                 if (data && data.status === "success") {
                     sessionsData = Array.isArray(data.schedules) ? data.schedules : [];
                     
-                    // Extract closed slots directly from the logged-in teacher's account row in Column L
                     let myName = getActiveTeacherName();
                     let teacherAcc = (data.accounts || []).find(acc => {
                         let accName = String(acc.username || "").toLowerCase().trim();
@@ -172,6 +394,7 @@
             currentView = viewType;
             document.querySelectorAll('#btn-view-day, #btn-view-week, #btn-view-month').forEach(b => b.classList.replace('btn-primary', 'btn-ghost'));
             document.getElementById(`btn-view-${viewType}`).classList.replace('btn-ghost', 'btn-primary');
+            updateBulkActionButtonLabels();
             renderCalendarMatrix();
         }
 
@@ -183,6 +406,7 @@
                 else if (currentView === 'week') currentDate.setDate(currentDate.getDate() + (direction * 7));
                 else if (currentView === 'month') currentDate.setMonth(currentDate.getMonth() + direction);
             }
+            updateBulkActionButtonLabels();
             renderCalendarMatrix();
         }
 
@@ -238,6 +462,41 @@
                 const isMatch = tName === myName || myName.includes(tName) || tName.includes(myName);
                 return isMatch && sDate === dateKey && sTime === targetTime;
             });
+        }
+
+        function getDayBookings(dateKey) {
+            const uniqueBookings = [];
+            const seen = new Set();
+            SCHEDULE_HOURS.forEach(h => {
+                getTeacherSessionsForSlot(dateKey, h).forEach(session => {
+                    const key = JSON.stringify([
+                        session.Student || session.student || '',
+                        session.Lesson || session.lesson || '',
+                        session.Time || session.time || session.sessionTime || h,
+                        session.Date || session.date || session.sessionDate || dateKey
+                    ]);
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        uniqueBookings.push(session);
+                    }
+                });
+            });
+            return uniqueBookings;
+        }
+
+        function formatCounterText(label, count, periodPhrase) {
+            const bookingWord = count === 1 ? 'total booking' : 'total bookings';
+            return `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-base-200 border border-base-300 font-extrabold text-xs sm:text-sm text-base-content">
+                    <i class="fa-regular fa-calendar text-primary"></i>
+                    ${label}
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/12 text-primary font-extrabold text-xs sm:text-sm border border-primary/25 shadow-2xs">
+                    <i class="fa-solid fa-calendar-check text-xs"></i>
+                    ${count} ${bookingWord}
+                </span>
+                <span class="text-xs sm:text-sm font-semibold text-base-content/75">${periodPhrase}</span>
+            `;
         }
 
         function isSlotClosed(dateKey, hourStr) {
@@ -297,36 +556,48 @@
 
             const startStr = weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             const endStr = weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            
-            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+            const todayKey = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
             let totalBookings = 0;
             weekDays.forEach(d => {
                 const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
-                hours.forEach(h => {
-                    totalBookings += getTeacherSessionsForSlot(dateKey, h).length;
-                });
+                totalBookings += getDayBookings(dateKey).length;
             });
 
-            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${startStr} - ${endStr}</span> • <span class="text-primary font-bold">${totalBookings} total bookings</span> this week.`;
+            subtitleEl.innerHTML = formatCounterText(`${startStr} - ${endStr}`, totalBookings, 'this week.');
 
             let html = `
                 <table class="table table-pin-rows table-zebra text-center w-full border-collapse">
                     <thead>
                         <tr class="text-base-content text-xs uppercase font-extrabold">
-                            <th class="w-28 border-r border-base-300 py-3 bg-base-200 sticky top-0 z-20 shadow-xs">Time</th>
+                            <th class="w-32 border-r border-base-300 py-3 bg-base-200 sticky top-0 z-20 shadow-xs">
+                                <div>Time</div>
+                                <div class="text-[10px] font-bold opacity-65">PST</div>
+                            </th>
                             ${weekDays.map(d => {
                                 const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
-                                const isToday = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) === dateKey;
-                                return `<th class="border-r border-base-300 py-3 bg-base-200 sticky top-0 z-20 shadow-xs ${isToday ? '!bg-primary/20 text-primary font-black' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })} <br><span class="text-[11px] opacity-80">${d.getMonth() + 1}/${d.getDate()}</span></th>`;
+                                const isToday = todayKey === dateKey;
+                                const dayCount = getDayBookings(dateKey).length;
+                                return `
+                                    <th class="border-r border-base-300 py-3 bg-base-200 sticky top-0 z-20 shadow-xs ${isToday ? '!bg-primary text-primary-content font-black' : ''}">
+                                        <div class="text-xs tracking-wider">${d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                                        <div class="inline-flex items-center gap-1.5 mt-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold ${isToday ? 'bg-base-100 text-primary shadow-2xs' : 'bg-base-100/90 text-base-content border border-base-300'}">
+                                            <span>${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                            ${dayCount > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[10px] font-black ${isToday ? 'bg-primary text-primary-content' : 'bg-primary/15 text-primary'}">${dayCount}</span>` : ''}
+                                        </div>
+                                    </th>
+                                `;
                             }).join('')}
                         </tr>
                     </thead>
                     <tbody>
             `;
 
-            hours.forEach(hour => {
-                html += `<tr><th class="bg-base-200/50 text-xs border-r border-base-300 font-bold py-3">${hour}</th>`;
+            SCHEDULE_HOURS.forEach(hour => {
+                const dayLabel = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Manila' });
+                html += `<tr><th class="bg-base-200/60 text-xs border-r border-base-300 font-extrabold py-3 text-base-content">
+                    <div>${hour}</div>
+                </th>`;
                 weekDays.forEach(d => {
                     const dateKey = d.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
                     const matches = getTeacherSessionsForSlot(dateKey, hour);
@@ -337,16 +608,16 @@
                         matches.forEach(m => {
                             const student = m.Student || m.student || 'Student';
                             const lesson = m.Lesson || m.lesson || 'Class';
-                            const timeStr = m.Time || m.time || m.sessionTime || '';
+                            const timeStr = m.Time || m.time || m.sessionTime || hour;
                             const link = m.Link || m.link || '#';
                             html += `
                                 <div class="bg-base-100 p-2.5 rounded-xl border border-primary/30 shadow-sm text-left">
-                                    <div class="flex justify-between items-center">
+                                    <div class="flex justify-between items-center gap-1">
                                         <span class="badge badge-primary badge-xs font-bold text-white px-2">Booked</span>
-                                        <span class="text-[10px] font-semibold opacity-70">${timeStr}</span>
+                                        <span class="text-[10px] font-extrabold text-primary">${dayLabel(d)} • ${timeStr}</span>
                                     </div>
-                                    <div class="text-xs font-bold mt-1 text-primary truncate"><i class="fa-solid fa-user-graduate text-[10px]"></i> ${student}</div>
-                                    <div class="text-[11px] font-medium text-base-content/80 truncate mt-0.5"><i class="fa-solid fa-book text-[10px] opacity-70"></i> ${lesson}</div>
+                                    <div class="text-xs font-extrabold mt-1 text-primary truncate"><i class="fa-solid fa-user-graduate text-[10px]"></i> ${student}</div>
+                                    <div class="text-[11px] font-semibold text-base-content/85 truncate mt-0.5"><i class="fa-solid fa-book text-[10px] opacity-70"></i> ${lesson}</div>
                                     ${link && link !== '#' ? `<a href="${link}" target="_blank" class="btn btn-xs btn-success text-white w-full mt-2 font-bold"><i class="fa-solid fa-video"></i> Join Meet</a>` : ''}
                                 </div>
                             `;
@@ -355,15 +626,17 @@
                     } else if (closed) {
                         html += `
                             <td class="border-r border-base-300 p-2 bg-warning/30 hover:bg-warning/40 cursor-pointer transition-all align-middle" onclick="toggleHourClosure('${dateKey}', '${hour}')" title="Click to Open Hour">
+                                <div class="text-[10px] font-extrabold text-base-content/75 mb-1">${dayLabel(d)} • ${hour}</div>
                                 <div class="badge badge-warning font-black text-white px-3 py-2 shadow-xs border border-warning/50 rounded-lg">
                                     <i class="fa-solid fa-ban mr-1"></i> CLOSED
                                 </div>
-                                <div class="text-[10px] text-warning-content font-bold mt-1 underline">Click to Re-open</div>
+                                <div class="text-[10px] text-warning-content font-extrabold mt-1 underline">Click to Re-open</div>
                             </td>`;
                     } else {
                         html += `
                             <td class="border-r border-base-300 p-2 bg-success/5 hover:bg-success/15 transition-all align-middle">
-                                <span class="text-[11px] text-success font-bold block mb-1">Available</span>
+                                <div class="text-[10px] font-bold text-base-content/60 mb-0.5">${dayLabel(d)} • ${hour}</div>
+                                <span class="text-xs text-success font-extrabold block mb-1 tracking-wide">Available</span>
                                 <button onclick="toggleHourClosure('${dateKey}', '${hour}')" class="btn btn-xs btn-warning btn-outline font-bold text-[10px] rounded-lg px-2 shadow-xs">
                                     <i class="fa-solid fa-lock text-[9px]"></i> Close Hour
                                 </button>
@@ -378,14 +651,19 @@
         }
 
         function renderDayView(container, subtitleEl) {
-            const dateFormatted = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
+            const dateFormatted = currentDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
             const dateKey = currentDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
-            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${dateFormatted}</span>`;
+            const todayKey = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+            const isToday = dateKey === todayKey;
+            const totalDayBookings = getDayBookings(dateKey).length;
 
-            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+            subtitleEl.innerHTML = `
+                ${formatCounterText(dateFormatted, totalDayBookings, 'today.')}
+                ${isToday ? `<span class="badge badge-primary badge-sm font-extrabold text-white px-2.5 py-1">Today</span>` : ''}
+            `;
 
             let html = `<div class="p-6 space-y-3 max-w-3xl mx-auto w-full">`;
-            hours.forEach(hour => {
+            SCHEDULE_HOURS.forEach(hour => {
                 const matches = getTeacherSessionsForSlot(dateKey, hour);
                 const closed = isSlotClosed(dateKey, hour);
 
@@ -398,31 +676,34 @@
                         html += `
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-base-100 p-4 rounded-2xl border border-primary/30 shadow-sm gap-4">
                                 <div class="space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="badge badge-primary font-bold text-xs px-2.5 py-1">${timeStr}</span>
-                                        <span class="font-bold text-base text-base-content">${lesson}</span>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="badge badge-primary font-extrabold text-xs px-3 py-1.5 text-white"><i class="fa-regular fa-clock mr-1"></i> ${timeStr}</span>
+                                        <span class="badge badge-outline badge-primary font-bold text-xs px-2.5 py-1"><i class="fa-regular fa-calendar mr-1"></i> ${dateFormatted}</span>
+                                        <span class="font-extrabold text-base text-base-content">${lesson}</span>
                                     </div>
-                                    <p class="text-xs font-medium text-base-content/70 pl-1">Student: <strong class="text-primary font-bold">${student}</strong></p>
+                                    <p class="text-xs font-semibold text-base-content/80 pl-1">Student: <strong class="text-primary font-extrabold">${student}</strong></p>
                                 </div>
-                                ${link ? `<a href="${link}" target="_blank" class="btn btn-primary btn-sm font-bold gap-2 rounded-xl px-4"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-sm font-semibold">No Link Yet</span>'}
+                                ${link ? `<a href="${link}" target="_blank" class="btn btn-primary btn-sm font-bold gap-2 rounded-xl px-4"><i class="fa-solid fa-video"></i> Join Meet</a>` : '<span class="badge badge-warning badge-sm font-bold">No Link Yet</span>'}
                             </div>
                         `;
                     });
                 } else if (closed) {
                     html += `
                         <div class="flex justify-between items-center bg-warning/20 p-4 rounded-2xl border border-warning/40 shadow-xs">
-                            <div>
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="badge badge-warning font-black text-white px-3 py-1.5 rounded-lg"><i class="fa-solid fa-ban mr-1"></i> CLOSED (${hour})</span>
-                                <span class="font-bold text-sm text-base-content ml-2">Unavailable for bookings</span>
+                                <span class="badge badge-ghost font-bold text-xs">${dateFormatted}</span>
+                                <span class="font-extrabold text-sm text-base-content">Unavailable for bookings</span>
                             </div>
                             <button onclick="toggleHourClosure('${dateKey}', '${hour}')" class="btn btn-sm btn-warning font-bold shadow-xs">Re-open Hour</button>
                         </div>`;
                 } else {
                     html += `
                         <div class="flex justify-between items-center bg-base-100 p-4 rounded-2xl border border-base-300 shadow-xs">
-                            <div>
-                                <span class="badge badge-success font-bold text-white px-2.5 py-1 rounded-lg">${hour}</span>
-                                <span class="text-xs font-bold text-success ml-2">Open & Available</span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="badge badge-success font-extrabold text-white px-3 py-1.5 rounded-lg"><i class="fa-regular fa-clock mr-1"></i> ${hour}</span>
+                                <span class="badge badge-ghost font-bold text-xs">${dateFormatted}</span>
+                                <span class="text-sm font-extrabold text-success">Open & Available</span>
                             </div>
                             <button onclick="toggleHourClosure('${dateKey}', '${hour}')" class="btn btn-sm btn-outline btn-warning font-bold shadow-xs">Close Hour</button>
                         </div>`;
@@ -435,11 +716,19 @@
         function renderMonthView(container, subtitleEl) {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            subtitleEl.innerHTML = `<span class="font-bold text-base-content">${currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' })}</span>`;
+            const monthLabel = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'Asia/Manila' });
+            const todayKey = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const hours = ['07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'];
+
+            let monthTotalBookings = 0;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                monthTotalBookings += getDayBookings(dateKey).length;
+            }
+
+            subtitleEl.innerHTML = formatCounterText(monthLabel, monthTotalBookings, 'this month.');
 
             let html = `
                 <table class="table text-center w-full border-collapse h-full">
@@ -456,17 +745,18 @@
             for (let i = 0; i < 42; i++) {
                 if (i >= firstDay && dayCount <= daysInMonth) {
                     const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayCount).padStart(2, '0')}`;
-                    let daySessions = [];
-                    hours.forEach(h => {
-                        getTeacherSessionsForSlot(dateKey, h).forEach(m => {
-                            if (!daySessions.includes(m)) daySessions.push(m);
-                        });
-                    });
+                    const isToday = todayKey === dateKey;
+                    const daySessions = getDayBookings(dateKey);
 
                     html += `
-                        <td class="border border-base-300 h-24 align-top p-2 hover:bg-primary/5 cursor-pointer transition-all" onclick="currentDate = new Date('${dateKey}T00:00:00'); changeView('day');">
-                            <div class="font-bold text-xs text-base-content">${dayCount}</div>
-                            ${daySessions.length > 0 ? `<div class="mt-2 badge badge-primary badge-xs font-bold p-2">${daySessions.length} class(es)</div>` : ''}
+                        <td class="border border-base-300 h-24 align-top p-2 cursor-pointer transition-all ${isToday ? 'bg-primary/10 ring-2 ring-inset ring-primary/50 hover:bg-primary/15' : 'hover:bg-primary/5'}" onclick="currentDate = new Date('${dateKey}T00:00:00'); updateBulkActionButtonLabels(); changeView('day');">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs font-black ${isToday ? 'bg-primary text-primary-content shadow-xs' : 'text-base-content bg-base-200/80'}">${dayCount}</span>
+                                <span class="text-[10px] font-bold ${isToday ? 'text-primary font-black uppercase' : 'text-base-content/55'}">${isToday ? 'Today' : monthLabel.split(' ')[0]}</span>
+                            </div>
+                            ${daySessions.length > 0
+                                ? `<div class="mt-2 badge badge-primary badge-sm font-extrabold text-white px-2.5 py-2 shadow-2xs">${daySessions.length} ${daySessions.length === 1 ? 'booking' : 'bookings'}</div>`
+                                : `<div class="mt-2 text-[11px] font-bold text-base-content/50">No bookings</div>`}
                         </td>`;
                     dayCount++;
                 } else {

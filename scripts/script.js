@@ -82,6 +82,10 @@ function getTargetUrl() {
         gid = "1631515039"; 
     }else if (pageName === "school-parenting-shopping-survival-english.html") { 
         gid = "488262510"; 
+    }else if (pageName === "bank.html") { 
+        gid = "1999734990"; 
+    }else if (pageName === "at-the-hospital.html") { 
+        gid = "976336238"; 
     }
 
 

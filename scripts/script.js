@@ -86,6 +86,8 @@ function getTargetUrl() {
         gid = "1999734990"; 
     }else if (pageName === "at-the-hospital.html") { 
         gid = "976336238"; 
+    }else if (pageName === "bank-v2.html") { 
+        gid = "374487847"; 
     }
 
 

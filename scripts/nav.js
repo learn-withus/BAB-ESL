@@ -82,7 +82,7 @@ function loadNavbar() {
                     line-height: 1.25;
                     border-radius: 6px;
                     white-space: nowrap;
-                    z-index: 999999;
+                    z-index: 100001;
                     box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.25);
                     pointer-events: none;
                     animation: fadeInTip 0.12s cubic-bezier(0.16, 1, 0.3, 1);
@@ -96,7 +96,7 @@ function loadNavbar() {
                     border-width: 5px;
                     border-style: solid;
                     border-color: transparent #1e293b transparent transparent;
-                    z-index: 999999;
+                    z-index: 100001;
                     pointer-events: none;
                 }
             }
@@ -175,14 +175,14 @@ function loadNavbar() {
             if (!isMobile) {
                 drawerSide.style.width = targetWidth;
                 drawerSide.style.transition = 'width 0.3s ease';
-                drawerSide.style.zIndex = '9999';
-                drawerSide.style.overflow = 'visible';
+                drawerSide.style.setProperty('z-index', '100000', 'important');
+                drawerSide.style.setProperty('overflow', 'visible', 'important');
             } else {
                 // Clear inline style overrides so DaisyUI overlay covers the viewport on mobile
                 drawerSide.style.width = '';
                 drawerSide.style.transition = '';
-                drawerSide.style.zIndex = '';
-                drawerSide.style.overflow = '';
+                drawerSide.style.removeProperty('z-index');
+                drawerSide.style.removeProperty('overflow');
             }
         }
 

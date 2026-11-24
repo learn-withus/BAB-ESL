@@ -90,9 +90,14 @@ function getTargetUrl() {
         gid = "374487847"; 
     }else if (pageName === "wildlife.html") { 
         gid = "1626658698"; 
+    }else if (pageName === "pets.html") { 
+        gid = "1475549903"; 
+    }else if (pageName === "pharmacies.html") { 
+        gid = "367032349"; 
+    }else if (pageName === "hospital-pharmacies-survival-english.html") { 
+        gid = "1618017118"; 
     }
 
-    
     return `${BASE_CSV_URL}&gid=${gid}`;
 }
 const CSV_URL = getTargetUrl();

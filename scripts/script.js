@@ -88,9 +88,11 @@ function getTargetUrl() {
         gid = "976336238"; 
     }else if (pageName === "bank-v2.html") { 
         gid = "374487847"; 
+    }else if (pageName === "wildlife.html") { 
+        gid = "1626658698"; 
     }
 
-
+    
     return `${BASE_CSV_URL}&gid=${gid}`;
 }
 const CSV_URL = getTargetUrl();
@@ -618,6 +620,556 @@ function addSectionControls(container, idx) {
     container.lastChild.appendChild(div);
 }
 
+function ensureGraffitiStyles() {
+    if (document.getElementById('graffiti-perfect-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'graffiti-perfect-styles';
+    style.textContent = `
+        .graffiti-fullscreen-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 99999;
+            overflow: hidden;
+        }
+        .graffiti-tag-banner {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ff2a85, #ffbe0b, #00f5d4, #8338ec);
+            color: #111827;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), 2px 2px 0px #ffffff;
+            transform: rotate(-2deg) scale(0.5);
+            animation: graffitiTagPop 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .graffiti-wildstyle-svg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: min(92vw, 920px);
+            height: auto;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%) rotate(-4deg) scale(0.25);
+            filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.55));
+            animation: graffitiWildstyleThrowup 10s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .graffiti-splat-svg {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.32));
+            animation: graffitiWallSplat 10s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .graffiti-drip {
+            position: fixed;
+            border-radius: 0 0 999px 999px;
+            pointer-events: none;
+            opacity: 0;
+            transform-origin: top center;
+            animation: graffitiPaintDrip 10s ease-in forwards;
+        }
+        .graffiti-overspray {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            filter: blur(22px);
+            animation: graffitiOversprayFade 10s ease-out forwards;
+        }
+        .graffiti-speckle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: graffitiSpeckleBurst 10s ease-out forwards;
+        }
+        .graffiti-glitter-shard {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0;
+            will-change: transform, opacity;
+            animation: graffitiGlitterDrift var(--g-dur, 4.2s) cubic-bezier(0.22, 1, 0.36, 1) var(--g-delay, 0s) infinite;
+        }
+        @keyframes graffitiTagPop {
+            0% { opacity: 0; transform: rotate(-10deg) scale(0.4); }
+            65% { opacity: 1; transform: rotate(-2deg) scale(1.1); }
+            100% { opacity: 1; transform: rotate(-2deg) scale(1); }
+        }
+        @keyframes graffitiWildstyleThrowup {
+            0% { opacity: 0; transform: translate(-50%, -44%) rotate(-12deg) scale(0.25); }
+            5% { opacity: 1; transform: translate(-50%, -51%) rotate(-3.5deg) scale(1.06); }
+            8% { opacity: 1; transform: translate(-50%, -50%) rotate(-4deg) scale(1); }
+            48% { opacity: 1; transform: translate(-50%, -51.5%) rotate(-3deg) scale(1.02); }
+            90% { opacity: 1; transform: translate(-50%, -50%) rotate(-4deg) scale(1.01); }
+            100% { opacity: 0; transform: translate(-50%, -55%) rotate(-2deg) scale(1.05); }
+        }
+        @keyframes graffitiWallSplat {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.15) rotate(var(--rot0, 0deg));
+            }
+            4% {
+                opacity: 0.96;
+                transform: translate(-50%, -50%) scale(1.1) rotate(var(--rot1, 15deg));
+            }
+            7% {
+                opacity: 0.94;
+                transform: translate(-50%, -50%) scale(1) rotate(var(--rot1, 15deg));
+            }
+            91% {
+                opacity: 0.92;
+                transform: translate(-50%, -50%) scale(1.02) rotate(var(--rot1, 15deg));
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.05) rotate(var(--rot1, 15deg));
+            }
+        }
+        @keyframes graffitiPaintDrip {
+            0% {
+                opacity: 0;
+                transform: scaleY(0.05);
+            }
+            6% {
+                opacity: 0.94;
+                transform: scaleY(0.25);
+            }
+            35% {
+                opacity: 0.92;
+                transform: scaleY(0.75);
+            }
+            91% {
+                opacity: 0.9;
+                transform: scaleY(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scaleY(1.05);
+            }
+        }
+        @keyframes graffitiOversprayFade {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+            5% { opacity: 0.45; transform: translate(-50%, -50%) scale(1); }
+            90% { opacity: 0.36; transform: translate(-50%, -50%) scale(1.06); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.12); }
+        }
+        @keyframes graffitiSpeckleBurst {
+            0% {
+                opacity: 0.95;
+                transform: translate(0, 0) scale(0.4);
+            }
+            12% {
+                opacity: 0.9;
+                transform: translate(calc(var(--sx, 0px) * 0.7), calc(var(--sy, 0px) * 0.7)) scale(1.05);
+            }
+            88% {
+                opacity: 0.85;
+                transform: translate(var(--sx, 0px), var(--sy, 0px)) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--sx, 0px), var(--sy, 0px)) scale(1.25);
+            }
+        }
+        @keyframes graffitiGlitterDrift {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 0, 0) rotate(0deg) scale(0.25);
+            }
+            16% {
+                opacity: 1;
+                transform: translate3d(calc(var(--gx, 0px) * 0.25), calc(var(--gy, 0px) * 0.25), 0) rotate(130deg) scale(1.45);
+            }
+            50% {
+                opacity: 0.55;
+                transform: translate3d(calc(var(--gx, 0px) * 0.62), calc(var(--gy, 0px) * 0.62), 0) rotate(310deg) scale(0.75);
+            }
+            82% {
+                opacity: 1;
+                transform: translate3d(calc(var(--gx, 0px) * 0.9), calc(var(--gy, 0px) * 0.9), 0) rotate(510deg) scale(1.35);
+            }
+            100% {
+                opacity: 0;
+                transform: translate3d(var(--gx, 0px), var(--gy, 0px), 0) rotate(680deg) scale(0.2);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+const CELEBRATION_AUDIO_FILE = "assets/cheer-applause.mp3";
+
+function resolveCelebrationAudioUrl() {
+    const pathname = window.location.pathname || "";
+    const lowerPath = pathname.toLowerCase();
+    const rootMarker = "/bab-esl-main/";
+    const markerIdx = lowerPath.indexOf(rootMarker);
+
+    if (markerIdx !== -1) {
+        const subPath = pathname.slice(markerIdx + rootMarker.length);
+        const parts = subPath.split("/").filter(Boolean);
+        const depth = Math.max(0, parts.length - 1);
+        const prefix = depth === 0 ? "./" : "../".repeat(depth);
+        return `${prefix}${CELEBRATION_AUDIO_FILE}`;
+    }
+
+    if (lowerPath.includes("/pages/books/")) {
+        return `../../../${CELEBRATION_AUDIO_FILE}`;
+    }
+    if (lowerPath.includes("/pages/")) {
+        return `../${CELEBRATION_AUDIO_FILE}`;
+    }
+    return `./${CELEBRATION_AUDIO_FILE}`;
+}
+
+function playGraffitiCelebrationAudio() {
+    try {
+        const audioUrl = resolveCelebrationAudioUrl();
+        const audio = new Audio(audioUrl);
+        audio.volume = 0.85;
+        audio.play().catch((err) => {
+            console.warn("Celebration audio failed to play from:", audioUrl, err);
+            playCelebrationChimeFallback();
+        });
+    } catch (err) {
+        console.error("Celebration audio error:", err);
+    }
+}
+
+function playCelebrationChimeFallback() {
+    try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+
+        const now = ctx.currentTime;
+        const notes = [
+            { freq: 523.25, time: 0.04, dur: 0.16 }, // C5
+            { freq: 659.25, time: 0.15, dur: 0.16 }, // E5
+            { freq: 783.99, time: 0.26, dur: 0.20 }, // G5
+            { freq: 1046.50, time: 0.39, dur: 0.50 } // C6
+        ];
+
+        notes.forEach((n) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(n.freq, now + n.time);
+
+            gain.gain.setValueAtTime(0.001, now + n.time);
+            gain.gain.linearRampToValueAtTime(0.14, now + n.time + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now + n.time);
+            osc.stop(now + n.time + n.dur + 0.02);
+        });
+
+        setTimeout(() => {
+            if (ctx && typeof ctx.close === 'function') {
+                ctx.close().catch(() => {});
+            }
+        }, 1500);
+    } catch (_) {}
+}
+
+function createWildstyleGraffitiSvg() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 920 340");
+    svg.classList.add("graffiti-wildstyle-svg");
+
+    const defs = document.createElementNS(svgNS, "defs");
+
+    const fillGrad = document.createElementNS(svgNS, "linearGradient");
+    fillGrad.setAttribute("id", "graffitiWildFill");
+    fillGrad.setAttribute("x1", "0%");
+    fillGrad.setAttribute("y1", "0%");
+    fillGrad.setAttribute("x2", "100%");
+    fillGrad.setAttribute("y2", "100%");
+    [
+        ["0%", "#ffbe0b"],
+        ["45%", "#ff2a85"],
+        ["100%", "#00f5d4"]
+    ].forEach(([offset, color]) => {
+        const stop = document.createElementNS(svgNS, "stop");
+        stop.setAttribute("offset", offset);
+        stop.setAttribute("stop-color", color);
+        fillGrad.appendChild(stop);
+    });
+    defs.appendChild(fillGrad);
+
+    const arrowGrad = document.createElementNS(svgNS, "linearGradient");
+    arrowGrad.setAttribute("id", "graffitiArrowGrad");
+    arrowGrad.setAttribute("x1", "0%");
+    arrowGrad.setAttribute("y1", "0%");
+    arrowGrad.setAttribute("x2", "100%");
+    arrowGrad.setAttribute("y2", "0%");
+    [
+        ["0%", "#9b5de5"],
+        ["50%", "#00bbf9"],
+        ["100%", "#ffbe0b"]
+    ].forEach(([offset, color]) => {
+        const stop = document.createElementNS(svgNS, "stop");
+        stop.setAttribute("offset", offset);
+        stop.setAttribute("stop-color", color);
+        arrowGrad.appendChild(stop);
+    });
+    defs.appendChild(arrowGrad);
+
+    svg.appendChild(defs);
+
+    // Wildstyle back-burst & directional spray arrows
+    const backBurst = document.createElementNS(svgNS, "path");
+    backBurst.setAttribute(
+        "d",
+        "M60,185 L15,130 L85,120 L55,55 L145,88 L195,28 L255,82 L355,34 L410,92 L515,32 L575,88 L680,36 L735,95 L845,52 L815,125 L898,145 L832,205 L885,265 L780,262 L735,318 L630,275 L540,322 L445,274 L330,322 L245,270 L130,312 L105,245 L25,235 Z"
+    );
+    backBurst.setAttribute("fill", "#8338ec");
+    backBurst.setAttribute("stroke", "#111827");
+    backBurst.setAttribute("stroke-width", "6");
+    backBurst.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(backBurst);
+
+    const arrowPaths = [
+        "M95,95 L25,45 L42,35 L15,18 L24,52 L38,44 Z",
+        "M820,88 L895,38 L878,28 L905,12 L896,46 L882,38 Z",
+        "M125,255 L42,315 L58,325 L26,334 L40,302 L52,312 Z",
+        "M795,252 L882,312 L866,322 L898,332 L884,300 L872,310 Z"
+    ];
+    arrowPaths.forEach((d) => {
+        const arrow = document.createElementNS(svgNS, "path");
+        arrow.setAttribute("d", d);
+        arrow.setAttribute("fill", "url(#graffitiArrowGrad)");
+        arrow.setAttribute("stroke", "#111827");
+        arrow.setAttribute("stroke-width", "4");
+        arrow.setAttribute("stroke-linejoin", "round");
+        svg.appendChild(arrow);
+    });
+
+    // 3D extruded piece letters: 100%
+    const pieceText = document.createElementNS(svgNS, "text");
+    pieceText.setAttribute("x", "460");
+    pieceText.setAttribute("y", "205");
+    pieceText.setAttribute("text-anchor", "middle");
+    pieceText.setAttribute("font-family", "Impact, 'Arial Black', sans-serif");
+    pieceText.setAttribute("font-size", "168");
+    pieceText.setAttribute("font-style", "italic");
+    pieceText.setAttribute("letter-spacing", "6");
+    pieceText.setAttribute("fill", "url(#graffitiWildFill)");
+    pieceText.setAttribute("stroke", "#111827");
+    pieceText.setAttribute("stroke-width", "12");
+    pieceText.setAttribute("paint-order", "stroke fill");
+    pieceText.style.filter = "drop-shadow(8px 10px 0px #ff2a85) drop-shadow(15px 18px 0px #00bbf9)";
+    pieceText.textContent = "100%";
+    svg.appendChild(pieceText);
+
+    // Wildstyle connector bar & crown spikes across the piece
+    const crownPath = document.createElementNS(svgNS, "path");
+    crownPath.setAttribute(
+        "d",
+        "M250,74 L274,34 L302,66 L332,20 L362,66 L390,34 L414,74 M506,74 L530,34 L558,66 L588,20 L618,66 L646,34 L670,74"
+    );
+    crownPath.setAttribute("fill", "#ffbe0b");
+    crownPath.setAttribute("stroke", "#111827");
+    crownPath.setAttribute("stroke-width", "5");
+    crownPath.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(crownPath);
+
+    return svg;
+}
+
+function triggerGraffitiPerfectScore(targetEl) {
+    ensureGraffitiStyles();
+
+    const existing = document.getElementById('graffiti-fullscreen-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'graffiti-fullscreen-overlay';
+    overlay.className = 'graffiti-fullscreen-overlay';
+    document.body.appendChild(overlay);
+
+    const palette = ['#ff2a85', '#ffbe0b', '#00bbf9', '#00f5d4', '#9b5de5', '#fb5607', '#38b000'];
+    const glitterColors = ['#ffffff', '#fff3b0', '#ffbe0b', '#00f5d4', '#ff2a85', '#00bbf9', '#e0aaff'];
+    const splatPaths = [
+        "M50,10 C64,8 72,22 83,26 C95,30 96,46 86,55 C94,68 83,84 69,79 C61,93 41,94 34,80 C18,86 8,70 17,57 C6,47 11,30 24,27 C30,14 40,12 50,10 Z",
+        "M48,7 C58,16 74,11 81,23 C93,29 91,48 80,55 C88,69 75,88 61,81 C52,95 34,91 29,77 C14,79 8,62 19,50 C9,38 17,20 31,22 C36,11 42,4 48,7 Z",
+        "M52,9 C67,6 75,21 88,28 C96,40 87,54 78,61 C83,75 68,89 55,82 C44,93 26,87 25,72 C11,69 10,50 22,42 C15,28 26,13 40,18 C44,11 47,10 52,9 Z",
+        "M50,6 C61,15 76,8 84,21 C97,25 99,44 87,53 C97,66 86,86 71,82 C63,96 42,96 35,82 C20,89 7,73 16,58 C5,49 9,29 23,25 C28,13 39,14 50,6 Z"
+    ];
+
+    // 1. Aerosol overspray mist clouds across the full screen
+    for (let c = 0; c < 22; c++) {
+        const cloud = document.createElement('div');
+        const color = palette[c % palette.length];
+        const size = 160 + Math.random() * 230;
+        const x = 4 + Math.random() * 92;
+        const y = 4 + Math.random() * 92;
+
+        cloud.className = 'graffiti-overspray';
+        cloud.style.width = `${size}px`;
+        cloud.style.height = `${size}px`;
+        cloud.style.left = `${x}vw`;
+        cloud.style.top = `${y}vh`;
+        cloud.style.background = `radial-gradient(circle, ${color} 0%, transparent 72%)`;
+        cloud.style.animationDelay = `${(Math.random() * 1.1).toFixed(2)}s`;
+        overlay.appendChild(cloud);
+    }
+
+    // 2. Fullscreen organic paint splatters + paint drips distributed across the entire viewport
+    const cols = 6;
+    const rows = 4;
+    let idx = 0;
+    for (let r = 0; r < rows; r++) {
+        for (let col = 0; col < cols; col++) {
+            const color = palette[idx % palette.length];
+            const accentColor = palette[(idx + 2) % palette.length];
+            const pathData = splatPaths[idx % splatPaths.length];
+            idx++;
+
+            const cellX = ((col + 0.15 + Math.random() * 0.7) / cols) * 100;
+            const cellY = ((r + 0.15 + Math.random() * 0.7) / rows) * 100;
+            const size = 110 + Math.random() * 145;
+            const delay = (Math.random() * 1.2).toFixed(2);
+            const rot0 = (Math.random() * 360).toFixed(0);
+            const rot1 = (Number(rot0) + (Math.random() - 0.5) * 45).toFixed(0);
+
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("viewBox", "0 0 100 100");
+            svg.classList.add("graffiti-splat-svg");
+            svg.style.width = `${size}px`;
+            svg.style.height = `${size}px`;
+            svg.style.left = `${cellX}vw`;
+            svg.style.top = `${cellY}vh`;
+            svg.style.setProperty('--rot0', `${rot0}deg`);
+            svg.style.setProperty('--rot1', `${rot1}deg`);
+            svg.style.animationDelay = `${delay}s`;
+
+            const path = document.createElementNS(svgNS, "path");
+            path.setAttribute("d", pathData);
+            path.setAttribute("fill", color);
+            svg.appendChild(path);
+
+            for (let d = 0; d < 8; d++) {
+                const dot = document.createElementNS(svgNS, "circle");
+                const angle = (Math.PI * 2 * d) / 8 + Math.random();
+                const dist = 35 + Math.random() * 14;
+                dot.setAttribute("cx", (50 + Math.cos(angle) * dist).toFixed(1));
+                dot.setAttribute("cy", (50 + Math.sin(angle) * dist).toFixed(1));
+                dot.setAttribute("r", (1.8 + Math.random() * 3.6).toFixed(1));
+                dot.setAttribute("fill", d % 2 === 0 ? color : accentColor);
+                svg.appendChild(dot);
+            }
+
+            overlay.appendChild(svg);
+
+            if (Math.random() > 0.25) {
+                const dripCount = 1 + Math.floor(Math.random() * 2);
+                for (let k = 0; k < dripCount; k++) {
+                    const drip = document.createElement('span');
+                    const dripLen = 65 + Math.random() * 125;
+                    const offsetPx = (Math.random() - 0.5) * (size * 0.45);
+                    drip.className = 'graffiti-drip';
+                    drip.style.left = `calc(${cellX}vw + ${offsetPx.toFixed(1)}px)`;
+                    drip.style.top = `calc(${cellY}vh + ${(size * 0.16).toFixed(1)}px)`;
+                    drip.style.height = `${dripLen}px`;
+                    drip.style.width = `${4 + Math.random() * 4}px`;
+                    drip.style.backgroundColor = color;
+                    drip.style.animationDelay = `${(parseFloat(delay) + 0.15).toFixed(2)}s`;
+                    overlay.appendChild(drip);
+                }
+            }
+        }
+    }
+
+    // 3. Fine spray-paint speckles across the entire viewport
+    for (let s = 0; s < 130; s++) {
+        const speckle = document.createElement('span');
+        const size = 3 + Math.random() * 7;
+        const startX = Math.random() * 100;
+        const startY = Math.random() * 100;
+        const sx = (Math.random() - 0.5) * 180;
+        const sy = (Math.random() - 0.5) * 180;
+
+        speckle.className = 'graffiti-speckle';
+        speckle.style.width = `${size}px`;
+        speckle.style.height = `${size}px`;
+        speckle.style.left = `${startX}vw`;
+        speckle.style.top = `${startY}vh`;
+        speckle.style.backgroundColor = palette[s % palette.length];
+        speckle.style.setProperty('--sx', `${sx.toFixed(1)}px`);
+        speckle.style.setProperty('--sy', `${sy.toFixed(1)}px`);
+        speckle.style.animationDelay = `${(Math.random() * 1.4).toFixed(2)}s`;
+        overlay.appendChild(speckle);
+    }
+
+    // 4. Center wildstyle graffiti piece (no tag/sticker text)
+    const wildstylePiece = createWildstyleGraffitiSvg();
+    overlay.appendChild(wildstylePiece);
+
+    // 5. Dramatically moving metallic & sparkling glitters across the viewport
+    const svgNS = "http://www.w3.org/2000/svg";
+    for (let g = 0; g < 95; g++) {
+        const gColor = glitterColors[g % glitterColors.length];
+        const gSize = 10 + Math.random() * 18;
+        const startX = Math.random() * 100;
+        const startY = Math.random() * 100;
+        const angle = Math.random() * Math.PI * 2;
+        const travelDist = 90 + Math.random() * 230;
+        const gx = (Math.cos(angle) * travelDist).toFixed(1);
+        const gy = (Math.sin(angle) * travelDist).toFixed(1);
+        const dur = (2.8 + Math.random() * 2.8).toFixed(2);
+        const gDelay = (Math.random() * 2.2).toFixed(2);
+
+        const gSvg = document.createElementNS(svgNS, "svg");
+        gSvg.setAttribute("viewBox", "0 0 24 24");
+        gSvg.classList.add("graffiti-glitter-shard");
+        gSvg.style.width = `${gSize}px`;
+        gSvg.style.height = `${gSize}px`;
+        gSvg.style.left = `${startX}vw`;
+        gSvg.style.top = `${startY}vh`;
+        gSvg.style.setProperty('--gx', `${gx}px`);
+        gSvg.style.setProperty('--gy', `${gy}px`);
+        gSvg.style.setProperty('--g-dur', `${dur}s`);
+        gSvg.style.setProperty('--g-delay', `${gDelay}s`);
+        gSvg.style.filter = `drop-shadow(0 0 6px ${gColor})`;
+
+        if (g % 2 === 0) {
+            const sparkle = document.createElementNS(svgNS, "path");
+            sparkle.setAttribute("d", "M12 0 L14.8 9.2 L24 12 L14.8 14.8 L12 24 L9.2 14.8 L0 12 L9.2 9.2 Z");
+            sparkle.setAttribute("fill", gColor);
+            gSvg.appendChild(sparkle);
+        } else {
+            const facet = document.createElementNS(svgNS, "polygon");
+            facet.setAttribute("points", "12,1 22,12 12,23 2,12");
+            facet.setAttribute("fill", gColor);
+            gSvg.appendChild(facet);
+        }
+
+        overlay.appendChild(gSvg);
+    }
+
+    setTimeout(() => {
+        if (overlay && overlay.parentNode) overlay.remove();
+    }, 10200);
+}
+
 function submitSection(sIdx) {
     const section = document.getElementById(`section-${sIdx}`);
     let score = 0, total = 0;
@@ -680,16 +1232,22 @@ function submitSection(sIdx) {
     });
 
     const scoreDiv = document.getElementById(`score-${sIdx}`);
-    const percentage = (score / total) * 100;
+    const percentage = total > 0 ? (score / total) * 100 : 0;
+    const isPerfect = total > 0 && percentage === 100;
     
-    let message = percentage === 100 ? "🌟 Good job! Perfect Score!" : (percentage >= 70 ? "✨ Great effort!" : "📖 Keep it up! Try again!");
+    let message = isPerfect ? "Yey!" : (percentage >= 70 ? "✨ Great effort!" : "📖 Keep it up! Try again!");
     
     scoreDiv.classList.remove('hidden', 'bg-success/20', 'text-success', 'border-success', 'bg-warning/22', 'text-warning', 'border-warning', 'bg-error/20', 'text-error', 'border-error');
     scoreDiv.style.display = "block";
-    scoreDiv.className = percentage === 100 ? "mt-5 p-4 rounded-xl border bg-success/20 text-success border-success font-semibold" : (percentage >= 70 ? "mt-5 p-4 rounded-xl border bg-warning/20 text-warning border-warning font-semibold" : "mt-5 p-4 rounded-xl border bg-error/20 text-error border-error font-semibold");
+    scoreDiv.className = isPerfect ? "mt-5 p-4 rounded-xl border bg-success/20 text-success border-success font-semibold" : (percentage >= 70 ? "mt-5 p-4 rounded-xl border bg-warning/20 text-warning border-warning font-semibold" : "mt-5 p-4 rounded-xl border bg-error/20 text-error border-error font-semibold");
     
-    scoreDiv.innerHTML = `<strong>${message}</strong><br>Score: ${score} / ${total} (${percentage.toFixed(0)}%)`;
+    scoreDiv.innerHTML = `<strong>${message}</strong><br>Score: ${score} / ${total} (${percentage.toFixed(0)}%)${isPerfect ? `<br><span class="graffiti-tag-banner">Good job! Perfect Score!</span>` : ''}`;
     scoreDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    if (isPerfect) {
+        playGraffitiCelebrationAudio();
+        triggerGraffitiPerfectScore(scoreDiv);
+    }
 }
 
 function resetSection(sIdx) {

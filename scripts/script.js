@@ -631,7 +631,7 @@ function ensureGraffitiStyles() {
             width: 100vw;
             height: 100vh;
             pointer-events: none;
-            z-index: 99999;
+            z-index: 100010;
             overflow: hidden;
         }
         .graffiti-tag-banner {
@@ -961,7 +961,6 @@ function createWildstyleGraffitiSvg() {
         svg.appendChild(arrow);
     });
 
-    // 3D extruded piece letters: 100%
     const pieceText = document.createElementNS(svgNS, "text");
     pieceText.setAttribute("x", "460");
     pieceText.setAttribute("y", "205");
@@ -978,7 +977,6 @@ function createWildstyleGraffitiSvg() {
     pieceText.textContent = "Well Done!";
     svg.appendChild(pieceText);
 
-    // Wildstyle connector bar & crown spikes across the piece
     const crownPath = document.createElementNS(svgNS, "path");
     crownPath.setAttribute(
         "d",

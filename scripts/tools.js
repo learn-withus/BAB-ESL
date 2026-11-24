@@ -297,10 +297,19 @@ function getCanvasCoordinates(e) {
 }
 
 function resizeCanvas() {
-    canvas.width = Math.max(appCanvas.scrollWidth, appCanvas.clientWidth, window.innerWidth);
-    canvas.height = Math.max(appCanvas.scrollHeight, appCanvas.clientHeight, window.innerHeight);
+    const temp = document.createElement('canvas');
+    temp.width = canvas.width;
+    temp.height = canvas.height;
+    if (canvas.width > 0 && canvas.height > 0) {
+        temp.getContext('2d').drawImage(canvas, 0, 0);
+    }
+    canvas.width = Math.max(appCanvas.scrollWidth, appCanvas.clientWidth, document.documentElement.scrollWidth, window.innerWidth);
+    canvas.height = Math.max(appCanvas.scrollHeight, appCanvas.clientHeight, document.documentElement.scrollHeight, window.innerHeight);
     canvas.style.width = `${canvas.width}px`;
     canvas.style.height = `${canvas.height}px`;
+    if (temp.width > 0 && temp.height > 0) {
+        ctx.drawImage(temp, 0, 0);
+    }
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -397,14 +406,22 @@ function setTool(tool) {
         canvas.className = "";
         if (tool === 'pencil') {
             canvas.classList.add('cursor-pencil-mode');
+            document.body.style.cursor = window.getComputedStyle(canvas).cursor;
         } else if (tool === 'pen') {
             canvas.classList.add('cursor-pen-mode');
+            document.body.style.cursor = window.getComputedStyle(canvas).cursor;
         } else if (tool === 'highlighter') {
             canvas.classList.add('cursor-highlighter-mode');
+            document.body.style.cursor = window.getComputedStyle(canvas).cursor;
         } else if (tool === 'eraser') {
             canvas.classList.add('cursor-eraser-mode');
+            document.body.style.cursor = window.getComputedStyle(canvas).cursor;
         }
     }
+    if (tool === 'pointer' || tool === 'text' || tool === 'image') {
+        document.body.style.cursor = '';
+    }
+    resizeCanvas();
 }
 
 let isCreatingBox = false;

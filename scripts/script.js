@@ -975,7 +975,7 @@ function createWildstyleGraffitiSvg() {
     pieceText.setAttribute("stroke-width", "12");
     pieceText.setAttribute("paint-order", "stroke fill");
     pieceText.style.filter = "drop-shadow(8px 10px 0px #ff2a85) drop-shadow(15px 18px 0px #00bbf9)";
-    pieceText.textContent = "100%";
+    pieceText.textContent = "Well Done!";
     svg.appendChild(pieceText);
 
     // Wildstyle connector bar & crown spikes across the piece
